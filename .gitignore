@@ -1,0 +1,8 @@
+germinal
+Makefile
+configure
+germinal.desktop
+po
+!po/POTFILES.in
+!po/LINGUAS
+!po/*.po
