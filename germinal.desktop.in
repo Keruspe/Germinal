@@ -2,7 +2,7 @@
 Name=Germinal
 _Comment=Minimalist vte-based terminal emulator
 Exec=germinal
-Icon=terminal-tango
+Icon=utilities-terminal
 Type=Application
 Categories=GTK;Utility;TerminalEmulator;System;
 StartupNotify=true
