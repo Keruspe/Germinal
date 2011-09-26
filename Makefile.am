@@ -41,17 +41,30 @@ germinal_SOURCES = \
 # CFLAGS
 
 AM_CFLAGS = \
+	-Wall -Wextra -std=gnu99 -pedantic \
+	-O2 -march=native \
 	-DLOCALEDIR=\"${localedir}\" \
 	$(GLIB_CFLAGS) \
+	$(GIO_CFLAGS) \
 	$(GTK_CFLAGS) \
+	$(GDK_CFLAGS) \
 	$(VTE_CFLAGS)
 
 # LDADD
 
+AM_LDFLAGS = \
+	-Wl,--as-needed \
+	-Wl,-O2
+
 AM_LIBS = \
 	$(GLIB_LIBS) \
+	$(GIO_LIBS) \
 	$(GTK_LIBS) \
+	$(GDK_LIBS) \
 	$(VTE_LIBS)
+
+germinal_LDADD = \
+	$(AM_LIBS)
 
 # Distribution stuff
 
