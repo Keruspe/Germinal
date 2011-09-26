@@ -227,6 +227,10 @@ main(int   argc,
                       "key-press-event",
                       G_CALLBACK (on_key_press),
                       terminal);
+    g_signal_connect(G_OBJECT (terminal),
+                     "child-exited",
+                     G_CALLBACK (germinal_exit),
+                     NULL);
 
     /* Launch program */
     gtk_widget_show_all (window);
