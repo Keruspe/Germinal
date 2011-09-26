@@ -101,17 +101,13 @@ on_button_press (GtkWidget *widget, GdkEventButton *button_event, gpointer user_
     if (button_event->button == 1 && (button_event->state & GDK_CONTROL_MASK) && (button_event->state & GDK_SHIFT_MASK) && url) {
         GError *error = NULL;
         gchar *cmd;
-        gchar *browser = (gchar *)g_getenv("BROWSER");
+        gchar *browser = g_strdup (g_getenv ("BROWSER"));
 
-        if (browser)
-            cmd = g_strdup_printf("%s %s", browser, url);
-        else {
-            if ((browser = g_find_program_in_path("xdg-open"))) {
-                cmd = g_strdup_printf ("%s %s", browser, url);
-                g_free (browser);
-            } else
-                cmd = g_strdup_printf("firefox %s", url);
-        }
+        if (!browser && !(browser = g_find_program_in_path ("xdg-open")))
+            browser = g_strdup ("firefox");
+
+        cmd = g_strdup_printf ("%s %s", browser, url);
+        g_free (browser);
 
         if (!g_spawn_command_line_async (cmd, &error))
             fprintf (stderr, _("Couldn't exec \"%s\": %s"), cmd, error->message);
