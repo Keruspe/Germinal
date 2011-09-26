@@ -86,6 +86,46 @@ on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_data)
     return FALSE;
 }
 
+static gboolean
+on_button_press (GtkWidget *widget, GdkEventButton *button_event, gpointer user_data)
+{
+    if (button_event->type != GDK_BUTTON_PRESS)
+        return FALSE;
+
+    VteTerminal *terminal = VTE_TERMINAL (widget);
+    gint tag;
+    glong column = (glong)button_event->x / vte_terminal_get_char_width (VTE_TERMINAL (terminal));
+    glong row = (glong)button_event->y / vte_terminal_get_char_height (VTE_TERMINAL (terminal));
+    gchar *url = vte_terminal_match_check (VTE_TERMINAL (terminal), column, row, &tag);
+
+    if (button_event->button == 1 && (button_event->state & GDK_CONTROL_MASK) && (button_event->state & GDK_SHIFT_MASK) && url) {
+        GError *error = NULL;
+        gchar *cmd;
+        gchar *browser = (gchar *)g_getenv("BROWSER");
+
+        if (browser)
+            cmd = g_strdup_printf("%s %s", browser, url);
+        else {
+            if ((browser = g_find_program_in_path("xdg-open"))) {
+                cmd = g_strdup_printf ("%s %s", browser, url);
+                g_free (browser);
+            } else
+                cmd = g_strdup_printf("firefox %s", url);
+        }
+
+        if (!g_spawn_command_line_async (cmd, &error))
+            fprintf (stderr, _("Couldn't exec \"%s\": %s"), cmd, error->message);
+
+        g_free (cmd);
+
+        return TRUE;
+    }
+
+    user_data = user_data;
+
+    return FALSE;
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -114,6 +154,7 @@ main(int argc, char *argv[])
     gtk_widget_show_all (window);
     g_signal_connect (G_OBJECT (window), "destroy", G_CALLBACK (germinal_exit), NULL);
     g_signal_connect (G_OBJECT (window), "key-press-event", G_CALLBACK (on_key_press), terminal);
+    g_signal_connect (G_OBJECT (terminal), "button-press-event", G_CALLBACK (on_button_press), NULL);
     gtk_main ();
     pango_font_description_free (font);
     g_object_unref (settings);
