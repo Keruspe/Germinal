@@ -38,6 +38,8 @@ AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE], ["$GETTEXT_PACKAGE"], [Gettext Package])
 AC_SUBST(GETTEXT_PACKAGE)
 IT_PROG_INTLTOOL([0.40.0])
 
+GLIB_GSETTINGS
+
 PKG_CHECK_MODULES(GLIB, [glib-2.0 >= 2.28.0])
 PKG_CHECK_MODULES(GIO, [gio-2.0 >= 2.28.0])
 PKG_CHECK_MODULES(GTK, [gtk+-3.0 >= 3.0.0])
@@ -47,6 +49,7 @@ PKG_CHECK_MODULES(VTE, [vte-2.90])
 AC_CONFIG_FILES([
   Makefile
   po/Makefile.in
+  data/org.gnome.Germinal.gschema.xml.in
 ])
 AC_OUTPUT
 AC_MSG_RESULT([

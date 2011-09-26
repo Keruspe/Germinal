@@ -26,7 +26,9 @@ applicationsdir = $(datadir)/applications
 
 dist_man_MANS = man/germinal.1
 
-applications_in_files = germinal.desktop.in
+gsettings_SCHEMAS = data/org.gnome.Germinal.gschema.xml
+
+applications_in_files = data/germinal.desktop.in
 applications_DATA = $(applications_in_files:.desktop.in=.desktop)
 
 # Binaries
@@ -70,18 +72,26 @@ germinal_LDADD = \
 
 EXTRA_DIST = \
 	$(applications_in_files) \
+	data/org.gnome.Germinal.gschema.xml.in.in \
 	autogen.sh
 
 CLEANFILES = \
 	${germinal_SOURCES:.c=.o} \
-	$(applications_DATA)
+	$(applications_DATA) \
+	$(gsettings_SCHEMAS) \
+	gschemas.compiled
 
 # Special rules
 
 @INTLTOOL_DESKTOP_RULE@
+@INTLTOOL_XML_NOMERGE_RULE@
+@GSETTINGS_RULES@
 
 update-po:
 	$(MAKE) -C po $@
+
+gschemas.compiled: $(gsettings_SCHEMAS:.xml=.valid)
+	$(AM_V_GEN) $(GLIB_COMPILE_SCHEMAS) --targetdir=. .
 
 release:
 	git commit -asm "Release $(PACKAGE_NAME) $(PACKAGE_VERSION)"

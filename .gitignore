@@ -2,7 +2,5 @@ germinal
 Makefile
 configure
 germinal.desktop
-po
-!po/POTFILES.in
-!po/LINGUAS
-!po/*.po
+*.xml
+*.xml.in
