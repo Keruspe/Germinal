@@ -23,15 +23,11 @@
 #include <gtk/gtk.h>
 #include <vte/vte.h>
 
-static void
-germinal_exit (GtkWidget *widget, void *data)
-{
-    widget = widget;
-    data = data;
-    gtk_main_quit ();
-}
+#define PALETTE_SIZE 16
+#define URL_REGEXP "(ftp|http)s?://[-a-zA-Z0-9.?$%&/=_~#.,:;+]*"
 
-static const GdkColor xterm_palette[16] =
+/* Stolen from sakura which stole it from gnome-terminal */
+static const GdkColor xterm_palette[PALETTE_SIZE] =
 {
     {0, 0x0000, 0x0000, 0x0000 },
     {0, 0xcdcb, 0x0000, 0x0000 },
@@ -51,15 +47,31 @@ static const GdkColor xterm_palette[16] =
     {0, 0xffff, 0xffff, 0xffff }
 };
 
+static void
+germinal_exit (GtkWidget *widget,
+               gpointer   data)
+{
+    gtk_main_quit ();
+
+    /* Silence stupid warnings */
+    widget = widget;
+    data = data;
+}
+
 static gboolean
-on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_data)
+on_key_press (GtkWidget   *widget,
+              GdkEventKey *event,
+              gpointer     user_data)
 {
     if (event->type != GDK_KEY_PRESS)
         return FALSE;
 
     VteTerminal *terminal = VTE_TERMINAL (user_data);
 
-    if ((event->state & GDK_CONTROL_MASK) && (event->state & GDK_SHIFT_MASK)) {
+    /* Ctrl + Shift + foo */
+    if ((event->state & GDK_CONTROL_MASK) &&
+        (event->state & GDK_SHIFT_MASK))
+    {
         switch (event->keyval) {
         case GDK_KEY_C:
             vte_terminal_copy_clipboard (terminal);
@@ -70,80 +82,159 @@ on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_data)
         }
     }
 
+    /* Silence stupid warning */
     widget = widget;
 
     return FALSE;
 }
 
 static gboolean
-on_button_press (GtkWidget *widget, GdkEventButton *button_event, gpointer user_data)
+on_button_press (GtkWidget      *widget,
+                 GdkEventButton *button_event,
+                 gpointer        user_data)
 {
     if (button_event->type != GDK_BUTTON_PRESS)
         return FALSE;
 
     VteTerminal *terminal = VTE_TERMINAL (widget);
-    gint tag;
-    glong column = (glong)button_event->x / vte_terminal_get_char_width (VTE_TERMINAL (terminal));
-    glong row = (glong)button_event->y / vte_terminal_get_char_height (VTE_TERMINAL (terminal));
-    gchar *url = vte_terminal_match_check (VTE_TERMINAL (terminal), column, row, &tag);
 
-    if (button_event->button == 1 && (button_event->state & GDK_CONTROL_MASK) && (button_event->state & GDK_SHIFT_MASK) && url) {
+    glong column = (glong)button_event->x / vte_terminal_get_char_width (terminal);
+    glong row = (glong)button_event->y / vte_terminal_get_char_height (terminal);
+    gchar *url = vte_terminal_match_check (terminal,
+                                           column,
+                                           row,
+                                           NULL); /* tag */
+
+    /* Ctrl + Shift + Left clic */
+    if ((button_event->button == 1) &&
+        (button_event->state & GDK_CONTROL_MASK) &&
+        (button_event->state & GDK_SHIFT_MASK) &&
+        (url))
+    {
         GError *error = NULL;
         gchar *cmd;
+        /* Always strdup because we free later */
         gchar *browser = g_strdup (g_getenv ("BROWSER"));
 
+        /* If BROWSER is not in env, try xdg-open or fallback to firefox */
         if (!browser && !(browser = g_find_program_in_path ("xdg-open")))
             browser = g_strdup ("firefox");
 
         cmd = g_strdup_printf ("%s %s", browser, url);
         g_free (browser);
+        g_free (url);
 
         if (!g_spawn_command_line_async (cmd, &error))
+        {
             fprintf (stderr, _("Couldn't exec \"%s\": %s"), cmd, error->message);
+            g_error_free (error);
+        }
 
         g_free (cmd);
 
         return TRUE;
     }
 
+    /* Silence stupid warning */
     user_data = user_data;
 
     return FALSE;
 }
 
-int
-main(int argc, char *argv[])
+static gchar *
+get_setting (GSettings   *settings,
+             const gchar *name)
 {
+    static gchar *dest = NULL;
+    g_free (dest);
+    if (name != NULL)
+        dest = g_settings_get_string (settings, name);
+    else
+        dest = NULL;
+    return dest;
+}
+
+int
+main(int   argc,
+     char *argv[])
+{
+    /* Gettext and gtk initialization */
     textdomain(GETTEXT_PACKAGE);
     bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
     bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
     gtk_init (&argc, &argv);
+
     GtkWidget *window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
     GtkWidget *terminal = vte_terminal_new ();
-    GRegex *http_regexp = g_regex_new ("(ftp|http)s?://[-a-zA-Z0-9.?$%&/=_~#.,:;+]*", G_REGEX_CASELESS, G_REGEX_MATCH_NOTEMPTY, NULL);
+
+    /* Settings stuff */
     GSettings *settings = g_settings_new ("org.gnome.Germinal");
-    PangoFontDescription *font = pango_font_description_from_string (g_settings_get_string (settings, "font"));
+    PangoFontDescription *font = pango_font_description_from_string (get_setting (settings, "font"));
     GdkColor forecolor, backcolor;
-    gdk_color_parse (g_settings_get_string (settings, "forecolor"), &forecolor);
-    gdk_color_parse (g_settings_get_string (settings, "backcolor"), &backcolor);
-    vte_terminal_match_add_gregex (VTE_TERMINAL (terminal), http_regexp, 0);
-    vte_terminal_set_mouse_autohide (VTE_TERMINAL (terminal), TRUE);
-    vte_terminal_set_font (VTE_TERMINAL (terminal), font);
-    vte_terminal_set_colors (VTE_TERMINAL(terminal), &forecolor, &backcolor, xterm_palette, 16);
+    gdk_color_parse (get_setting (settings, "forecolor"), &forecolor);
+    gdk_color_parse (get_setting (settings, "backcolor"), &backcolor);
+    get_setting (settings, NULL); /* Free buffer */
+
+    /* Url matching stuff */
+    GRegex *url_regexp = g_regex_new (URL_REGEXP,
+                                      G_REGEX_CASELESS,
+                                      G_REGEX_MATCH_NOTEMPTY,
+                                      NULL); /* error */
+    vte_terminal_match_add_gregex (VTE_TERMINAL (terminal),
+                                   url_regexp,
+                                   0);
+    g_signal_connect (G_OBJECT (terminal),
+                      "button-press-event",
+                      G_CALLBACK (on_button_press),
+                      NULL);
+
+    /* Window settings */
     gtk_window_set_decorated (GTK_WINDOW (window), FALSE);
     gtk_window_maximize (GTK_WINDOW (window));
-    gtk_widget_grab_focus(terminal);
     gtk_container_add (GTK_CONTAINER (window), terminal);
+    gtk_widget_grab_focus (terminal);
+
+    /* Vte settings */
+    vte_terminal_set_mouse_autohide (VTE_TERMINAL (terminal), TRUE);
+    vte_terminal_set_font (VTE_TERMINAL (terminal), font);
+    vte_terminal_set_colors (VTE_TERMINAL(terminal),
+                            &forecolor,
+                            &backcolor,
+                            xterm_palette,
+                            PALETTE_SIZE);
+
+    /* Base command */
     gchar *tmux_argv[] = { "tmux", "-u2", "a", NULL };
     gchar *cwd = g_get_current_dir ();
-    vte_terminal_fork_command_full (VTE_TERMINAL (terminal), VTE_PTY_DEFAULT, cwd, tmux_argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
+    vte_terminal_fork_command_full (VTE_TERMINAL (terminal),
+                                    VTE_PTY_DEFAULT,
+                                    cwd,
+                                    tmux_argv,
+                                    NULL, /* env */
+                                    G_SPAWN_SEARCH_PATH,
+                                    NULL, /* child_setup */
+                                    NULL, /* child_setup_data */
+                                    NULL, /* child_pid */
+                                    NULL); /* error */
     g_free (cwd);
+
+    /* Bind signals */
+    g_signal_connect (G_OBJECT (window),
+                      "destroy",
+                      G_CALLBACK (germinal_exit),
+                      NULL);
+    g_signal_connect (G_OBJECT (window),
+                      "key-press-event",
+                      G_CALLBACK (on_key_press),
+                      terminal);
+
+    /* Launch program */
     gtk_widget_show_all (window);
-    g_signal_connect (G_OBJECT (window), "destroy", G_CALLBACK (germinal_exit), NULL);
-    g_signal_connect (G_OBJECT (window), "key-press-event", G_CALLBACK (on_key_press), terminal);
-    g_signal_connect (G_OBJECT (terminal), "button-press-event", G_CALLBACK (on_button_press), NULL);
     gtk_main ();
+
+    /* Free memory */
     pango_font_description_free (font);
+    g_regex_unref (url_regexp);
     g_object_unref (settings);
     return 0;
 }
