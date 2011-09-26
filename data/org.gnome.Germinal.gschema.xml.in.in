@@ -1,24 +1,6 @@
 <schemalist>
     <schema id="org.gnome.Germinal" path="/org/gnome/Germinal/" gettext-domain="@GETTEXT_PACKAGE@">
 
-    <key name="lines" type="u">
-      <range min="5" max="255"/>
-      <default>92</default>
-      <_summary>Number of lines</_summary>
-      <_description>
-        Number of lines
-      </_description>
-    </key>
-
-    <key name="cols" type="u">
-      <range min="5" max="511"/>
-      <default>279</default>
-      <_summary>Number of columns</_summary>
-      <_description>
-        Number of columns
-      </_description>
-    </key>
-
     <key name="font" type="s">
       <default>'DejaVu Sans Mono 8.5'</default>
       <_summary>The font to use</_summary>
