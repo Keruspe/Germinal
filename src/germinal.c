@@ -42,6 +42,26 @@ run_tmux (GtkWidget *terminal, gboolean attach)
 
 }
 
+static const GdkColor xterm_palette[16] =
+{
+	{0, 0x0000, 0x0000, 0x0000 },
+	{0, 0xcdcb, 0x0000, 0x0000 },
+	{0, 0x0000, 0xcdcb, 0x0000 },
+	{0, 0xcdcb, 0xcdcb, 0x0000 },
+	{0, 0x1e1a, 0x908f, 0xffff },
+	{0, 0xcdcb, 0x0000, 0xcdcb },
+	{0, 0x0000, 0xcdcb, 0xcdcb },
+	{0, 0xe5e2, 0xe5e2, 0xe5e2 },
+	{0, 0x4ccc, 0x4ccc, 0x4ccc },
+	{0, 0xffff, 0x0000, 0x0000 },
+	{0, 0x0000, 0xffff, 0x0000 },
+	{0, 0xffff, 0xffff, 0x0000 },
+	{0, 0x4645, 0x8281, 0xb4ae },
+	{0, 0xffff, 0x0000, 0xffff },
+	{0, 0x0000, 0xffff, 0xffff },
+	{0, 0xffff, 0xffff, 0xffff }
+};
+
 int
 main(int argc, char *argv[])
 {
@@ -54,9 +74,13 @@ main(int argc, char *argv[])
     GRegex *http_regexp = g_regex_new ("(ftp|http)s?://[-a-zA-Z0-9.?$%&/=_~#.,:;+]*", G_REGEX_CASELESS, G_REGEX_MATCH_NOTEMPTY, NULL);
     GSettings *settings = g_settings_new ("org.gnome.Germinal");
     PangoFontDescription *font = pango_font_description_from_string (g_settings_get_string (settings, "font"));
+    GdkColor forecolor, backcolor;
+    gdk_color_parse (g_settings_get_string (settings, "forecolor"), &forecolor);
+    gdk_color_parse (g_settings_get_string (settings, "backcolor"), &backcolor);
     vte_terminal_match_add_gregex (VTE_TERMINAL (terminal), http_regexp, 0);
     vte_terminal_set_mouse_autohide (VTE_TERMINAL (terminal), TRUE);
     vte_terminal_set_font (VTE_TERMINAL (terminal), font);
+    vte_terminal_set_colors (VTE_TERMINAL(terminal), &forecolor, &backcolor, xterm_palette, 16);
     gtk_window_set_decorated (GTK_WINDOW (window), FALSE);
     gtk_window_maximize (GTK_WINDOW (window));
     gtk_widget_grab_focus(terminal);

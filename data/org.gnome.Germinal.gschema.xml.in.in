@@ -27,5 +27,21 @@
       </_description>
     </key>
 
+    <key name="forecolor" type="s">
+      <default>'#00D321'</default>
+      <_summary>The foreground color</_summary>
+      <_description>
+        The foreground color
+      </_description>
+    </key>
+
+    <key name="backcolor" type="s">
+      <default>'#101010'</default>
+      <_summary>The background color</_summary>
+      <_description>
+        The background color
+      </_description>
+    </key>
+
   </schema>
 </schemalist>
