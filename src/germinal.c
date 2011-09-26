@@ -31,17 +31,6 @@ germinal_exit (GtkWidget *widget, void *data)
     gtk_main_quit ();
 }
 
-static gboolean
-run_tmux (GtkWidget *terminal, gboolean attach)
-{
-    gchar *tmux_attach_argv[] = { "tmux", "-u2", attach ? "a" : NULL, NULL };
-    gchar *cwd = g_get_current_dir ();
-    gboolean ret = vte_terminal_fork_command_full (VTE_TERMINAL (terminal), VTE_PTY_DEFAULT, cwd, tmux_attach_argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
-    g_free (cwd);
-    return ret;
-
-}
-
 static const GdkColor xterm_palette[16] =
 {
     {0, 0x0000, 0x0000, 0x0000 },
@@ -145,8 +134,10 @@ main(int argc, char *argv[])
     gtk_window_maximize (GTK_WINDOW (window));
     gtk_widget_grab_focus(terminal);
     gtk_container_add (GTK_CONTAINER (window), terminal);
-    if (!run_tmux (terminal, TRUE))
-        run_tmux (terminal, FALSE);
+    gchar *tmux_argv[] = { "tmux", "-u2", "a", NULL };
+    gchar *cwd = g_get_current_dir ();
+    vte_terminal_fork_command_full (VTE_TERMINAL (terminal), VTE_PTY_DEFAULT, cwd, tmux_argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
+    g_free (cwd);
     gtk_widget_show_all (window);
     g_signal_connect (G_OBJECT (window), "destroy", G_CALLBACK (germinal_exit), NULL);
     g_signal_connect (G_OBJECT (window), "key-press-event", G_CALLBACK (on_key_press), terminal);
