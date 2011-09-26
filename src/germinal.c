@@ -62,6 +62,30 @@ static const GdkColor xterm_palette[16] =
 	{0, 0xffff, 0xffff, 0xffff }
 };
 
+static gboolean
+on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_data)
+{
+    if (event->type != GDK_KEY_PRESS)
+        return FALSE;
+
+    VteTerminal *terminal = VTE_TERMINAL (user_data);
+
+    if ((event->state & GDK_CONTROL_MASK) && (event->state & GDK_SHIFT_MASK)) {
+        switch (event->keyval) {
+        case GDK_KEY_C:
+            vte_terminal_copy_clipboard (terminal);
+            return TRUE;
+        case GDK_KEY_V:
+            vte_terminal_paste_clipboard (terminal);
+            return TRUE;
+	}
+    }
+
+    widget = widget;
+
+    return FALSE;
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -89,6 +113,7 @@ main(int argc, char *argv[])
         run_tmux (terminal, FALSE);
     gtk_widget_show_all (window);
     g_signal_connect (G_OBJECT (window), "destroy", G_CALLBACK (germinal_exit), NULL);
+    g_signal_connect (G_OBJECT (window), "key-press-event", G_CALLBACK (on_key_press), terminal);
     gtk_main ();
     pango_font_description_free (font);
     g_object_unref (settings);
