@@ -52,8 +52,11 @@ main(int argc, char *argv[])
     GtkWidget *window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
     GtkWidget *terminal = vte_terminal_new ();
     GRegex *http_regexp = g_regex_new ("(ftp|http)s?://[-a-zA-Z0-9.?$%&/=_~#.,:;+]*", G_REGEX_CASELESS, G_REGEX_MATCH_NOTEMPTY, NULL);
+    GSettings *settings = g_settings_new ("org.gnome.Germinal");
+    PangoFontDescription *font = pango_font_description_from_string (g_settings_get_string (settings, "font"));
     vte_terminal_match_add_gregex (VTE_TERMINAL (terminal), http_regexp, 0);
     vte_terminal_set_mouse_autohide (VTE_TERMINAL (terminal), TRUE);
+    vte_terminal_set_font (VTE_TERMINAL (terminal), font);
     gtk_window_set_decorated (GTK_WINDOW (window), FALSE);
     gtk_window_maximize (GTK_WINDOW (window));
     gtk_widget_grab_focus(terminal);
@@ -63,5 +66,7 @@ main(int argc, char *argv[])
     gtk_widget_show_all (window);
     g_signal_connect (G_OBJECT (window), "destroy", G_CALLBACK (germinal_exit), NULL);
     gtk_main ();
+    pango_font_description_free (font);
+    g_object_unref (settings);
     return 0;
 }
