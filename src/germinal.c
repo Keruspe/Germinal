@@ -105,9 +105,8 @@ on_button_press (GtkWidget      *widget,
                                            row,
                                            NULL); /* tag */
 
-    /* Ctrl + Shift + Left clic */
+    /* Shift + Left clic */
     if ((button_event->button == 1) &&
-        (button_event->state & GDK_CONTROL_MASK) &&
         (button_event->state & GDK_SHIFT_MASK) &&
         (url))
     {
