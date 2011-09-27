@@ -100,10 +100,11 @@ on_button_press (GtkWidget      *widget,
 
     glong column = (glong)button_event->x / vte_terminal_get_char_width (terminal);
     glong row = (glong)button_event->y / vte_terminal_get_char_height (terminal);
+    gint tag; /* avoid stupid vte segv (said to be optional) */
     gchar *url = vte_terminal_match_check (terminal,
                                            column,
                                            row,
-                                           NULL); /* tag */
+                                           &tag); /* tag */
 
     /* Shift + Left clic */
     if ((button_event->button == 1) &&
