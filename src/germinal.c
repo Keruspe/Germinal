@@ -27,6 +27,8 @@
 #define URL_REGEXP "(ftp|http)s?://[-a-zA-Z0-9.?$%&/=_~#.,:;+]*"
 
 #define FONT_KEY "font"
+#define FORECOLOR_KEY "forecolor"
+#define BACKCOLOR_KEY "backcolor"
 
 /* Stolen from sakura which stole it from gnome-terminal */
 static const GdkColor xterm_palette[PALETTE_SIZE] =
@@ -159,11 +161,30 @@ get_setting (GSettings   *settings,
 static void
 update_font (GSettings   *settings,
              const gchar *key,
-             gpointer     terminal)
+             gpointer     data)
 {
     PangoFontDescription *font = pango_font_description_from_string (get_setting (settings, key));
-    vte_terminal_set_font (VTE_TERMINAL (terminal), font);
+    vte_terminal_set_font (VTE_TERMINAL (data), font);
     pango_font_description_free (font);
+}
+
+static void
+update_colors (GSettings   *settings,
+               const gchar *key, /* NULL for initialization */
+               gpointer     data)
+{
+    static GdkColor forecolor, backcolor;
+    if ((key == NULL) ||
+        (strcmp (key, FORECOLOR_KEY) == 0))
+            gdk_color_parse (get_setting (settings, "forecolor"), &forecolor);
+    else if ((key == NULL) ||
+             (strcmp (key, BACKCOLOR_KEY) == 0))
+            gdk_color_parse (get_setting (settings, "backcolor"), &backcolor);
+    vte_terminal_set_colors (VTE_TERMINAL (data),
+                            &forecolor,
+                            &backcolor,
+                             xterm_palette,
+                             PALETTE_SIZE);
 }
 
 int
@@ -178,12 +199,7 @@ main(int   argc,
 
     GtkWidget *window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
     GtkWidget *terminal = vte_terminal_new ();
-
-    /* Settings stuff */
     GSettings *settings = g_settings_new ("org.gnome.Germinal");
-    GdkColor forecolor, backcolor;
-    gdk_color_parse (get_setting (settings, "forecolor"), &forecolor);
-    gdk_color_parse (get_setting (settings, "backcolor"), &backcolor);
 
     /* Url matching stuff */
     GRegex *url_regexp = g_regex_new (URL_REGEXP,
@@ -205,16 +221,20 @@ main(int   argc,
     gtk_widget_grab_focus (terminal);
 
     /* Vte settings */
-    update_font (settings, FONT_KEY, terminal);
     vte_terminal_set_mouse_autohide (VTE_TERMINAL (terminal), TRUE);
-    vte_terminal_set_colors (VTE_TERMINAL(terminal),
-                            &forecolor,
-                            &backcolor,
-                            xterm_palette,
-                            PALETTE_SIZE);
+    update_font (settings, FONT_KEY, terminal);
     g_signal_connect (G_OBJECT (settings),
                       "changed::" FONT_KEY,
                       G_CALLBACK (update_font),
+                      terminal);
+    update_colors (settings, NULL, terminal);
+    g_signal_connect (G_OBJECT (settings),
+                      "changed::" FORECOLOR_KEY,
+                      G_CALLBACK (update_colors),
+                      terminal);
+    g_signal_connect (G_OBJECT (settings),
+                      "changed::" BACKCOLOR_KEY,
+                      G_CALLBACK (update_colors),
                       terminal);
 
     /* Base command */
