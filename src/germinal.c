@@ -26,6 +26,8 @@
 #define PALETTE_SIZE 16
 #define URL_REGEXP "(ftp|http)s?://[-a-zA-Z0-9.?$%&/=_~#.,:;+]*"
 
+#define FONT_KEY "font"
+
 /* Stolen from sakura which stole it from gnome-terminal */
 static const GdkColor xterm_palette[PALETTE_SIZE] =
 {
@@ -156,10 +158,11 @@ get_setting (GSettings   *settings,
 
 static void
 update_font (GSettings   *settings,
-             VteTerminal *terminal)
+             const gchar *key,
+             gpointer     terminal)
 {
-    PangoFontDescription *font = pango_font_description_from_string (get_setting (settings, "font"));
-    vte_terminal_set_font (terminal, font);
+    PangoFontDescription *font = pango_font_description_from_string (get_setting (settings, key));
+    vte_terminal_set_font (VTE_TERMINAL (terminal), font);
     pango_font_description_free (font);
 }
 
@@ -202,13 +205,17 @@ main(int   argc,
     gtk_widget_grab_focus (terminal);
 
     /* Vte settings */
-    update_font (settings, VTE_TERMINAL (terminal));
+    update_font (settings, FONT_KEY, terminal);
     vte_terminal_set_mouse_autohide (VTE_TERMINAL (terminal), TRUE);
     vte_terminal_set_colors (VTE_TERMINAL(terminal),
                             &forecolor,
                             &backcolor,
                             xterm_palette,
                             PALETTE_SIZE);
+    g_signal_connect (G_OBJECT (settings),
+                      "changed::" FONT_KEY,
+                      G_CALLBACK (update_font),
+                      terminal);
 
     /* Base command */
     gchar *tmux_argv[] = { "tmux", "-u2", "a", NULL };
