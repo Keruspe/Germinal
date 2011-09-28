@@ -104,7 +104,7 @@ on_button_press (GtkWidget      *widget,
     gchar *url = vte_terminal_match_check (terminal,
                                            column,
                                            row,
-                                           &tag); /* tag */
+                                           &tag);
 
     /* Shift + Left clic */
     if ((button_event->button == 1) &&
@@ -154,6 +154,15 @@ get_setting (GSettings   *settings,
     return dest;
 }
 
+static void
+update_font (GSettings   *settings,
+             VteTerminal *terminal)
+{
+    PangoFontDescription *font = pango_font_description_from_string (get_setting (settings, "font"));
+    vte_terminal_set_font (terminal, font);
+    pango_font_description_free (font);
+}
+
 int
 main(int   argc,
      char *argv[])
@@ -169,11 +178,9 @@ main(int   argc,
 
     /* Settings stuff */
     GSettings *settings = g_settings_new ("org.gnome.Germinal");
-    PangoFontDescription *font = pango_font_description_from_string (get_setting (settings, "font"));
     GdkColor forecolor, backcolor;
     gdk_color_parse (get_setting (settings, "forecolor"), &forecolor);
     gdk_color_parse (get_setting (settings, "backcolor"), &backcolor);
-    get_setting (settings, NULL); /* Free buffer */
 
     /* Url matching stuff */
     GRegex *url_regexp = g_regex_new (URL_REGEXP,
@@ -195,8 +202,8 @@ main(int   argc,
     gtk_widget_grab_focus (terminal);
 
     /* Vte settings */
+    update_font (settings, VTE_TERMINAL (terminal));
     vte_terminal_set_mouse_autohide (VTE_TERMINAL (terminal), TRUE);
-    vte_terminal_set_font (VTE_TERMINAL (terminal), font);
     vte_terminal_set_colors (VTE_TERMINAL(terminal),
                             &forecolor,
                             &backcolor,
@@ -237,7 +244,7 @@ main(int   argc,
     gtk_main ();
 
     /* Free memory */
-    pango_font_description_free (font);
+    get_setting (settings, NULL); /* Free buffer */
     g_regex_unref (url_regexp);
     g_object_unref (settings);
     return 0;
