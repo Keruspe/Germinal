@@ -222,9 +222,9 @@ main(int   argc,
     gtk_window_maximize (GTK_WINDOW (window));
     gtk_container_add (GTK_CONTAINER (window), terminal);
     gtk_widget_grab_focus (terminal);
+    gtk_widget_show_all (window);
 
     /* Vte settings */
-    //vte_terminal_im_append_menuitems (VTE_TERMINAL (terminal), GTK_MENU_SHELL (menu));
     vte_terminal_set_mouse_autohide (VTE_TERMINAL (terminal), TRUE);
     update_font (settings, FONT_KEY, terminal);
     g_signal_connect (G_OBJECT (settings),
@@ -274,13 +274,19 @@ main(int   argc,
                      G_CALLBACK (germinal_exit),
                      NULL);
 
+    /* Populate right click menu */
+    GtkWidget *im_submenu = gtk_menu_new ();
+    vte_terminal_im_append_menuitems (VTE_TERMINAL (terminal), GTK_MENU_SHELL (im_submenu));
+    GtkWidget *im_menu_item = gtk_menu_item_new_with_mnemonic (_("Input _Methods"));
+    gtk_menu_item_set_submenu (GTK_MENU_ITEM (im_menu_item), im_submenu);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), im_menu_item);
+    gtk_widget_show_all (menu);
+
     /* Launch program */
-    gtk_widget_show_all (window);
     gtk_main ();
 
     /* Free memory */
     get_setting (settings, NULL); /* Free buffer */
     g_object_unref (settings);
-    g_object_unref (menu);
     return 0;
 }
