@@ -226,6 +226,8 @@ main(int   argc,
 
     /* Vte settings */
     vte_terminal_set_mouse_autohide (VTE_TERMINAL (terminal), TRUE);
+    vte_terminal_set_audible_bell (VTE_TERMINAL (terminal), FALSE);
+    vte_terminal_set_visible_bell (VTE_TERMINAL (terminal), FALSE);
     update_font (settings, FONT_KEY, terminal);
     g_signal_connect (G_OBJECT (settings),
                       "changed::" FONT_KEY,
