@@ -53,13 +53,13 @@ static const GdkColor xterm_palette[PALETTE_SIZE] =
 
 static void
 germinal_exit (GtkWidget *widget,
-               gpointer   data)
+               gpointer   user_data)
 {
     gtk_main_quit ();
 
     /* Silence stupid warnings */
     widget = widget;
-    data = data;
+    user_data = user_data;
 }
 
 static gboolean
@@ -138,9 +138,11 @@ on_button_press (GtkWidget      *widget,
 
         return TRUE;
     }
-
-    /* Silence stupid warning */
-    user_data = user_data;
+    else if (button_event->button == 3)
+    {
+        gtk_menu_popup (GTK_MENU (user_data), NULL, NULL, NULL, NULL, button_event->button, button_event->time);
+        return TRUE;
+    }
 
     return FALSE;
 }
@@ -161,17 +163,17 @@ get_setting (GSettings   *settings,
 static void
 update_font (GSettings   *settings,
              const gchar *key,
-             gpointer     data)
+             gpointer     user_data)
 {
     PangoFontDescription *font = pango_font_description_from_string (get_setting (settings, key));
-    vte_terminal_set_font (VTE_TERMINAL (data), font);
+    vte_terminal_set_font (VTE_TERMINAL (user_data), font);
     pango_font_description_free (font);
 }
 
 static void
 update_colors (GSettings   *settings,
                const gchar *key, /* NULL for initialization */
-               gpointer     data)
+               gpointer     user_data)
 {
     static GdkColor forecolor, backcolor;
     if (key == NULL)
@@ -183,7 +185,7 @@ update_colors (GSettings   *settings,
         gdk_color_parse (get_setting (settings, FORECOLOR_KEY), &forecolor);
     else if (strcmp (key, BACKCOLOR_KEY) == 0)
         gdk_color_parse (get_setting (settings, BACKCOLOR_KEY), &forecolor);
-    vte_terminal_set_colors (VTE_TERMINAL (data),
+    vte_terminal_set_colors (VTE_TERMINAL (user_data),
                             &forecolor,
                             &backcolor,
                              xterm_palette,
@@ -202,6 +204,7 @@ main(int   argc,
 
     GtkWidget *window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
     GtkWidget *terminal = vte_terminal_new ();
+    GtkWidget *menu = gtk_menu_new ();
     GSettings *settings = g_settings_new ("org.gnome.Germinal");
 
     /* Url matching stuff */
@@ -213,10 +216,6 @@ main(int   argc,
                                    url_regexp,
                                    0);
     g_regex_unref (url_regexp);
-    g_signal_connect (G_OBJECT (terminal),
-                      "button-press-event",
-                      G_CALLBACK (on_button_press),
-                      NULL);
 
     /* Window settings */
     gtk_window_set_decorated (GTK_WINDOW (window), FALSE);
@@ -225,6 +224,7 @@ main(int   argc,
     gtk_widget_grab_focus (terminal);
 
     /* Vte settings */
+    //vte_terminal_im_append_menuitems (VTE_TERMINAL (terminal), GTK_MENU_SHELL (menu));
     vte_terminal_set_mouse_autohide (VTE_TERMINAL (terminal), TRUE);
     update_font (settings, FONT_KEY, terminal);
     g_signal_connect (G_OBJECT (settings),
@@ -257,6 +257,10 @@ main(int   argc,
     g_free (cwd);
 
     /* Bind signals */
+    g_signal_connect (G_OBJECT (terminal),
+                      "button-press-event",
+                      G_CALLBACK (on_button_press),
+                      menu);
     g_signal_connect (G_OBJECT (window),
                       "destroy",
                       G_CALLBACK (germinal_exit),
@@ -277,5 +281,6 @@ main(int   argc,
     /* Free memory */
     get_setting (settings, NULL); /* Free buffer */
     g_object_unref (settings);
+    g_object_unref (menu);
     return 0;
 }
