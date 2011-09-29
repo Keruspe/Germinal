@@ -92,6 +92,51 @@ on_key_press (GtkWidget   *widget,
     return FALSE;
 }
 
+static gchar *
+get_url (VteTerminal    *terminal,
+         GdkEventButton *button_event)
+{
+    glong column = (glong)button_event->x / vte_terminal_get_char_width (terminal);
+    glong row = (glong)button_event->y / vte_terminal_get_char_height (terminal);
+    gint tag; /* avoid stupid vte segv (said to be optional) */
+    return vte_terminal_match_check (terminal,
+                                     column,
+                                     row,
+                                    &tag);
+
+}
+
+static gboolean
+open_url (VteTerminal    *terminal,
+          GdkEventButton *button_event)
+{
+    gchar *url = get_url (terminal, button_event);
+    if (!url)
+        return FALSE;
+
+    GError *error = NULL;
+    gchar *cmd;
+    /* Always strdup because we free later */
+    gchar *browser = g_strdup (g_getenv ("BROWSER"));
+
+    /* If BROWSER is not in env, try xdg-open or fallback to firefox */
+    if (!browser && !(browser = g_find_program_in_path ("xdg-open")))
+        browser = g_strdup ("firefox");
+
+    cmd = g_strdup_printf ("%s %s", browser, url);
+    g_free (browser);
+    g_free (url);
+
+    if (!g_spawn_command_line_async (cmd, &error))
+    {
+        fprintf (stderr, _("Couldn't exec \"%s\": %s"), cmd, error->message);
+        g_error_free (error);
+    }
+
+    g_free (cmd);
+    return TRUE;
+}
+
 static gboolean
 on_button_press (GtkWidget      *widget,
                  GdkEventButton *button_event,
@@ -100,44 +145,10 @@ on_button_press (GtkWidget      *widget,
     if (button_event->type != GDK_BUTTON_PRESS)
         return FALSE;
 
-    VteTerminal *terminal = VTE_TERMINAL (widget);
-
-    glong column = (glong)button_event->x / vte_terminal_get_char_width (terminal);
-    glong row = (glong)button_event->y / vte_terminal_get_char_height (terminal);
-    gint tag; /* avoid stupid vte segv (said to be optional) */
-    gchar *url = vte_terminal_match_check (terminal,
-                                           column,
-                                           row,
-                                           &tag);
-
     /* Shift + Left clic */
     if ((button_event->button == 1) &&
-        (button_event->state & GDK_SHIFT_MASK) &&
-        (url))
-    {
-        GError *error = NULL;
-        gchar *cmd;
-        /* Always strdup because we free later */
-        gchar *browser = g_strdup (g_getenv ("BROWSER"));
-
-        /* If BROWSER is not in env, try xdg-open or fallback to firefox */
-        if (!browser && !(browser = g_find_program_in_path ("xdg-open")))
-            browser = g_strdup ("firefox");
-
-        cmd = g_strdup_printf ("%s %s", browser, url);
-        g_free (browser);
-        g_free (url);
-
-        if (!g_spawn_command_line_async (cmd, &error))
-        {
-            fprintf (stderr, _("Couldn't exec \"%s\": %s"), cmd, error->message);
-            g_error_free (error);
-        }
-
-        g_free (cmd);
-
-        return TRUE;
-    }
+        (button_event->state & GDK_SHIFT_MASK))
+            return open_url (VTE_TERMINAL (widget), button_event);
     else if (button_event->button == 3)
     {
         gtk_menu_popup (GTK_MENU (user_data), NULL, NULL, NULL, NULL, button_event->button, button_event->time);
