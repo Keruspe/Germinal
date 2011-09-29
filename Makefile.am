@@ -24,8 +24,6 @@ applicationsdir = $(datadir)/applications
 
 # Data stuff
 
-dist_man_MANS = man/germinal.1
-
 gsettings_SCHEMAS = data/org.gnome.Germinal.gschema.xml
 
 applications_in_files = data/germinal.desktop.in
