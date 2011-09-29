@@ -165,9 +165,7 @@ update_font (GSettings   *settings,
              const gchar *key,
              gpointer     user_data)
 {
-    PangoFontDescription *font = pango_font_description_from_string (get_setting (settings, key));
-    vte_terminal_set_font (VTE_TERMINAL (user_data), font);
-    pango_font_description_free (font);
+    vte_terminal_set_font_from_string (VTE_TERMINAL (user_data), get_setting (settings, key));
 }
 
 static void
