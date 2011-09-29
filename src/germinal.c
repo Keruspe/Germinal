@@ -209,6 +209,7 @@ main(int   argc,
     vte_terminal_match_add_gregex (VTE_TERMINAL (terminal),
                                    url_regexp,
                                    0);
+    g_regex_unref (url_regexp);
     g_signal_connect (G_OBJECT (terminal),
                       "button-press-event",
                       G_CALLBACK (on_button_press),
@@ -272,7 +273,6 @@ main(int   argc,
 
     /* Free memory */
     get_setting (settings, NULL); /* Free buffer */
-    g_regex_unref (url_regexp);
     g_object_unref (settings);
     return 0;
 }
