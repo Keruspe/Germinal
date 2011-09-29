@@ -174,12 +174,15 @@ update_colors (GSettings   *settings,
                gpointer     data)
 {
     static GdkColor forecolor, backcolor;
-    if ((key == NULL) ||
-        (strcmp (key, FORECOLOR_KEY) == 0))
-            gdk_color_parse (get_setting (settings, "forecolor"), &forecolor);
-    else if ((key == NULL) ||
-             (strcmp (key, BACKCOLOR_KEY) == 0))
-            gdk_color_parse (get_setting (settings, "backcolor"), &backcolor);
+    if (key == NULL)
+    {
+        gdk_color_parse (get_setting (settings, FORECOLOR_KEY), &forecolor);
+        gdk_color_parse (get_setting (settings, BACKCOLOR_KEY), &backcolor);
+    }
+    else if (strcmp (key, FORECOLOR_KEY) == 0)
+        gdk_color_parse (get_setting (settings, FORECOLOR_KEY), &forecolor);
+    else if (strcmp (key, BACKCOLOR_KEY) == 0)
+        gdk_color_parse (get_setting (settings, BACKCOLOR_KEY), &forecolor);
     vte_terminal_set_colors (VTE_TERMINAL (data),
                             &forecolor,
                             &backcolor,
