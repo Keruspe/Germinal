@@ -184,7 +184,7 @@ update_colors (GSettings   *settings,
     else if (strcmp (key, FORECOLOR_KEY) == 0)
         gdk_color_parse (get_setting (settings, FORECOLOR_KEY), &forecolor);
     else if (strcmp (key, BACKCOLOR_KEY) == 0)
-        gdk_color_parse (get_setting (settings, BACKCOLOR_KEY), &forecolor);
+        gdk_color_parse (get_setting (settings, BACKCOLOR_KEY), &backcolor);
     vte_terminal_set_colors (VTE_TERMINAL (user_data),
                             &forecolor,
                             &backcolor,
