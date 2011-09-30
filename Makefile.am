@@ -41,7 +41,7 @@ germinal_SOURCES = \
 # CFLAGS
 
 AM_CFLAGS = \
-	-Wall -Wextra -std=gnu99 -pedantic \
+	-Wall -Wextra -pedantic \
 	-O2 -march=native \
 	-DLOCALEDIR=\"${localedir}\" \
 	$(GLIB_CFLAGS) \
