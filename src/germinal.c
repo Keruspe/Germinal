@@ -63,6 +63,26 @@ germinal_exit (GtkWidget *widget,
 }
 
 static gboolean
+do_copy (GtkWidget *widget,
+         gpointer   user_data)
+{
+    vte_terminal_copy_clipboard (VTE_TERMINAL (user_data));
+    /* Silence stupid warning */
+    widget = widget;
+    return TRUE;
+}
+
+static gboolean
+do_paste (GtkWidget *widget,
+         gpointer   user_data)
+{
+    vte_terminal_paste_clipboard (VTE_TERMINAL (user_data));
+    /* Silence stupid warning */
+    widget = widget;
+    return TRUE;
+}
+
+static gboolean
 on_key_press (GtkWidget   *widget,
               GdkEventKey *event,
               gpointer     user_data)
@@ -70,24 +90,19 @@ on_key_press (GtkWidget   *widget,
     if (event->type != GDK_KEY_PRESS)
         return FALSE;
 
-    VteTerminal *terminal = VTE_TERMINAL (user_data);
-
     /* Ctrl + Shift + foo */
     if ((event->state & GDK_CONTROL_MASK) &&
         (event->state & GDK_SHIFT_MASK))
     {
         switch (event->keyval) {
         case GDK_KEY_C:
-            vte_terminal_copy_clipboard (terminal);
+            do_copy (widget, user_data);
             return TRUE;
         case GDK_KEY_V:
-            vte_terminal_paste_clipboard (terminal);
+            do_paste (widget, user_data);
             return TRUE;
         }
     }
-
-    /* Silence stupid warning */
-    widget = widget;
 
     return FALSE;
 }
@@ -233,7 +248,7 @@ main(int   argc,
     gtk_widget_grab_focus (terminal);
     gtk_widget_show_all (window);
 
-    /* Vte settings */
+    /* Vte settings */ /* TODO: scroll settings ? */
     vte_terminal_set_mouse_autohide (VTE_TERMINAL (terminal), TRUE);
     vte_terminal_set_audible_bell (VTE_TERMINAL (terminal), FALSE);
     vte_terminal_set_visible_bell (VTE_TERMINAL (terminal), FALSE);
@@ -286,6 +301,27 @@ main(int   argc,
                      NULL);
 
     /* Populate right click menu */
+    GtkAction *copy_action = gtk_action_new ("copy",
+                                             _("_Copy"),
+                                             NULL, /* tooltip */
+                                             GTK_STOCK_COPY);
+    GtkWidget *copy_menu_item = gtk_action_create_menu_item (copy_action);
+    g_signal_connect (G_OBJECT (copy_action),
+                      "activate",
+                      G_CALLBACK (do_copy),
+                      terminal);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), copy_menu_item);
+    GtkAction *paste_action = gtk_action_new ("paste",
+                                              _("_Paste"),
+                                              NULL, /* tooltip */
+                                              GTK_STOCK_PASTE);
+    g_signal_connect (G_OBJECT (paste_action),
+                      "activate",
+                      G_CALLBACK (do_paste),
+                      terminal);
+    GtkWidget *paste_menu_item = gtk_action_create_menu_item (paste_action);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), paste_menu_item);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), gtk_separator_menu_item_new ());
     GtkWidget *im_submenu = gtk_menu_new ();
     vte_terminal_im_append_menuitems (VTE_TERMINAL (terminal), GTK_MENU_SHELL (im_submenu));
     GtkWidget *im_menu_item = gtk_menu_item_new_with_mnemonic (_("Input _Methods"));
