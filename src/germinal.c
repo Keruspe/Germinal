@@ -109,7 +109,6 @@ open_url (gchar *url)
         return FALSE;
 
     GError *error = NULL;
-    gchar *cmd;
     /* Always strdup because we free later */
     gchar *browser = g_strdup (g_getenv ("BROWSER"));
 
@@ -117,17 +116,22 @@ open_url (gchar *url)
     if (!browser && !(browser = g_find_program_in_path ("xdg-open")))
         browser = g_strdup ("firefox");
 
-    cmd = g_strdup_printf ("%s %s", browser, url);
-    g_free (browser);
-    g_free (url);
-
-    if (!g_spawn_command_line_async (cmd, &error))
+    gchar *cmd[] = {browser, url, NULL};
+    if (!g_spawn_async (NULL, /* working directory */
+                        cmd,
+                        NULL, /* env */
+                        G_SPAWN_SEARCH_PATH,
+                        NULL, /* child setup */
+                        NULL, /* child setup data */
+                        NULL, /* child pid */
+                       &error))
     {
-        fprintf (stderr, _("Couldn't exec \"%s\": %s"), cmd, error->message);
+        fprintf (stderr, _("Couldn't exec \"%s %s\": %s"), browser, url, error->message);
         g_error_free (error);
     }
 
-    g_free (cmd);
+    g_free (browser);
+    g_free (url);
     return TRUE;
 }
 
@@ -315,9 +319,9 @@ main(int   argc,
                                     tmux_argv,
                                     NULL, /* env */
                                     G_SPAWN_SEARCH_PATH,
-                                    NULL, /* child_setup */
-                                    NULL, /* child_setup_data */
-                                    NULL, /* child_pid */
+                                    NULL, /* child setup */
+                                    NULL, /* child setup data */
+                                    NULL, /* child pid */
                                     NULL); /* error */
     g_free (cwd);
 
