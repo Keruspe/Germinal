@@ -74,7 +74,7 @@ do_copy (GtkWidget *widget,
 
 static gboolean
 do_paste (GtkWidget *widget,
-         gpointer   user_data)
+          gpointer   user_data)
 {
     vte_terminal_paste_clipboard (VTE_TERMINAL (user_data));
     /* Silence stupid warning */
@@ -82,37 +82,17 @@ do_paste (GtkWidget *widget,
     return TRUE;
 }
 
-static gboolean
-on_key_press (GtkWidget   *widget,
-              GdkEventKey *event,
-              gpointer     user_data)
-{
-    if (event->type != GDK_KEY_PRESS)
-        return FALSE;
-
-    /* Ctrl + Shift + foo */
-    if ((event->state & GDK_CONTROL_MASK) &&
-        (event->state & GDK_SHIFT_MASK))
-    {
-        switch (event->keyval) {
-        case GDK_KEY_C:
-            do_copy (widget, user_data);
-            return TRUE;
-        case GDK_KEY_V:
-            do_paste (widget, user_data);
-            return TRUE;
-        }
-    }
-
-    return FALSE;
-}
-
 static gchar *
 get_url (VteTerminal    *terminal,
          GdkEventButton *button_event)
 {
-    glong column = (glong)button_event->x / vte_terminal_get_char_width (terminal);
-    glong row = (glong)button_event->y / vte_terminal_get_char_height (terminal);
+    static glong column = 0;
+    static glong row = 0;
+    if (button_event)
+    {
+        column = (glong)button_event->x / vte_terminal_get_char_width (terminal);
+        row = (glong)button_event->y / vte_terminal_get_char_height (terminal);
+    }
     gint tag; /* avoid stupid vte segv (said to be optional) */
     return vte_terminal_match_check (terminal,
                                      column,
@@ -150,6 +130,56 @@ open_url (VteTerminal    *terminal,
 
     g_free (cmd);
     return TRUE;
+}
+
+static gboolean
+do_copy_url (GtkWidget *widget,
+             gpointer   user_data)
+{
+    gchar *url = get_url (VTE_TERMINAL (user_data), NULL);
+    if (!url)
+        return FALSE;
+    GtkClipboard *clip = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);
+    gtk_clipboard_set_text (clip, url, -1);
+    clip = gtk_clipboard_get (GDK_SELECTION_PRIMARY);
+    gtk_clipboard_set_text (clip, url, -1);
+    /* Silence stupid warning */
+    widget = widget;
+    return TRUE;
+}
+
+static gboolean
+do_open_url (GtkWidget *widget,
+             gpointer   user_data)
+{
+    /* Silence stupid warning */
+    widget = widget;
+    return open_url (VTE_TERMINAL (user_data), NULL);
+}
+
+static gboolean
+on_key_press (GtkWidget   *widget,
+              GdkEventKey *event,
+              gpointer     user_data)
+{
+    if (event->type != GDK_KEY_PRESS)
+        return FALSE;
+
+    /* Ctrl + Shift + foo */
+    if ((event->state & GDK_CONTROL_MASK) &&
+        (event->state & GDK_SHIFT_MASK))
+    {
+        switch (event->keyval) {
+        case GDK_KEY_C:
+            do_copy (widget, user_data);
+            return TRUE;
+        case GDK_KEY_V:
+            do_paste (widget, user_data);
+            return TRUE;
+        }
+    }
+
+    return FALSE;
 }
 
 static gboolean
@@ -301,6 +331,26 @@ main(int   argc,
                      NULL);
 
     /* Populate right click menu */
+    GtkAction *copy_url_action = gtk_action_new ("copy_url",
+                                                 _("Copy _url"),
+                                                 NULL, /* tooltip */
+                                                 GTK_STOCK_COPY);
+    GtkWidget *copy_url_menu_item = gtk_action_create_menu_item (copy_url_action);
+    g_signal_connect (G_OBJECT (copy_url_action),
+                      "activate",
+                      G_CALLBACK (do_copy_url),
+                      terminal);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), copy_url_menu_item);
+    GtkAction *open_url_action = gtk_action_new ("open_url",
+                                                 _("_Open url"),
+                                                 NULL, /* tooltip */
+                                                 GTK_STOCK_COPY);
+    GtkWidget *open_url_menu_item = gtk_action_create_menu_item (open_url_action);
+    g_signal_connect (G_OBJECT (open_url_action),
+                      "activate",
+                      G_CALLBACK (do_open_url),
+                      terminal);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), open_url_menu_item);
     GtkAction *copy_action = gtk_action_new ("copy",
                                              _("_Copy"),
                                              NULL, /* tooltip */
