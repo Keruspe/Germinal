@@ -195,6 +195,19 @@ on_button_press (GtkWidget      *widget,
             return open_url (url);
     else if (button_event->button == 3)
     {
+        GList *children = gtk_container_get_children (GTK_CONTAINER (user_data));
+        if (url)
+        {
+            gtk_widget_show (GTK_WIDGET (children->data));
+            gtk_widget_show (GTK_WIDGET (children->next->data));
+            gtk_widget_show (GTK_WIDGET (children->next->next->data));
+        }
+        else
+        {
+            gtk_widget_hide (GTK_WIDGET (children->data));
+            gtk_widget_hide (GTK_WIDGET (children->next->data));
+            gtk_widget_hide (GTK_WIDGET (children->next->next->data));
+        }
         gtk_menu_popup (GTK_MENU (user_data), NULL, NULL, NULL, NULL, button_event->button, button_event->time);
         return TRUE;
     }
