@@ -350,6 +350,7 @@ main(int   argc,
                       G_CALLBACK (do_open_url),
                       terminal);
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), open_url_menu_item);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), gtk_separator_menu_item_new ());
     GtkAction *copy_action = gtk_action_new ("copy",
                                              _("_Copy"),
                                              NULL, /* tooltip */
