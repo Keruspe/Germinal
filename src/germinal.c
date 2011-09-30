@@ -24,7 +24,8 @@
 #include <vte/vte.h>
 
 #define PALETTE_SIZE 16
-#define URL_REGEXP "(ftp|http)s?://[-a-zA-Z0-9.?$%&/=_~#.,:;+]*"
+#define NOT_BLANK "[^ \t\n\r]"
+#define URL_REGEXP NOT_BLANK "+://" NOT_BLANK "+"
 
 #define FONT_KEY "font"
 #define FORECOLOR_KEY "forecolor"
