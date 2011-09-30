@@ -195,15 +195,11 @@ on_button_press (GtkWidget      *widget,
             return open_url (url);
     else if (button_event->button == 3)
     {
-        GList *children = gtk_container_get_children (GTK_CONTAINER (user_data));
         if (url)
-        {
-            gtk_widget_show (GTK_WIDGET (children->data));
-            gtk_widget_show (GTK_WIDGET (children->next->data));
-            gtk_widget_show (GTK_WIDGET (children->next->next->data));
-        }
+            gtk_widget_show_all (GTK_WIDGET (user_data));
         else
         {
+            GList *children = gtk_container_get_children (GTK_CONTAINER (user_data));
             gtk_widget_hide (GTK_WIDGET (children->data));
             gtk_widget_hide (GTK_WIDGET (children->next->data));
             gtk_widget_hide (GTK_WIDGET (children->next->next->data));
