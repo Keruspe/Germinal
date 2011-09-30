@@ -102,10 +102,8 @@ get_url (VteTerminal    *terminal,
 }
 
 static gboolean
-open_url (VteTerminal    *terminal,
-          GdkEventButton *button_event)
+open_url (gchar *url)
 {
-    gchar *url = get_url (terminal, button_event);
     if (!url)
         return FALSE;
 
@@ -154,7 +152,7 @@ do_open_url (GtkWidget *widget,
 {
     /* Silence stupid warning */
     widget = widget;
-    return open_url (VTE_TERMINAL (user_data), NULL);
+    return open_url (get_url (VTE_TERMINAL (user_data), NULL));
 }
 
 static gboolean
@@ -190,10 +188,11 @@ on_button_press (GtkWidget      *widget,
     if (button_event->type != GDK_BUTTON_PRESS)
         return FALSE;
 
+    gchar *url = get_url (VTE_TERMINAL (widget), button_event);
     /* Shift + Left clic */
     if ((button_event->button == 1) &&
         (button_event->state & GDK_SHIFT_MASK))
-            return open_url (VTE_TERMINAL (widget), button_event);
+            return open_url (url);
     else if (button_event->button == 3)
     {
         gtk_menu_popup (GTK_MENU (user_data), NULL, NULL, NULL, NULL, button_event->button, button_event->time);
