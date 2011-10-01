@@ -57,8 +57,7 @@ germinal_exit (GtkWidget *widget,
                gpointer   user_data)
 {
     gtk_main_quit ();
-
-    /* Silence stupid warnings */
+    /* Silence stupid warning */
     widget = widget;
     user_data = user_data;
 }
@@ -87,19 +86,19 @@ static gchar *
 get_url (VteTerminal    *terminal,
          GdkEventButton *button_event)
 {
-    static glong column = 0;
-    static glong row = 0;
+    static gchar *url = NULL;
     if (button_event)
     {
-        column = (glong)button_event->x / vte_terminal_get_char_width (terminal);
-        row = (glong)button_event->y / vte_terminal_get_char_height (terminal);
+        g_free (url); /* free previous url */
+        glong column = (glong)button_event->x / vte_terminal_get_char_width (terminal);
+        glong row = (glong)button_event->y / vte_terminal_get_char_height (terminal);
+        gint tag; /* avoid stupid vte segv (said to be optional) */
+        url = vte_terminal_match_check (terminal,
+                                        column,
+                                        row,
+                                       &tag);
     }
-    gint tag; /* avoid stupid vte segv (said to be optional) */
-    return vte_terminal_match_check (terminal,
-                                     column,
-                                     row,
-                                    &tag);
-
+    return url;
 }
 
 static gboolean
@@ -129,9 +128,7 @@ open_url (gchar *url)
         fprintf (stderr, _("Couldn't exec \"%s %s\": %s"), browser, url, error->message);
         g_error_free (error);
     }
-
     g_free (browser);
-    g_free (url);
     return TRUE;
 }
 
@@ -397,6 +394,7 @@ main(int   argc,
     gtk_main ();
 
     /* Free memory */
+    g_free (get_url (NULL, NULL));
     get_setting (settings, NULL); /* Free buffer */
     g_object_unref (settings);
     return 0;
