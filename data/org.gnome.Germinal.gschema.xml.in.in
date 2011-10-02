@@ -1,6 +1,14 @@
 <schemalist>
     <schema id="org.gnome.Germinal" path="/org/gnome/Germinal/" gettext-domain="@GETTEXT_PACKAGE@">
 
+    <key name="scrollback-lines" type="i">
+      <default>65536</default>
+      <_summary>Number of lines to keep in the buffer</_summary>
+      <_description>
+        Number of lines to keep in the buffer
+      </_description>
+    </key>
+
     <key name="font" type="s">
       <default>'DejaVu Sans Mono 8.5'</default>
       <_summary>The font to use</_summary>

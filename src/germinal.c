@@ -27,6 +27,7 @@
 #define NOT_BLANK "[^ \t\n\r]"
 #define URL_REGEXP NOT_BLANK "+://" NOT_BLANK "+"
 
+#define SCROLLBACK_KEY "scrollback-lines"
 #define FONT_KEY "font"
 #define FORECOLOR_KEY "forecolor"
 #define BACKCOLOR_KEY "backcolor"
@@ -229,6 +230,14 @@ get_setting (GSettings   *settings,
 }
 
 static void
+update_scrollback (GSettings   *settings,
+                   const gchar *key,
+                   gpointer     user_data)
+{
+    vte_terminal_set_scrollback_lines (VTE_TERMINAL (user_data), g_settings_get_int (settings, key));
+}
+
+static void
 update_font (GSettings   *settings,
              const gchar *key,
              gpointer     user_data)
@@ -290,10 +299,18 @@ main(int   argc,
     gtk_widget_grab_focus (terminal);
     gtk_widget_show_all (window);
 
-    /* Vte settings */ /* TODO: scroll settings ? */
+    /* Vte settings */
     vte_terminal_set_mouse_autohide (VTE_TERMINAL (terminal), TRUE);
     vte_terminal_set_audible_bell (VTE_TERMINAL (terminal), FALSE);
     vte_terminal_set_visible_bell (VTE_TERMINAL (terminal), FALSE);
+    vte_terminal_set_scroll_on_output (VTE_TERMINAL (terminal), FALSE);
+    vte_terminal_set_scroll_on_keystroke (VTE_TERMINAL (terminal), TRUE);
+    update_scrollback (settings, SCROLLBACK_KEY, terminal);
+    g_signal_connect (G_OBJECT (settings),
+                      "changed::" SCROLLBACK_KEY,
+                      G_CALLBACK (update_scrollback),
+                      terminal);
+    // TODO: vte_terminal_set_word_chars ?
     update_font (settings, FONT_KEY, terminal);
     g_signal_connect (G_OBJECT (settings),
                       "changed::" FONT_KEY,

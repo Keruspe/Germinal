@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Germinal\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-30 23:52+0200\n"
+"POT-Creation-Date: 2011-10-02 12:14+0200\n"
 "PO-Revision-Date: 2011-09-23 16:05+0100\n"
 "Last-Translator: Marc-Antoine Perennou <Marc-Antoine@Perennou.com>\n"
 "Language-Team: French\n"
@@ -17,28 +17,28 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: ../src/germinal.c:125
+#: ../src/germinal.c:129
 #, c-format
-msgid "Couldn't exec \"%s\": %s"
-msgstr "Impossible d'exécuter %s : %s"
+msgid "Couldn't exec \"%s %s\": %s"
+msgstr "Impossible d'exécuter \"%s %s\" : %s"
 
-#: ../src/germinal.c:343
+#: ../src/germinal.c:364
 msgid "Copy _url"
 msgstr "Copier la cible d_u lien"
 
-#: ../src/germinal.c:353
+#: ../src/germinal.c:374
 msgid "_Open url"
 msgstr "_Suivre le lien"
 
-#: ../src/germinal.c:364
+#: ../src/germinal.c:385
 msgid "_Copy"
 msgstr "_Copier"
 
-#: ../src/germinal.c:374
+#: ../src/germinal.c:395
 msgid "_Paste"
 msgstr "Co_ller"
 
-#: ../src/germinal.c:386
+#: ../src/germinal.c:407
 msgid "Input _Methods"
 msgstr "_Méthodes de saisie"
 
@@ -47,13 +47,17 @@ msgid "Minimalist vte-based terminal emulator"
 msgstr "Émulateur de terminal minimaliste basé sur vte"
 
 #: ../data/org.gnome.Germinal.gschema.xml.in.in.h:1
+msgid "Number of lines to keep in the buffer"
+msgstr "Nombre de lignes à garder dans le tampon"
+
+#: ../data/org.gnome.Germinal.gschema.xml.in.in.h:2
 msgid "The background color"
 msgstr "La couleur de fond"
 
-#: ../data/org.gnome.Germinal.gschema.xml.in.in.h:2
+#: ../data/org.gnome.Germinal.gschema.xml.in.in.h:3
 msgid "The font to use"
 msgstr "La police à utiliser"
 
-#: ../data/org.gnome.Germinal.gschema.xml.in.in.h:3
+#: ../data/org.gnome.Germinal.gschema.xml.in.in.h:4
 msgid "The foreground color"
 msgstr "La couleur de premier plan"
