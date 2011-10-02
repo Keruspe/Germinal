@@ -9,7 +9,7 @@
       </_description>
     </key>
 
-    <key name="scrollback-lines" type="s">
+    <key name="word-chars" type="s">
       <default>'-:_:/'</default>
       <_summary>Chars considered as part of a word when selecting with a double clic</_summary>
       <_description>
