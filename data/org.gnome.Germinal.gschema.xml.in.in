@@ -9,6 +9,14 @@
       </_description>
     </key>
 
+    <key name="scrollback-lines" type="s">
+      <default>'-:_:/'</default>
+      <_summary>Chars considered as part of a word when selecting with a double clic</_summary>
+      <_description>
+        ':'-separated characters list
+      </_description>
+    </key>
+
     <key name="font" type="s">
       <default>'DejaVu Sans Mono 8.5'</default>
       <_summary>The font to use</_summary>

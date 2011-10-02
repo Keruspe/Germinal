@@ -28,6 +28,7 @@
 #define URL_REGEXP NOT_BLANK "+://" NOT_BLANK "+"
 
 #define SCROLLBACK_KEY "scrollback-lines"
+#define WORD_CHARS_KEY "word-chars"
 #define FONT_KEY "font"
 #define FORECOLOR_KEY "forecolor"
 #define BACKCOLOR_KEY "backcolor"
@@ -238,6 +239,14 @@ update_scrollback (GSettings   *settings,
 }
 
 static void
+update_word_chars (GSettings   *settings,
+                   const gchar *key,
+                   gpointer     user_data)
+{
+    vte_terminal_set_word_chars (VTE_TERMINAL (user_data), get_setting (settings, key));
+}
+
+static void
 update_font (GSettings   *settings,
              const gchar *key,
              gpointer     user_data)
@@ -310,7 +319,11 @@ main(int   argc,
                       "changed::" SCROLLBACK_KEY,
                       G_CALLBACK (update_scrollback),
                       terminal);
-    // TODO: vte_terminal_set_word_chars ?
+    update_word_chars (settings, WORD_CHARS_KEY, terminal);
+    g_signal_connect (G_OBJECT (settings),
+                      "changed::" WORD_CHARS_KEY,
+                      G_CALLBACK (update_word_chars),
+                      terminal);
     update_font (settings, FONT_KEY, terminal);
     g_signal_connect (G_OBJECT (settings),
                       "changed::" FONT_KEY,
