@@ -86,8 +86,8 @@ static gchar *
 get_url (VteTerminal    *terminal,
          GdkEventButton *button_event)
 {
-    static gchar *url = NULL;
-    if (button_event)
+    static gchar *url = NULL; /* cache the url */
+    if (button_event) /* only access to cached url if no button_event available */
     {
         g_free (url); /* free previous url */
         glong column = (glong)button_event->x / vte_terminal_get_char_width (terminal);
@@ -197,10 +197,11 @@ on_button_press (GtkWidget      *widget,
             return open_url (url);
     else if (button_event->button == 3)
     {
-        if (url)
+        if (url) /* show url stuff */
             gtk_widget_show_all (GTK_WIDGET (user_data));
         else
         {
+            /* hide url stuff */
             GList *children = gtk_container_get_children (GTK_CONTAINER (user_data));
             gtk_widget_hide (GTK_WIDGET (children->data));
             gtk_widget_hide (GTK_WIDGET (children->next->data));
@@ -217,6 +218,7 @@ static gchar *
 get_setting (GSettings   *settings,
              const gchar *name)
 {
+    /* helper to manage memory */
     static gchar *dest = NULL;
     g_free (dest);
     if (name != NULL)
