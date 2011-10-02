@@ -10,7 +10,7 @@
     </key>
 
     <key name="word-chars" type="s">
-        <default>'a-zA-Z0-9/_#-'</default>
+        <default>'.:a-zA-Z0-9/_#-'</default>
       <_summary>Chars considered as part of a word when selecting with a double clic</_summary>
       <_description>
         Chars considered as part of a word when selecting with a double clic
