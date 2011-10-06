@@ -281,11 +281,24 @@ int
 main(int   argc,
      char *argv[])
 {
+    /* Options */
+    gchar **command = NULL;
+    GOptionEntry options[] =
+    {
+        { G_OPTION_REMAINING, 'c', 0, G_OPTION_ARG_STRING_ARRAY, &command, N_("the command to launch"), "command" },
+        { NULL, '\0', 0, G_OPTION_ARG_NONE, NULL, NULL, NULL }
+    };
+
     /* Gettext and gtk initialization */
     textdomain(GETTEXT_PACKAGE);
     bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
     bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-    gtk_init (&argc, &argv);
+    gtk_init_with_args (&argc,
+                        &argv,
+                         N_(" - minimalist vte-based terminal emulator"),
+                         options,
+                         GETTEXT_PACKAGE,
+                         NULL); /* error */
 
     GtkWidget *window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
     GtkWidget *terminal = vte_terminal_new ();
@@ -346,13 +359,14 @@ main(int   argc,
     vte_terminal_fork_command_full (VTE_TERMINAL (terminal),
                                     VTE_PTY_DEFAULT,
                                     cwd,
-                                    tmux_argv,
+                                    (command == NULL) ? tmux_argv : command,
                                     NULL, /* env */
                                     G_SPAWN_SEARCH_PATH,
                                     NULL, /* child setup */
                                     NULL, /* child setup data */
                                     NULL, /* child pid */
                                     NULL); /* error */
+    g_strfreev (command);
     g_free (cwd);
 
     /* Bind signals */
