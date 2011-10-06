@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Germinal\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-02 12:30+0200\n"
+"POT-Creation-Date: 2011-10-06 09:50+0200\n"
 "PO-Revision-Date: 2011-09-23 16:05+0100\n"
 "Last-Translator: Marc-Antoine Perennou <Marc-Antoine@Perennou.com>\n"
 "Language-Team: French\n"
@@ -17,28 +17,36 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: ../src/germinal.c:130
+#: ../src/germinal.c:131
 #, c-format
 msgid "Couldn't exec \"%s %s\": %s"
 msgstr "Impossible d'exécuter \"%s %s\" : %s"
 
-#: ../src/germinal.c:377
+#: ../src/germinal.c:294
+msgid "the command to launch"
+msgstr "la commande à lancer"
+
+#: ../src/germinal.c:304
+msgid " - minimalist vte-based terminal emulator"
+msgstr " - émulateur de terminal minimaliste basé sur vte"
+
+#: ../src/germinal.c:398
 msgid "Copy _url"
 msgstr "Copier la cible d_u lien"
 
-#: ../src/germinal.c:387
+#: ../src/germinal.c:408
 msgid "_Open url"
 msgstr "_Suivre le lien"
 
-#: ../src/germinal.c:398
+#: ../src/germinal.c:419
 msgid "_Copy"
 msgstr "_Copier"
 
-#: ../src/germinal.c:408
+#: ../src/germinal.c:429
 msgid "_Paste"
 msgstr "Co_ller"
 
-#: ../src/germinal.c:420
+#: ../src/germinal.c:441
 msgid "Input _Methods"
 msgstr "_Méthodes de saisie"
 
