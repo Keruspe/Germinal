@@ -210,7 +210,13 @@ on_button_press (GtkWidget      *widget,
             gtk_widget_hide (GTK_WIDGET (children->next->data));
             gtk_widget_hide (GTK_WIDGET (children->next->next->data));
         }
-        gtk_menu_popup (GTK_MENU (user_data), NULL, NULL, NULL, NULL, button_event->button, button_event->time);
+        gtk_menu_popup (GTK_MENU (user_data),
+                        NULL, /* parent menu_shell */
+                        NULL, /* parent menu_item */
+                        NULL, /* menu position func */
+                        NULL, /* user_data */
+                        button_event->button,
+                        button_event->time);
         return TRUE;
     }
 
