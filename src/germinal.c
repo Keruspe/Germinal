@@ -24,9 +24,10 @@
 #include <vte/vte.h>
 
 #define PALETTE_SIZE 16
+#define CHARACTER "[a-zA-Z]"
 #define NOT_BLANK "[^ \t\n\r]"
 #define NOT_BLANK_NOT_QUOTE "[^ \t\n\r\"\']"
-#define URL_REGEXP NOT_BLANK_NOT_QUOTE "+://" NOT_BLANK "+" NOT_BLANK_NOT_QUOTE
+#define URL_REGEXP CHARACTER "+://" NOT_BLANK "+" NOT_BLANK_NOT_QUOTE
 
 #define SCROLLBACK_KEY "scrollback-lines"
 #define WORD_CHARS_KEY "word-chars"
