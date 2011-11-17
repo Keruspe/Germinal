@@ -161,6 +161,67 @@ do_open_url (GtkWidget *widget,
     return open_url (get_url (VTE_TERMINAL (user_data), NULL));
 }
 
+typedef enum {
+    FONT_SIZE_DELTA_RESET = 0,
+    FONT_SIZE_DELTA_INC = 1,
+    FONT_SIZE_DELTA_DEC = -1,
+    FONT_SIZE_DELTA_SET_DEFAULT = 42
+} FontSizeDelta;
+
+static void
+update_font_size (VteTerminal  *terminal,
+                  FontSizeDelta delta)
+{
+    static gdouble default_size = 0;
+    PangoFontDescription *font = pango_font_description_copy (vte_terminal_get_font (terminal));
+    gdouble size = pango_font_description_get_size (font);
+    switch (delta)
+    {
+    case FONT_SIZE_DELTA_SET_DEFAULT:
+        default_size = size;
+        return;
+    case FONT_SIZE_DELTA_RESET:
+        size = default_size;
+        break;
+    default:
+        size = CLAMP (size / PANGO_SCALE + delta, 4., 144.) * PANGO_SCALE;
+        break;
+    }
+    pango_font_description_set_size (font, size);
+    vte_terminal_set_font (terminal, font);
+    pango_font_description_free (font);
+}
+
+static gboolean
+do_zoom (GtkWidget *widget,
+         gpointer   user_data)
+{
+    update_font_size (VTE_TERMINAL (user_data), FONT_SIZE_DELTA_INC);
+    /* Silence stupid warning */
+    widget = widget;
+    return TRUE;
+}
+
+static gboolean
+do_dezoom (GtkWidget *widget,
+           gpointer   user_data)
+{
+    update_font_size (VTE_TERMINAL (user_data), FONT_SIZE_DELTA_DEC);
+    /* Silence stupid warning */
+    widget = widget;
+    return TRUE;
+}
+
+static gboolean
+do_reset_zoom (GtkWidget *widget,
+               gpointer   user_data)
+{
+    update_font_size (VTE_TERMINAL (user_data), FONT_SIZE_DELTA_RESET);
+    /* Silence stupid warning */
+    widget = widget;
+    return TRUE;
+}
+
 static gboolean
 on_key_press (GtkWidget   *widget,
               GdkEventKey *event,
@@ -260,6 +321,7 @@ update_font (GSettings   *settings,
              gpointer     user_data)
 {
     vte_terminal_set_font_from_string (VTE_TERMINAL (user_data), get_setting (settings, key));
+    update_font_size (VTE_TERMINAL (user_data), FONT_SIZE_DELTA_SET_DEFAULT);
 }
 
 static void
@@ -384,7 +446,7 @@ main(int   argc,
     GtkAction *copy_url_action = gtk_action_new ("copy_url",
                                                  _("Copy _url"),
                                                  NULL, /* tooltip */
-                                                 GTK_STOCK_COPY);
+                                                 NULL); /* stock_id */
     GtkWidget *copy_url_menu_item = gtk_action_create_menu_item (copy_url_action);
     g_signal_connect (G_OBJECT (copy_url_action),
                       "activate",
@@ -395,7 +457,7 @@ main(int   argc,
     GtkAction *open_url_action = gtk_action_new ("open_url",
                                                  _("_Open url"),
                                                  NULL, /* tooltip */
-                                                 GTK_STOCK_COPY);
+                                                 NULL); /* stock_id */
     GtkWidget *open_url_menu_item = gtk_action_create_menu_item (open_url_action);
     g_signal_connect (G_OBJECT (open_url_action),
                       "activate",
@@ -408,7 +470,7 @@ main(int   argc,
     GtkAction *copy_action = gtk_action_new ("copy",
                                              _("_Copy"),
                                              NULL, /* tooltip */
-                                             GTK_STOCK_COPY);
+                                             NULL); /* stock_id */
     GtkWidget *copy_menu_item = gtk_action_create_menu_item (copy_action);
     g_signal_connect (G_OBJECT (copy_action),
                       "activate",
@@ -419,13 +481,48 @@ main(int   argc,
     GtkAction *paste_action = gtk_action_new ("paste",
                                               _("_Paste"),
                                               NULL, /* tooltip */
-                                              GTK_STOCK_PASTE);
+                                              NULL); /* stock_id */
     GtkWidget *paste_menu_item = gtk_action_create_menu_item (paste_action);
     g_signal_connect (G_OBJECT (paste_action),
                       "activate",
                       G_CALLBACK (do_paste),
                       terminal);
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), paste_menu_item);
+
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), gtk_separator_menu_item_new ());
+
+    GtkAction *zoom_action = gtk_action_new ("zoom",
+                                             _("_Zoom"),
+                                             NULL, /* tooltip */
+                                             NULL); /* stock_id */
+    GtkWidget *zoom_menu_item = gtk_action_create_menu_item (zoom_action);
+    g_signal_connect (G_OBJECT (zoom_action),
+                      "activate",
+                      G_CALLBACK (do_zoom),
+                      terminal);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), zoom_menu_item);
+
+    GtkAction *dezoom_action = gtk_action_new ("dezoom",
+                                               _("_Dezoom"),
+                                               NULL, /* tooltip */
+                                               NULL); /* stock_id */
+    GtkWidget *dezoom_menu_item = gtk_action_create_menu_item (dezoom_action);
+    g_signal_connect (G_OBJECT (dezoom_action),
+                      "activate",
+                      G_CALLBACK (do_dezoom),
+                      terminal);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), dezoom_menu_item);
+
+    GtkAction *reset_zoom_action = gtk_action_new ("reset-zoom",
+                                                   _("_Reset zoom"),
+                                                   NULL, /* tooltip */
+                                                   NULL); /* stock_id */
+    GtkWidget *reset_zoom_menu_item = gtk_action_create_menu_item (reset_zoom_action);
+    g_signal_connect (G_OBJECT (reset_zoom_action),
+                      "activate",
+                      G_CALLBACK (do_reset_zoom),
+                      terminal);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), reset_zoom_menu_item);
 
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), gtk_separator_menu_item_new ());
 
