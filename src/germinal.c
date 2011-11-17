@@ -230,17 +230,30 @@ on_key_press (GtkWidget   *widget,
     if (event->type != GDK_KEY_PRESS)
         return FALSE;
 
-    /* Ctrl + Shift + foo */
-    if ((event->state & GDK_CONTROL_MASK) &&
-        (event->state & GDK_SHIFT_MASK))
+    /* Ctrl + foo */
+    if (event->state & GDK_CONTROL_MASK)
     {
-        switch (event->keyval) {
-        case GDK_KEY_C:
-            do_copy (widget, user_data);
-            return TRUE;
-        case GDK_KEY_V:
-            do_paste (widget, user_data);
-            return TRUE;
+        /* Ctrl + Shift + foo */
+        if (event->state & GDK_SHIFT_MASK)
+        {
+            switch (event->keyval)
+            {
+            case GDK_KEY_C:
+                do_copy (widget, user_data);
+                return TRUE;
+            case GDK_KEY_V:
+                do_paste (widget, user_data);
+                return TRUE;
+            }
+        }
+        switch (event->keyval)
+        {
+        case GDK_KEY_KP_Add:
+            return do_zoom (widget, user_data);
+        case GDK_KEY_KP_Subtract:
+            return do_dezoom (widget, user_data);
+        case GDK_KEY_KP_0:
+            return do_reset_zoom (widget, user_data);
         }
     }
 
