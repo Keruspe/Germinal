@@ -307,10 +307,23 @@ main(int   argc,
                          GETTEXT_PACKAGE,
                          NULL); /* error */
 
+    /* Window settings */
     GtkWidget *window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+    gtk_window_maximize (GTK_WINDOW (window));
+    gtk_window_set_decorated (GTK_WINDOW (window), FALSE);
+
+    /* Vte settings */
     GtkWidget *terminal = vte_terminal_new ();
-    GtkWidget *menu = gtk_menu_new ();
-    GSettings *settings = g_settings_new ("org.gnome.Germinal");
+    vte_terminal_set_mouse_autohide (VTE_TERMINAL (terminal), TRUE);
+    vte_terminal_set_audible_bell (VTE_TERMINAL (terminal), FALSE);
+    vte_terminal_set_visible_bell (VTE_TERMINAL (terminal), FALSE);
+    vte_terminal_set_scroll_on_output (VTE_TERMINAL (terminal), FALSE);
+    vte_terminal_set_scroll_on_keystroke (VTE_TERMINAL (terminal), TRUE);
+
+    /* Fill window */
+    gtk_container_add (GTK_CONTAINER (window), terminal);
+    gtk_widget_grab_focus (terminal);
+    gtk_widget_show_all (window);
 
     /* Url matching stuff */
     GRegex *url_regexp = g_regex_new (URL_REGEXP,
@@ -322,19 +335,8 @@ main(int   argc,
                                    0);
     g_regex_unref (url_regexp);
 
-    /* Window settings */
-    gtk_window_set_decorated (GTK_WINDOW (window), FALSE);
-    gtk_window_maximize (GTK_WINDOW (window));
-    gtk_container_add (GTK_CONTAINER (window), terminal);
-    gtk_widget_grab_focus (terminal);
-    gtk_widget_show_all (window);
-
-    /* Vte settings */
-    vte_terminal_set_mouse_autohide (VTE_TERMINAL (terminal), TRUE);
-    vte_terminal_set_audible_bell (VTE_TERMINAL (terminal), FALSE);
-    vte_terminal_set_visible_bell (VTE_TERMINAL (terminal), FALSE);
-    vte_terminal_set_scroll_on_output (VTE_TERMINAL (terminal), FALSE);
-    vte_terminal_set_scroll_on_keystroke (VTE_TERMINAL (terminal), TRUE);
+    /* Apply user settings */
+    GSettings *settings = g_settings_new ("org.gnome.Germinal");
     update_scrollback (settings, SCROLLBACK_KEY, terminal);
     g_signal_connect (G_OBJECT (settings),
                       "changed::" SCROLLBACK_KEY,
@@ -376,6 +378,65 @@ main(int   argc,
     g_strfreev (command);
     g_free (cwd);
 
+    /* Populate right click menu */
+    GtkWidget *menu = gtk_menu_new ();
+
+    GtkAction *copy_url_action = gtk_action_new ("copy_url",
+                                                 _("Copy _url"),
+                                                 NULL, /* tooltip */
+                                                 GTK_STOCK_COPY);
+    GtkWidget *copy_url_menu_item = gtk_action_create_menu_item (copy_url_action);
+    g_signal_connect (G_OBJECT (copy_url_action),
+                      "activate",
+                      G_CALLBACK (do_copy_url),
+                      terminal);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), copy_url_menu_item);
+
+    GtkAction *open_url_action = gtk_action_new ("open_url",
+                                                 _("_Open url"),
+                                                 NULL, /* tooltip */
+                                                 GTK_STOCK_COPY);
+    GtkWidget *open_url_menu_item = gtk_action_create_menu_item (open_url_action);
+    g_signal_connect (G_OBJECT (open_url_action),
+                      "activate",
+                      G_CALLBACK (do_open_url),
+                      terminal);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), open_url_menu_item);
+
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), gtk_separator_menu_item_new ());
+
+    GtkAction *copy_action = gtk_action_new ("copy",
+                                             _("_Copy"),
+                                             NULL, /* tooltip */
+                                             GTK_STOCK_COPY);
+    GtkWidget *copy_menu_item = gtk_action_create_menu_item (copy_action);
+    g_signal_connect (G_OBJECT (copy_action),
+                      "activate",
+                      G_CALLBACK (do_copy),
+                      terminal);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), copy_menu_item);
+
+    GtkAction *paste_action = gtk_action_new ("paste",
+                                              _("_Paste"),
+                                              NULL, /* tooltip */
+                                              GTK_STOCK_PASTE);
+    GtkWidget *paste_menu_item = gtk_action_create_menu_item (paste_action);
+    g_signal_connect (G_OBJECT (paste_action),
+                      "activate",
+                      G_CALLBACK (do_paste),
+                      terminal);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), paste_menu_item);
+
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), gtk_separator_menu_item_new ());
+
+    GtkWidget *im_submenu = gtk_menu_new ();
+    vte_terminal_im_append_menuitems (VTE_TERMINAL (terminal), GTK_MENU_SHELL (im_submenu));
+    GtkWidget *im_menu_item = gtk_menu_item_new_with_mnemonic (_("Input _Methods"));
+    gtk_menu_item_set_submenu (GTK_MENU_ITEM (im_menu_item), im_submenu);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), im_menu_item);
+
+    gtk_widget_show_all (menu);
+
     /* Bind signals */
     g_signal_connect (G_OBJECT (terminal),
                       "button-press-event",
@@ -393,56 +454,6 @@ main(int   argc,
                      "child-exited",
                      G_CALLBACK (germinal_exit),
                      NULL);
-
-    /* Populate right click menu */
-    GtkAction *copy_url_action = gtk_action_new ("copy_url",
-                                                 _("Copy _url"),
-                                                 NULL, /* tooltip */
-                                                 GTK_STOCK_COPY);
-    GtkWidget *copy_url_menu_item = gtk_action_create_menu_item (copy_url_action);
-    g_signal_connect (G_OBJECT (copy_url_action),
-                      "activate",
-                      G_CALLBACK (do_copy_url),
-                      terminal);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), copy_url_menu_item);
-    GtkAction *open_url_action = gtk_action_new ("open_url",
-                                                 _("_Open url"),
-                                                 NULL, /* tooltip */
-                                                 GTK_STOCK_COPY);
-    GtkWidget *open_url_menu_item = gtk_action_create_menu_item (open_url_action);
-    g_signal_connect (G_OBJECT (open_url_action),
-                      "activate",
-                      G_CALLBACK (do_open_url),
-                      terminal);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), open_url_menu_item);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), gtk_separator_menu_item_new ());
-    GtkAction *copy_action = gtk_action_new ("copy",
-                                             _("_Copy"),
-                                             NULL, /* tooltip */
-                                             GTK_STOCK_COPY);
-    GtkWidget *copy_menu_item = gtk_action_create_menu_item (copy_action);
-    g_signal_connect (G_OBJECT (copy_action),
-                      "activate",
-                      G_CALLBACK (do_copy),
-                      terminal);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), copy_menu_item);
-    GtkAction *paste_action = gtk_action_new ("paste",
-                                              _("_Paste"),
-                                              NULL, /* tooltip */
-                                              GTK_STOCK_PASTE);
-    g_signal_connect (G_OBJECT (paste_action),
-                      "activate",
-                      G_CALLBACK (do_paste),
-                      terminal);
-    GtkWidget *paste_menu_item = gtk_action_create_menu_item (paste_action);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), paste_menu_item);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), gtk_separator_menu_item_new ());
-    GtkWidget *im_submenu = gtk_menu_new ();
-    vte_terminal_im_append_menuitems (VTE_TERMINAL (terminal), GTK_MENU_SHELL (im_submenu));
-    GtkWidget *im_menu_item = gtk_menu_item_new_with_mnemonic (_("Input _Methods"));
-    gtk_menu_item_set_submenu (GTK_MENU_ITEM (im_menu_item), im_submenu);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), im_menu_item);
-    gtk_widget_show_all (menu);
 
     /* Launch program */
     gtk_main ();
