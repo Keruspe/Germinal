@@ -249,10 +249,13 @@ on_key_press (GtkWidget   *widget,
         switch (event->keyval)
         {
         case GDK_KEY_KP_Add:
+        case GDK_KEY_plus:
             return do_zoom (widget, user_data);
         case GDK_KEY_KP_Subtract:
+        case GDK_KEY_minus:
             return do_dezoom (widget, user_data);
         case GDK_KEY_KP_0:
+        case GDK_KEY_0:
             return do_reset_zoom (widget, user_data);
         }
     }
