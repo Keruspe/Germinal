@@ -370,7 +370,7 @@ main(int   argc,
     gchar **command = NULL;
     GOptionEntry options[] =
     {
-        { G_OPTION_REMAINING, 'c', 0, G_OPTION_ARG_STRING_ARRAY, &command, N_("the command to launch"), "command" },
+        { G_OPTION_REMAINING, 'e', 0, G_OPTION_ARG_STRING_ARRAY, &command, N_("the command to launch"), "command" },
         { NULL, '\0', 0, G_OPTION_ARG_NONE, NULL, NULL, NULL }
     };
 
