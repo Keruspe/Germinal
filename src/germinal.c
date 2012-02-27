@@ -26,9 +26,9 @@
 #define PALETTE_SIZE 16
 #define CHARACTER "[a-zA-Z]"
 #define STRAIGHT_TEXT_ONLY "[^ \t\n\r()\\[\\]\"]*[^,' \t\n\r()\\[\\]\"]+"
-#define QUOTED_TEXT        "\"[^\"]+\""
-#define PAREN_TEXT         "\\([^()]+\\)"
-#define SQUARE_BRACED_TEXT "\\[[^\\[\\]]+\\]"
+#define QUOTED_TEXT        "\"[^\"\n\r]+\""
+#define PAREN_TEXT         "\\([^()\n\r]+\\)"
+#define SQUARE_BRACED_TEXT "\\[[^\n\r\\[\\]]+\\]"
 #define URL_REGEXP CHARACTER "+://" "(" QUOTED_TEXT "|" PAREN_TEXT "|" SQUARE_BRACED_TEXT "|" STRAIGHT_TEXT_ONLY ")+"
 
 #define SCROLLBACK_KEY "scrollback-lines"
