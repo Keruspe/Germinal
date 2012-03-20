@@ -445,6 +445,17 @@ main(int   argc,
     /* Base command */
     gchar *tmux_argv[] = { "tmux", "-u2", "a", NULL };
     gchar *cwd = g_get_current_dir ();
+    
+    if (command == NULL)
+    {
+        command = g_strsplit (get_setting (settings, "startup-command"), " ", 0);
+        if (g_strcmp0 (command[0], "") == 0)
+        {
+            g_strfreev (command);
+            command = NULL;
+        }
+    }
+
     vte_terminal_fork_command_full (VTE_TERMINAL (terminal),
                                     VTE_PTY_DEFAULT,
                                     cwd,

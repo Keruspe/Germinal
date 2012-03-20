@@ -10,7 +10,7 @@
     </key>
 
     <key name="word-chars" type="s">
-        <default>'.:a-zA-Z0-9@/_#-'</default>
+      <default>'.:a-zA-Z0-9@/_#-'</default>
       <_summary>Chars considered as part of a word when selecting with a double clic</_summary>
       <_description>
         Chars considered as part of a word when selecting with a double clic
@@ -38,6 +38,14 @@
       <_summary>The background color</_summary>
       <_description>
         The background color
+      </_description>
+    </key>
+
+    <key name="startup-command" type="s">
+      <default>''</default>
+      <_summary>Command to launch at startup</_summary>
+      <_description>
+        If none is specified, tmux will be used
       </_description>
     </key>
 
