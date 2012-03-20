@@ -449,7 +449,7 @@ main(int   argc,
     if (command == NULL)
     {
         command = g_strsplit (get_setting (settings, "startup-command"), " ", 0);
-        if (g_strcmp0 (command[0], "") == 0)
+        if (command[0] == NULL)
         {
             g_strfreev (command);
             command = NULL;
