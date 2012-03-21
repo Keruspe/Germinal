@@ -42,7 +42,7 @@
     </key>
 
     <key name="startup-command" type="s">
-      <default>''</default>
+      <default>'tmux -u2 a'</default>
       <_summary>Command to launch at startup</_summary>
       <_description>
         If none is specified, tmux will be used

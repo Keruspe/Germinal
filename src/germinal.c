@@ -442,24 +442,16 @@ main(int   argc,
                       G_CALLBACK (update_colors),
                       terminal);
 
-    /* Base command */
-    gchar *tmux_argv[] = { "tmux", "-u2", "a", NULL };
+    /* Launch base command */
     gchar *cwd = g_get_current_dir ();
     
-    if (command == NULL)
-    {
+    if (G_LIKELY (command == NULL))
         command = g_strsplit (get_setting (settings, "startup-command"), " ", 0);
-        if (command[0] == NULL)
-        {
-            g_strfreev (command);
-            command = NULL;
-        }
-    }
 
     vte_terminal_fork_command_full (VTE_TERMINAL (terminal),
                                     VTE_PTY_DEFAULT,
                                     cwd,
-                                    (command == NULL) ? tmux_argv : command,
+                                    command,
                                     NULL, /* env */
                                     G_SPAWN_SEARCH_PATH,
                                     NULL, /* child setup */
