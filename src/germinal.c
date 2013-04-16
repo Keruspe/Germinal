@@ -23,7 +23,6 @@
 #include <gtk/gtk.h>
 #include <vte/vte.h>
 
-#define PALETTE_SIZE 16
 #define CHARACTER "[a-zA-Z]"
 #define STRAIGHT_TEXT_ONLY "[^ \t\n\r()\\[\\]\"<>]*[^,' \t\n\r()\\[\\]\"<>]+"
 #define QUOTED_TEXT        "\"[^\"\n\r]+\""
@@ -37,27 +36,7 @@
 #define FONT_KEY "font"
 #define FORECOLOR_KEY "forecolor"
 #define BACKCOLOR_KEY "backcolor"
-
-/* Stolen from sakura which stole it from gnome-terminal */
-static const GdkColor xterm_palette[PALETTE_SIZE] =
-{
-    {0, 0x0000, 0x0000, 0x0000 },
-    {0, 0xcdcb, 0x0000, 0x0000 },
-    {0, 0x0000, 0xcdcb, 0x0000 },
-    {0, 0xcdcb, 0xcdcb, 0x0000 },
-    {0, 0x1e1a, 0x908f, 0xffff },
-    {0, 0xcdcb, 0x0000, 0xcdcb },
-    {0, 0x0000, 0xcdcb, 0xcdcb },
-    {0, 0xe5e2, 0xe5e2, 0xe5e2 },
-    {0, 0x4ccc, 0x4ccc, 0x4ccc },
-    {0, 0xffff, 0x0000, 0x0000 },
-    {0, 0x0000, 0xffff, 0x0000 },
-    {0, 0xffff, 0xffff, 0x0000 },
-    {0, 0x4645, 0x8281, 0xb4ae },
-    {0, 0xffff, 0x0000, 0xffff },
-    {0, 0x0000, 0xffff, 0xffff },
-    {0, 0xffff, 0xffff, 0xffff }
-};
+#define PALETTE_KEY "palette"
 
 static void
 germinal_exit (GtkWidget *widget,
@@ -318,6 +297,37 @@ get_setting (GSettings   *settings,
     return dest;
 }
 
+static GdkColor *
+get_palette (GSettings   *settings,
+             const gchar *name,
+             gsize *palette_size)
+{
+    gchar **colors;
+    guint size, i;
+    GdkColor *palette;
+
+    colors = g_settings_get_strv (settings, name);
+    size = g_strv_length (colors);
+    if (!((size == 0) ||
+          (size == 8) ||
+          (size == 16) ||
+          (size == 24) ||
+          ((size >= 25) && (size <= 255))))
+    {
+        g_strfreev (colors);
+        g_settings_reset (settings, name);
+        return get_palette (settings, name, palette_size);
+    }
+
+    palette = g_new(GdkColor, size);
+    for (i = 0 ; i < size ; ++i)
+        gdk_color_parse(colors[i], &palette[i]);
+    g_strfreev (colors);
+
+    *palette_size = size;
+    return palette;
+}
+
 static void
 update_scrollback (GSettings   *settings,
                    const gchar *key,
@@ -349,20 +359,26 @@ update_colors (GSettings   *settings,
                gpointer     user_data)
 {
     static GdkColor forecolor, backcolor;
+    static GdkColor *palette = NULL;
+    static gsize palette_size;
+    g_free(palette);
     if (key == NULL)
     {
         gdk_color_parse (get_setting (settings, FORECOLOR_KEY), &forecolor);
         gdk_color_parse (get_setting (settings, BACKCOLOR_KEY), &backcolor);
+        palette = get_palette(settings, PALETTE_KEY, &palette_size);
     }
     else if (strcmp (key, FORECOLOR_KEY) == 0)
         gdk_color_parse (get_setting (settings, FORECOLOR_KEY), &forecolor);
     else if (strcmp (key, BACKCOLOR_KEY) == 0)
         gdk_color_parse (get_setting (settings, BACKCOLOR_KEY), &backcolor);
+    else if (strcmp (key, PALETTE_KEY) == 0)
+        palette = get_palette(settings, PALETTE_KEY, &palette_size);
     vte_terminal_set_colors (VTE_TERMINAL (user_data),
                             &forecolor,
                             &backcolor,
-                             xterm_palette,
-                             PALETTE_SIZE);
+                             palette,
+                             palette_size);
 }
 
 int

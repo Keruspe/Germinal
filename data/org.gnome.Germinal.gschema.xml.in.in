@@ -41,6 +41,31 @@
       </_description>
     </key>
 
+    <key name="palette" type="as">
+      <!-- Stolen from sakura which stole it from gnome-terminal -->
+      <default>
+        [
+          '#000000000000',
+          '#cdcb00000000',
+          '#0000cdcb0000',
+          '#cdcbcdcb0000',
+          '#1e1a908fffff',
+          '#cdcb0000cdcb',
+          '#0000cdcbcdcb',
+          '#e5e2e5e2e5e2',
+          '#4ccc4ccc4ccc',
+          '#ffff00000000',
+          '#0000ffff0000',
+          '#ffffffff0000',
+          '#46458281b4ae',
+          '#ffff0000ffff',
+          '#0000ffffffff',
+          '#ffffffffffff'
+        ]
+      </default>
+      <_summary>The color palette</_summary>
+    </key>
+
     <key name="startup-command" type="s">
       <default>'tmux -u2 a'</default>
       <_summary>Command to launch at startup</_summary>
