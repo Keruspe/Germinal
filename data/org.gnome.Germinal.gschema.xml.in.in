@@ -26,7 +26,7 @@
     </key>
 
     <key name="forecolor" type="s">
-      <default>'#00D321'</default>
+      <default>'#C34897'</default>
       <_summary>The foreground color</_summary>
       <_description>
         The foreground color
