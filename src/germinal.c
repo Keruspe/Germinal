@@ -26,6 +26,13 @@
 #define GERMINAL_UNUSED     __attribute__((unused))
 #define GERMINAL_CLEANUP(x) __attribute__((cleanup(x)))
 
+#define GERMINAL_SETTINGS_CLEANUP GERMINAL_CLEANUP (cleanup_settings)
+#define GERMINAL_STR_CLEANUP      GERMINAL_CLEANUP (cleanup_str)
+#define GERMINAL_STRV_CLEANUP     GERMINAL_CLEANUP (cleanup_strv)
+#define GERMINAL_ERROR_CLEANUP    GERMINAL_CLEANUP (cleanup_error)
+#define GERMINAL_REGEX_CLEANUP    GERMINAL_CLEANUP (cleanup_regex)
+#define GERMINAL_FONT_CLEANUP     GERMINAL_CLEANUP (cleanup_font)
+
 #define CHARACTER          "[a-zA-Z]"
 #define STRAIGHT_TEXT_ONLY "[^ \t\n\r()\\[\\]\"<>]*[^,' \t\n\r()\\[\\]\"<>]+"
 #define QUOTED_TEXT        "\"[^\"\n\r]+\""
@@ -34,12 +41,50 @@
 #define DUMB_USERS_TEXT    "<[^\n\r<>]+>"
 #define URL_REGEXP         CHARACTER "+://(" QUOTED_TEXT "|" PAREN_TEXT "|" SQUARE_BRACED_TEXT "|" DUMB_USERS_TEXT "|" STRAIGHT_TEXT_ONLY ")+"
 
-#define SCROLLBACK_KEY "scrollback-lines"
-#define WORD_CHARS_KEY "word-chars"
-#define FONT_KEY       "font"
-#define FORECOLOR_KEY  "forecolor"
-#define BACKCOLOR_KEY  "backcolor"
-#define PALETTE_KEY    "palette"
+#define SCROLLBACK_KEY      "scrollback-lines"
+#define WORD_CHARS_KEY      "word-chars"
+#define FONT_KEY            "font"
+#define FORECOLOR_KEY       "forecolor"
+#define BACKCOLOR_KEY       "backcolor"
+#define PALETTE_KEY         "palette"
+#define STARTUP_COMMAND_KEY "startup-command"
+
+static void
+cleanup_settings (GSettings **settings)
+{
+    g_object_unref (*settings);
+}
+
+static void
+cleanup_str (gchar **str)
+{
+    g_free (*str);
+}
+
+static void
+cleanup_strv (gchar ***strv)
+{
+    g_strfreev (*strv);
+}
+
+static void
+cleanup_error (GError **error)
+{
+    if (*error)
+        g_error_free (*error);
+}
+
+static void
+cleanup_regex (GRegex **regex)
+{
+    g_regex_unref (*regex);
+}
+
+static void
+cleanup_font (PangoFontDescription **font)
+{
+    pango_font_description_free (*font);
+}
 
 static void
 germinal_exit (GtkWidget *widget    GERMINAL_UNUSED,
@@ -78,7 +123,7 @@ get_url (VteTerminal    *terminal,
         url = vte_terminal_match_check (terminal,
                                         column,
                                         row,
-                                       &tag);
+                                        &tag);
     }
     return url;
 }
@@ -89,9 +134,9 @@ open_url (gchar *url)
     if (!url)
         return FALSE;
 
-    GError *error = NULL;
+    GError GERMINAL_ERROR_CLEANUP *error = NULL;
     /* Always strdup because we free later */
-    gchar *browser = g_strdup (g_getenv ("BROWSER"));
+    gchar GERMINAL_STR_CLEANUP *browser = g_strdup (g_getenv ("BROWSER"));
 
     /* If BROWSER is not in env, try xdg-open or fallback to firefox */
     if (!browser && !(browser = g_find_program_in_path ("xdg-open")))
@@ -105,12 +150,9 @@ open_url (gchar *url)
                         NULL, /* child setup */
                         NULL, /* child setup data */
                         NULL, /* child pid */
-                       &error))
-    {
+                        &error))
         fprintf (stderr, _("Couldn't exec \"%s %s\": %s"), browser, url, error->message);
-        g_error_free (error);
-    }
-    g_free (browser);
+
     return TRUE;
 }
 
@@ -147,7 +189,7 @@ update_font_size (VteTerminal  *terminal,
                   FontSizeDelta delta)
 {
     static gdouble default_size = 0;
-    PangoFontDescription *font = pango_font_description_copy (vte_terminal_get_font (terminal));
+    PangoFontDescription GERMINAL_FONT_CLEANUP *font = pango_font_description_copy (vte_terminal_get_font (terminal));
     gdouble size = pango_font_description_get_size (font);
     switch (delta)
     {
@@ -163,7 +205,6 @@ update_font_size (VteTerminal  *terminal,
     }
     pango_font_description_set_size (font, size);
     vte_terminal_set_font (terminal, font);
-    pango_font_description_free (font);
 }
 
 static gboolean
@@ -273,14 +314,7 @@ static gchar *
 get_setting (GSettings   *settings,
              const gchar *name)
 {
-    /* helper to manage memory */
-    static gchar *dest = NULL;
-    g_free (dest);
-    if (name != NULL)
-        dest = g_settings_get_string (settings, name);
-    else
-        dest = NULL;
-    return dest;
+    return (name) ? g_settings_get_string (settings, name) : NULL;
 }
 
 static GdkColor *
@@ -288,7 +322,7 @@ get_palette (GSettings   *settings,
              const gchar *name,
              gsize *palette_size)
 {
-    gchar **colors;
+    gchar GERMINAL_STRV_CLEANUP **colors = NULL;
     guint size, i;
     GdkColor *palette;
 
@@ -300,7 +334,6 @@ get_palette (GSettings   *settings,
           (size == 24) ||
           ((size >= 25) && (size <= 255))))
     {
-        g_strfreev (colors);
         g_settings_reset (settings, name);
         return get_palette (settings, name, palette_size);
     }
@@ -308,7 +341,6 @@ get_palette (GSettings   *settings,
     palette = g_new(GdkColor, size);
     for (i = 0 ; i < size ; ++i)
         gdk_color_parse(colors[i], &palette[i]);
-    g_strfreev (colors);
 
     *palette_size = size;
     return palette;
@@ -327,7 +359,8 @@ update_word_chars (GSettings   *settings,
                    const gchar *key,
                    gpointer     user_data)
 {
-    vte_terminal_set_word_chars (VTE_TERMINAL (user_data), get_setting (settings, key));
+    gchar GERMINAL_STR_CLEANUP *setting = get_setting (settings, key);
+    vte_terminal_set_word_chars (VTE_TERMINAL (user_data), setting);
 }
 
 static void
@@ -335,7 +368,8 @@ update_font (GSettings   *settings,
              const gchar *key,
              gpointer     user_data)
 {
-    vte_terminal_set_font_from_string (VTE_TERMINAL (user_data), get_setting (settings, key));
+    gchar GERMINAL_STR_CLEANUP *setting = get_setting (settings, key);
+    vte_terminal_set_font_from_string (VTE_TERMINAL (user_data), setting);
     update_font_size (VTE_TERMINAL (user_data), FONT_SIZE_DELTA_SET_DEFAULT);
 }
 
@@ -347,22 +381,34 @@ update_colors (GSettings   *settings,
     static GdkColor forecolor, backcolor;
     static GdkColor *palette = NULL;
     static gsize palette_size;
-    g_free(palette);
     if (key == NULL)
     {
-        gdk_color_parse (get_setting (settings, FORECOLOR_KEY), &forecolor);
-        gdk_color_parse (get_setting (settings, BACKCOLOR_KEY), &backcolor);
+        gchar GERMINAL_STR_CLEANUP *backcolor_str = get_setting (settings, BACKCOLOR_KEY);
+        gdk_color_parse (backcolor_str, &backcolor);
+        gchar GERMINAL_STR_CLEANUP *forecolor_str = get_setting (settings, FORECOLOR_KEY);
+        gdk_color_parse (forecolor_str, &forecolor);
+        g_free(palette);
         palette = get_palette(settings, PALETTE_KEY, &palette_size);
     }
-    else if (strcmp (key, FORECOLOR_KEY) == 0)
-        gdk_color_parse (get_setting (settings, FORECOLOR_KEY), &forecolor);
     else if (strcmp (key, BACKCOLOR_KEY) == 0)
-        gdk_color_parse (get_setting (settings, BACKCOLOR_KEY), &backcolor);
+    {
+        gchar GERMINAL_STR_CLEANUP *backcolor_str = get_setting (settings, BACKCOLOR_KEY);
+        gdk_color_parse (backcolor_str, &backcolor);
+    }
+    else if (strcmp (key, FORECOLOR_KEY) == 0)
+    {
+        gchar GERMINAL_STR_CLEANUP *forecolor_str = get_setting (settings, FORECOLOR_KEY);
+        gdk_color_parse (forecolor_str, &forecolor);
+    }
     else if (strcmp (key, PALETTE_KEY) == 0)
+    {
+        g_free(palette);
         palette = get_palette(settings, PALETTE_KEY, &palette_size);
+    }
+
     vte_terminal_set_colors (VTE_TERMINAL (user_data),
-                            &forecolor,
-                            &backcolor,
+                             &forecolor,
+                             &backcolor,
                              palette,
                              palette_size);
 }
@@ -372,7 +418,7 @@ main(int   argc,
      char *argv[])
 {
     /* Options */
-    gchar **command = NULL;
+    gchar GERMINAL_STRV_CLEANUP **command = NULL;
     GOptionEntry options[] =
     {
         { G_OPTION_REMAINING, 'e', 0, G_OPTION_ARG_STRING_ARRAY, &command, N_("the command to launch"), "command" },
@@ -409,17 +455,16 @@ main(int   argc,
     gtk_widget_show_all (window);
 
     /* Url matching stuff */
-    GRegex *url_regexp = g_regex_new (URL_REGEXP,
-                                      G_REGEX_CASELESS | G_REGEX_OPTIMIZE,
-                                      G_REGEX_MATCH_NOTEMPTY,
-                                      NULL); /* error */
+    GRegex GERMINAL_REGEX_CLEANUP *url_regexp = g_regex_new (URL_REGEXP,
+                                                             G_REGEX_CASELESS | G_REGEX_OPTIMIZE,
+                                                             G_REGEX_MATCH_NOTEMPTY,
+                                                             NULL); /* error */
     vte_terminal_match_add_gregex (VTE_TERMINAL (terminal),
                                    url_regexp,
                                    0);
-    g_regex_unref (url_regexp);
 
     /* Apply user settings */
-    GSettings *settings = g_settings_new ("org.gnome.Germinal");
+    GSettings GERMINAL_SETTINGS_CLEANUP *settings = g_settings_new ("org.gnome.Germinal");
     update_scrollback (settings, SCROLLBACK_KEY, terminal);
     g_signal_connect (G_OBJECT (settings),
                       "changed::" SCROLLBACK_KEY,
@@ -446,10 +491,13 @@ main(int   argc,
                       terminal);
 
     /* Launch base command */
-    gchar *cwd = g_get_current_dir ();
+    gchar GERMINAL_STR_CLEANUP *cwd = g_get_current_dir ();
     
     if (G_LIKELY (command == NULL))
-        command = g_strsplit (get_setting (settings, "startup-command"), " ", 0);
+    {
+        gchar GERMINAL_STR_CLEANUP *setting = get_setting (settings, STARTUP_COMMAND_KEY);
+        command = g_strsplit (setting , " ", 0);
+    }
 
     vte_terminal_fork_command_full (VTE_TERMINAL (terminal),
                                     VTE_PTY_DEFAULT,
@@ -461,8 +509,6 @@ main(int   argc,
                                     NULL, /* child setup data */
                                     NULL, /* child pid */
                                     NULL); /* error */
-    g_strfreev (command);
-    g_free (cwd);
 
     /* Populate right click menu */
     GtkWidget *menu = gtk_menu_new ();
@@ -581,7 +627,6 @@ main(int   argc,
 
     /* Free memory */
     g_free (get_url (NULL, NULL));
-    get_setting (settings, NULL); /* Free buffer */
-    g_object_unref (settings);
+
     return 0;
 }
