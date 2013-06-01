@@ -1,7 +1,7 @@
 /*
  * This file is part of Germinal.
  *
- * Copyright 2011 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
+ * Copyright 2011-2013 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
  *
  * Germinal is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,48 +23,44 @@
 #include <gtk/gtk.h>
 #include <vte/vte.h>
 
-#define CHARACTER "[a-zA-Z]"
+#define GERMINAL_UNUSED     __attribute__((unused))
+#define GERMINAL_CLEANUP(x) __attribute__((cleanup(x)))
+
+#define CHARACTER          "[a-zA-Z]"
 #define STRAIGHT_TEXT_ONLY "[^ \t\n\r()\\[\\]\"<>]*[^,' \t\n\r()\\[\\]\"<>]+"
 #define QUOTED_TEXT        "\"[^\"\n\r]+\""
 #define PAREN_TEXT         "\\([^()\n\r]+\\)"
 #define SQUARE_BRACED_TEXT "\\[[^\n\r\\[\\]]+\\]"
 #define DUMB_USERS_TEXT    "<[^\n\r<>]+>"
-#define URL_REGEXP CHARACTER "+://" "(" QUOTED_TEXT "|" PAREN_TEXT "|" SQUARE_BRACED_TEXT "|" DUMB_USERS_TEXT "|" STRAIGHT_TEXT_ONLY ")+"
+#define URL_REGEXP         CHARACTER "+://(" QUOTED_TEXT "|" PAREN_TEXT "|" SQUARE_BRACED_TEXT "|" DUMB_USERS_TEXT "|" STRAIGHT_TEXT_ONLY ")+"
 
 #define SCROLLBACK_KEY "scrollback-lines"
 #define WORD_CHARS_KEY "word-chars"
-#define FONT_KEY "font"
-#define FORECOLOR_KEY "forecolor"
-#define BACKCOLOR_KEY "backcolor"
-#define PALETTE_KEY "palette"
+#define FONT_KEY       "font"
+#define FORECOLOR_KEY  "forecolor"
+#define BACKCOLOR_KEY  "backcolor"
+#define PALETTE_KEY    "palette"
 
 static void
-germinal_exit (GtkWidget *widget,
-               gpointer   user_data)
+germinal_exit (GtkWidget *widget    GERMINAL_UNUSED,
+               gpointer   user_data GERMINAL_UNUSED)
 {
     gtk_main_quit ();
-    /* Silence stupid warning */
-    widget = widget;
-    user_data = user_data;
 }
 
 static gboolean
-do_copy (GtkWidget *widget,
-         gpointer   user_data)
+do_copy (GtkWidget *widget    GERMINAL_UNUSED,
+         gpointer   user_data GERMINAL_UNUSED)
 {
     vte_terminal_copy_clipboard (VTE_TERMINAL (user_data));
-    /* Silence stupid warning */
-    widget = widget;
     return TRUE;
 }
 
 static gboolean
-do_paste (GtkWidget *widget,
+do_paste (GtkWidget *widget GERMINAL_UNUSED,
           gpointer   user_data)
 {
     vte_terminal_paste_clipboard (VTE_TERMINAL (user_data));
-    /* Silence stupid warning */
-    widget = widget;
     return TRUE;
 }
 
@@ -119,7 +115,7 @@ open_url (gchar *url)
 }
 
 static gboolean
-do_copy_url (GtkWidget *widget,
+do_copy_url (GtkWidget *widget GERMINAL_UNUSED,
              gpointer   user_data)
 {
     gchar *url = get_url (VTE_TERMINAL (user_data), NULL);
@@ -129,17 +125,13 @@ do_copy_url (GtkWidget *widget,
     gtk_clipboard_set_text (clip, url, -1);
     clip = gtk_clipboard_get (GDK_SELECTION_PRIMARY);
     gtk_clipboard_set_text (clip, url, -1);
-    /* Silence stupid warning */
-    widget = widget;
     return TRUE;
 }
 
 static gboolean
-do_open_url (GtkWidget *widget,
+do_open_url (GtkWidget *widget GERMINAL_UNUSED,
              gpointer   user_data)
 {
-    /* Silence stupid warning */
-    widget = widget;
     return open_url (get_url (VTE_TERMINAL (user_data), NULL));
 }
 
@@ -175,32 +167,26 @@ update_font_size (VteTerminal  *terminal,
 }
 
 static gboolean
-do_zoom (GtkWidget *widget,
+do_zoom (GtkWidget *widget GERMINAL_UNUSED,
          gpointer   user_data)
 {
     update_font_size (VTE_TERMINAL (user_data), FONT_SIZE_DELTA_INC);
-    /* Silence stupid warning */
-    widget = widget;
     return TRUE;
 }
 
 static gboolean
-do_dezoom (GtkWidget *widget,
+do_dezoom (GtkWidget *widget GERMINAL_UNUSED,
            gpointer   user_data)
 {
     update_font_size (VTE_TERMINAL (user_data), FONT_SIZE_DELTA_DEC);
-    /* Silence stupid warning */
-    widget = widget;
     return TRUE;
 }
 
 static gboolean
-do_reset_zoom (GtkWidget *widget,
+do_reset_zoom (GtkWidget *widget GERMINAL_UNUSED,
                gpointer   user_data)
 {
     update_font_size (VTE_TERMINAL (user_data), FONT_SIZE_DELTA_RESET);
-    /* Silence stupid warning */
-    widget = widget;
     return TRUE;
 }
 
