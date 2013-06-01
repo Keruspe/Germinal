@@ -20,72 +20,9 @@
 #include "config.h"
 
 #include <glib/gi18n-lib.h>
-#include <gtk/gtk.h>
 #include <vte/vte.h>
 
-#define GERMINAL_UNUSED     __attribute__((unused))
-#define GERMINAL_CLEANUP(x) __attribute__((cleanup(x)))
-
-#define GERMINAL_SETTINGS_CLEANUP GERMINAL_CLEANUP (cleanup_settings)
-#define GERMINAL_STR_CLEANUP      GERMINAL_CLEANUP (cleanup_str)
-#define GERMINAL_STRV_CLEANUP     GERMINAL_CLEANUP (cleanup_strv)
-#define GERMINAL_ERROR_CLEANUP    GERMINAL_CLEANUP (cleanup_error)
-#define GERMINAL_REGEX_CLEANUP    GERMINAL_CLEANUP (cleanup_regex)
-#define GERMINAL_FONT_CLEANUP     GERMINAL_CLEANUP (cleanup_font)
-
-#define CHARACTER          "[a-zA-Z]"
-#define STRAIGHT_TEXT_ONLY "[^ \t\n\r()\\[\\]\"<>]*[^,' \t\n\r()\\[\\]\"<>]+"
-#define QUOTED_TEXT        "\"[^\"\n\r]+\""
-#define PAREN_TEXT         "\\([^()\n\r]+\\)"
-#define SQUARE_BRACED_TEXT "\\[[^\n\r\\[\\]]+\\]"
-#define DUMB_USERS_TEXT    "<[^\n\r<>]+>"
-#define URL_REGEXP         CHARACTER "+://(" QUOTED_TEXT "|" PAREN_TEXT "|" SQUARE_BRACED_TEXT "|" DUMB_USERS_TEXT "|" STRAIGHT_TEXT_ONLY ")+"
-
-#define SCROLLBACK_KEY       "scrollback-lines"
-#define WORD_CHARS_KEY       "word-chars"
-#define FONT_KEY             "font"
-#define FORECOLOR_KEY        "forecolor"
-#define BACKCOLOR_KEY        "backcolor"
-#define PALETTE_KEY          "palette"
-#define STARTUP_COMMAND_KEY  "startup-command"
-#define BACKGROUND_IMAGE_KEY "background-image"
-
-static void
-cleanup_settings (GSettings **settings)
-{
-    g_object_unref (*settings);
-}
-
-static void
-cleanup_str (gchar **str)
-{
-    g_free (*str);
-}
-
-static void
-cleanup_strv (gchar ***strv)
-{
-    g_strfreev (*strv);
-}
-
-static void
-cleanup_error (GError **error)
-{
-    if (*error)
-        g_error_free (*error);
-}
-
-static void
-cleanup_regex (GRegex **regex)
-{
-    g_regex_unref (*regex);
-}
-
-static void
-cleanup_font (PangoFontDescription **font)
-{
-    pango_font_description_free (*font);
-}
+#include "germinal-util.h"
 
 static void
 germinal_exit (GtkWidget *widget    GERMINAL_UNUSED,

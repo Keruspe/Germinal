@@ -36,6 +36,7 @@ bin_PROGRAMS = germinal
 # Sources
 
 germinal_SOURCES = \
+	src/germinal-util.h \
 	src/germinal.c
 
 # CFLAGS
