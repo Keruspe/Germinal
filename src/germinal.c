@@ -482,11 +482,15 @@ main(int   argc,
                       terminal);
     update_colors (settings, NULL, terminal);
     g_signal_connect (G_OBJECT (settings),
+                      "changed::" BACKCOLOR_KEY,
+                      G_CALLBACK (update_colors),
+                      terminal);
+    g_signal_connect (G_OBJECT (settings),
                       "changed::" FORECOLOR_KEY,
                       G_CALLBACK (update_colors),
                       terminal);
     g_signal_connect (G_OBJECT (settings),
-                      "changed::" BACKCOLOR_KEY,
+                      "changed::" PALETTE_KEY,
                       G_CALLBACK (update_colors),
                       terminal);
 
