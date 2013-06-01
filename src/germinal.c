@@ -373,21 +373,24 @@ update_font (GSettings   *settings,
     update_font_size (VTE_TERMINAL (user_data), FONT_SIZE_DELTA_SET_DEFAULT);
 }
 
-static void
+static GdkColor *
 update_colors (GSettings   *settings,
                const gchar *key, /* NULL for initialization */
-               gpointer     user_data)
+               gpointer     user_data) /* NULL to get the palette */
 {
     static GdkColor forecolor, backcolor;
     static GdkColor *palette = NULL;
     static gsize palette_size;
+
+    if (!user_data)
+        return palette;
+
     if (key == NULL)
     {
         gchar GERMINAL_STR_CLEANUP *backcolor_str = get_setting (settings, BACKCOLOR_KEY);
         gdk_color_parse (backcolor_str, &backcolor);
         gchar GERMINAL_STR_CLEANUP *forecolor_str = get_setting (settings, FORECOLOR_KEY);
         gdk_color_parse (forecolor_str, &forecolor);
-        g_free(palette);
         palette = get_palette(settings, PALETTE_KEY, &palette_size);
     }
     else if (strcmp (key, BACKCOLOR_KEY) == 0)
@@ -411,6 +414,8 @@ update_colors (GSettings   *settings,
                              &backcolor,
                              palette,
                              palette_size);
+
+    return NULL;
 }
 
 int
@@ -631,6 +636,7 @@ main(int   argc,
 
     /* Free memory */
     g_free (get_url (NULL, NULL));
+    g_free (update_colors (NULL, NULL, NULL));
 
     return 0;
 }
