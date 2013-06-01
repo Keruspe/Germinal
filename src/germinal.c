@@ -425,8 +425,7 @@ update_background_image (GSettings   *settings,
                          gpointer     user_data)
 {
     gchar GERMINAL_STR_CLEANUP *setting = get_setting (settings, key);
-    if (setting && g_strcmp0 (setting, "") != 0)
-        vte_terminal_set_background_image_file (VTE_TERMINAL (user_data), setting);
+    vte_terminal_set_background_image_file (VTE_TERMINAL (user_data), setting);
 }
 
 int
