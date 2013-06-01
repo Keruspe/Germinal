@@ -41,13 +41,14 @@
 #define DUMB_USERS_TEXT    "<[^\n\r<>]+>"
 #define URL_REGEXP         CHARACTER "+://(" QUOTED_TEXT "|" PAREN_TEXT "|" SQUARE_BRACED_TEXT "|" DUMB_USERS_TEXT "|" STRAIGHT_TEXT_ONLY ")+"
 
-#define SCROLLBACK_KEY      "scrollback-lines"
-#define WORD_CHARS_KEY      "word-chars"
-#define FONT_KEY            "font"
-#define FORECOLOR_KEY       "forecolor"
-#define BACKCOLOR_KEY       "backcolor"
-#define PALETTE_KEY         "palette"
-#define STARTUP_COMMAND_KEY "startup-command"
+#define SCROLLBACK_KEY       "scrollback-lines"
+#define WORD_CHARS_KEY       "word-chars"
+#define FONT_KEY             "font"
+#define FORECOLOR_KEY        "forecolor"
+#define BACKCOLOR_KEY        "backcolor"
+#define PALETTE_KEY          "palette"
+#define STARTUP_COMMAND_KEY  "startup-command"
+#define BACKGROUND_IMAGE_KEY "background-image"
 
 static void
 cleanup_settings (GSettings **settings)
@@ -418,6 +419,16 @@ update_colors (GSettings   *settings,
     return NULL;
 }
 
+static void
+update_background_image (GSettings   *settings,
+                         const gchar *key,
+                         gpointer     user_data)
+{
+    gchar GERMINAL_STR_CLEANUP *setting = get_setting (settings, key);
+    if (setting && g_strcmp0 (setting, "") != 0)
+        vte_terminal_set_background_image_file (VTE_TERMINAL (user_data), setting);
+}
+
 int
 main(int   argc,
      char *argv[])
@@ -497,6 +508,11 @@ main(int   argc,
     g_signal_connect (G_OBJECT (settings),
                       "changed::" PALETTE_KEY,
                       G_CALLBACK (update_colors),
+                      terminal);
+    update_background_image (settings, NULL, terminal);
+    g_signal_connect (G_OBJECT (settings),
+                      "changed::" BACKGROUND_IMAGE_KEY,
+                      G_CALLBACK (update_background_image),
                       terminal);
 
     /* Launch base command */

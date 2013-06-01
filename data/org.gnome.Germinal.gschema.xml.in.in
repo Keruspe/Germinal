@@ -74,5 +74,13 @@
       </_description>
     </key>
 
+    <key name="background-image" type="s">
+      <default>''</default>
+      <_summary>The background image</_summary>
+      <_description>
+        The background image
+      </_description>
+    </key>
+
   </schema>
 </schemalist>
