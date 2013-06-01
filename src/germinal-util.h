@@ -41,6 +41,7 @@
 #define BACKGROUND_IMAGE_KEY "background-image"
 #define FONT_KEY             "font"
 #define FORECOLOR_KEY        "forecolor"
+#define OPACITY_KEY          "opacity"
 #define PALETTE_KEY          "palette"
 #define SCROLLBACK_KEY       "scrollback-lines"
 #define STARTUP_COMMAND_KEY  "startup-command"

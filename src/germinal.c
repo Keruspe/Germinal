@@ -364,6 +364,14 @@ update_background_image (GSettings   *settings,
     gchar GERMINAL_STR_CLEANUP *setting = get_setting (settings, key);
     vte_terminal_set_background_image_file (VTE_TERMINAL (user_data), setting);
 }
+static void
+update_opacity (GSettings   *settings,
+                const gchar *key,
+                gpointer     user_data)
+{
+    gtk_widget_set_opacity (GTK_WIDGET (user_data), g_settings_get_double (settings, key));
+}
+
 
 int
 main(int   argc,
@@ -445,11 +453,16 @@ main(int   argc,
                       "changed::" PALETTE_KEY,
                       G_CALLBACK (update_colors),
                       terminal);
-    update_background_image (settings, NULL, terminal);
+    update_background_image (settings, BACKGROUND_IMAGE_KEY, terminal);
     g_signal_connect (G_OBJECT (settings),
                       "changed::" BACKGROUND_IMAGE_KEY,
                       G_CALLBACK (update_background_image),
                       terminal);
+    update_opacity (settings, OPACITY_KEY, window);
+    g_signal_connect (G_OBJECT (settings),
+                      "changed::" OPACITY_KEY,
+                      G_CALLBACK (update_opacity),
+                      window);
 
     /* Launch base command */
     gchar GERMINAL_STR_CLEANUP *cwd = g_get_current_dir ();
