@@ -463,18 +463,18 @@ main(int   argc,
     MENU_ACTION (copy_url, _("Copy _url"));
     MENU_ACTION (open_url, _("_Open url"));
 
-    MENU_SEPARATOR
+    MENU_SEPARATOR;
 
     MENU_ACTION (copy,  _("_Copy"));
     MENU_ACTION (paste, _("_Paste"));
 
-    MENU_SEPARATOR
+    MENU_SEPARATOR;
 
     MENU_ACTION (zoom,       _("_Zoom"));
     MENU_ACTION (dezoom,     _("_Dezoom"));
     MENU_ACTION (reset_zoom, _("_Reset zoom"));
 
-    MENU_SEPARATOR
+    MENU_SEPARATOR;
 
     GtkWidget *im_submenu = gtk_menu_new ();
     vte_terminal_im_append_menuitems (VTE_TERMINAL (terminal), GTK_MENU_SHELL (im_submenu));
