@@ -391,10 +391,10 @@ main(int   argc,
     bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
     gtk_init_with_args (&argc,
                         &argv,
-                         N_(" - minimalist vte-based terminal emulator"),
-                         options,
-                         GETTEXT_PACKAGE,
-                         NULL); /* error */
+                        N_(" - minimalist vte-based terminal emulator"),
+                        options,
+                        GETTEXT_PACKAGE,
+                        NULL); /* error */
 
     /* Window settings */
     GtkWidget *window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
