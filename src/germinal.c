@@ -463,18 +463,18 @@ main(int   argc,
     MENU_ACTION (copy_url, _("Copy _url"));
     MENU_ACTION (open_url, _("_Open url"));
 
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), gtk_separator_menu_item_new ());
+    MENU_SEPARATOR
 
     MENU_ACTION (copy,  _("_Copy"));
     MENU_ACTION (paste, _("_Paste"));
 
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), gtk_separator_menu_item_new ());
+    MENU_SEPARATOR
 
     MENU_ACTION (zoom,       _("_Zoom"));
     MENU_ACTION (dezoom,     _("_Dezoom"));
     MENU_ACTION (reset_zoom, _("_Reset zoom"));
 
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), gtk_separator_menu_item_new ());
+    MENU_SEPARATOR
 
     GtkWidget *im_submenu = gtk_menu_new ();
     vte_terminal_im_append_menuitems (VTE_TERMINAL (terminal), GTK_MENU_SHELL (im_submenu));
@@ -485,22 +485,10 @@ main(int   argc,
     gtk_widget_show_all (menu);
 
     /* Bind signals */
-    g_signal_connect (G_OBJECT (terminal),
-                      "button-press-event",
-                      G_CALLBACK (on_button_press),
-                      menu);
-    g_signal_connect (G_OBJECT (window),
-                      "destroy",
-                      G_CALLBACK (germinal_exit),
-                      NULL);
-    g_signal_connect (G_OBJECT (window),
-                      "key-press-event",
-                      G_CALLBACK (on_key_press),
-                      terminal);
-    g_signal_connect(G_OBJECT (terminal),
-                     "child-exited",
-                     G_CALLBACK (germinal_exit),
-                     NULL);
+    CONNECT_SIGNAL (terminal, "button-press-event", on_button_press, menu);
+    CONNECT_SIGNAL (terminal, "child-exited",       germinal_exit,   NULL);
+    CONNECT_SIGNAL (window,   "destroy",            germinal_exit,   NULL);
+    CONNECT_SIGNAL (window,   "key-press-event",    on_key_press,    terminal);
 
     /* Launch program */
     gtk_main ();

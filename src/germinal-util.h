@@ -47,16 +47,16 @@
 #define STARTUP_COMMAND_KEY  "startup-command"
 #define WORD_CHARS_KEY       "word-chars"
 
-#define SETTING_SIGNAL_FULL(key,fn,obj)         \
+#define SETTING_SIGNAL_FULL(key, fn, obj)       \
     g_signal_connect (G_OBJECT (settings),      \
                       "changed::" key##_KEY,    \
                       G_CALLBACK (update_##fn), \
                       obj)
-#define SETTING_SIGNAL(key,fn) SETTING_SIGNAL_FULL (key, fn, terminal)
-#define SETTING_FULL(key,fn,obj)            \
+#define SETTING_SIGNAL(key, fn) SETTING_SIGNAL_FULL (key, fn, terminal)
+#define SETTING_FULL(key, fn, obj)          \
     update_##fn (settings, key##_KEY, obj); \
     SETTING_SIGNAL_FULL (key, fn, obj)
-#define SETTING(key,fn) SETTING_FULL (key, fn, terminal)
+#define SETTING(key, fn) SETTING_FULL (key, fn, terminal)
 
 #define MENU_ACTION(name, label)                                               \
     GtkAction* name##_action = gtk_action_new (#name,                          \
@@ -69,6 +69,15 @@
                       G_CALLBACK (do_##name),                                  \
                       terminal);                                               \
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), name##_menu_item)
+
+#define MENU_SEPARATOR \
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), gtk_separator_menu_item_new ())
+
+#define CONNECT_SIGNAL(obj, signal, fn, data) \
+    g_signal_connect (G_OBJECT (obj),         \
+                      signal,                 \
+                      G_CALLBACK (fn),        \
+                      data)
 
 static void
 cleanup_error (GError **error)
