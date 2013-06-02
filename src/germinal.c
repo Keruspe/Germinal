@@ -425,44 +425,17 @@ main(int   argc,
 
     /* Apply user settings */
     GSettings GERMINAL_SETTINGS_CLEANUP *settings = g_settings_new ("org.gnome.Germinal");
-    update_scrollback (settings, SCROLLBACK_KEY, terminal);
-    g_signal_connect (G_OBJECT (settings),
-                      "changed::" SCROLLBACK_KEY,
-                      G_CALLBACK (update_scrollback),
-                      terminal);
-    update_word_chars (settings, WORD_CHARS_KEY, terminal);
-    g_signal_connect (G_OBJECT (settings),
-                      "changed::" WORD_CHARS_KEY,
-                      G_CALLBACK (update_word_chars),
-                      terminal);
-    update_font (settings, FONT_KEY, terminal);
-    g_signal_connect (G_OBJECT (settings),
-                      "changed::" FONT_KEY,
-                      G_CALLBACK (update_font),
-                      terminal);
+
     update_colors (settings, NULL, terminal);
-    g_signal_connect (G_OBJECT (settings),
-                      "changed::" BACKCOLOR_KEY,
-                      G_CALLBACK (update_colors),
-                      terminal);
-    g_signal_connect (G_OBJECT (settings),
-                      "changed::" FORECOLOR_KEY,
-                      G_CALLBACK (update_colors),
-                      terminal);
-    g_signal_connect (G_OBJECT (settings),
-                      "changed::" PALETTE_KEY,
-                      G_CALLBACK (update_colors),
-                      terminal);
-    update_background_image (settings, BACKGROUND_IMAGE_KEY, terminal);
-    g_signal_connect (G_OBJECT (settings),
-                      "changed::" BACKGROUND_IMAGE_KEY,
-                      G_CALLBACK (update_background_image),
-                      terminal);
-    update_opacity (settings, OPACITY_KEY, window);
-    g_signal_connect (G_OBJECT (settings),
-                      "changed::" OPACITY_KEY,
-                      G_CALLBACK (update_opacity),
-                      window);
+    SETTING_SIGNAL (BACKCOLOR, colors);
+    SETTING_SIGNAL (FORECOLOR, colors);
+    SETTING_SIGNAL (PALETTE,   colors);
+
+    SETTING (BACKGROUND_IMAGE, background_image);
+    SETTING (FONT,             font);
+    SETTING (OPACITY,          opacity);
+    SETTING (SCROLLBACK,       scrollback);
+    SETTING (WORD_CHARS,       word_chars);
 
     /* Launch base command */
     gchar GERMINAL_STR_CLEANUP *cwd = g_get_current_dir ();
@@ -487,86 +460,19 @@ main(int   argc,
     /* Populate right click menu */
     GtkWidget *menu = gtk_menu_new ();
 
-    GtkAction *copy_url_action = gtk_action_new ("copy_url",
-                                                 _("Copy _url"),
-                                                 NULL, /* tooltip */
-                                                 NULL); /* stock_id */
-    GtkWidget *copy_url_menu_item = gtk_action_create_menu_item (copy_url_action);
-    g_signal_connect (G_OBJECT (copy_url_action),
-                      "activate",
-                      G_CALLBACK (do_copy_url),
-                      terminal);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), copy_url_menu_item);
-
-    GtkAction *open_url_action = gtk_action_new ("open_url",
-                                                 _("_Open url"),
-                                                 NULL, /* tooltip */
-                                                 NULL); /* stock_id */
-    GtkWidget *open_url_menu_item = gtk_action_create_menu_item (open_url_action);
-    g_signal_connect (G_OBJECT (open_url_action),
-                      "activate",
-                      G_CALLBACK (do_open_url),
-                      terminal);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), open_url_menu_item);
+    MENU_ACTION (copy_url, _("Copy _url"));
+    MENU_ACTION (open_url, _("_Open url"));
 
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), gtk_separator_menu_item_new ());
 
-    GtkAction *copy_action = gtk_action_new ("copy",
-                                             _("_Copy"),
-                                             NULL, /* tooltip */
-                                             NULL); /* stock_id */
-    GtkWidget *copy_menu_item = gtk_action_create_menu_item (copy_action);
-    g_signal_connect (G_OBJECT (copy_action),
-                      "activate",
-                      G_CALLBACK (do_copy),
-                      terminal);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), copy_menu_item);
-
-    GtkAction *paste_action = gtk_action_new ("paste",
-                                              _("_Paste"),
-                                              NULL, /* tooltip */
-                                              NULL); /* stock_id */
-    GtkWidget *paste_menu_item = gtk_action_create_menu_item (paste_action);
-    g_signal_connect (G_OBJECT (paste_action),
-                      "activate",
-                      G_CALLBACK (do_paste),
-                      terminal);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), paste_menu_item);
+    MENU_ACTION (copy,  _("_Copy"));
+    MENU_ACTION (paste, _("_Paste"));
 
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), gtk_separator_menu_item_new ());
 
-    GtkAction *zoom_action = gtk_action_new ("zoom",
-                                             _("_Zoom"),
-                                             NULL, /* tooltip */
-                                             NULL); /* stock_id */
-    GtkWidget *zoom_menu_item = gtk_action_create_menu_item (zoom_action);
-    g_signal_connect (G_OBJECT (zoom_action),
-                      "activate",
-                      G_CALLBACK (do_zoom),
-                      terminal);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), zoom_menu_item);
-
-    GtkAction *dezoom_action = gtk_action_new ("dezoom",
-                                               _("_Dezoom"),
-                                               NULL, /* tooltip */
-                                               NULL); /* stock_id */
-    GtkWidget *dezoom_menu_item = gtk_action_create_menu_item (dezoom_action);
-    g_signal_connect (G_OBJECT (dezoom_action),
-                      "activate",
-                      G_CALLBACK (do_dezoom),
-                      terminal);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), dezoom_menu_item);
-
-    GtkAction *reset_zoom_action = gtk_action_new ("reset-zoom",
-                                                   _("_Reset zoom"),
-                                                   NULL, /* tooltip */
-                                                   NULL); /* stock_id */
-    GtkWidget *reset_zoom_menu_item = gtk_action_create_menu_item (reset_zoom_action);
-    g_signal_connect (G_OBJECT (reset_zoom_action),
-                      "activate",
-                      G_CALLBACK (do_reset_zoom),
-                      terminal);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), reset_zoom_menu_item);
+    MENU_ACTION (zoom,       _("_Zoom"));
+    MENU_ACTION (dezoom,     _("_Dezoom"));
+    MENU_ACTION (reset_zoom, _("_Reset zoom"));
 
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), gtk_separator_menu_item_new ());
 
