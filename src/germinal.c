@@ -433,9 +433,10 @@ main(int   argc,
 
     SETTING (BACKGROUND_IMAGE, background_image);
     SETTING (FONT,             font);
-    SETTING (OPACITY,          opacity);
     SETTING (SCROLLBACK,       scrollback);
     SETTING (WORD_CHARS,       word_chars);
+
+    SETTING_FULL (OPACITY, opacity, window);
 
     /* Launch base command */
     gchar GERMINAL_STR_CLEANUP *cwd = g_get_current_dir ();
