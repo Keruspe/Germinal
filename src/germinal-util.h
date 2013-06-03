@@ -19,7 +19,6 @@
 
 #include <gtk/gtk.h>
 
-#define GERMINAL_UNUSED     __attribute__((unused))
 #define GERMINAL_CLEANUP(x) __attribute__((cleanup(x)))
 
 #define GERMINAL_ERROR_CLEANUP    GERMINAL_CLEANUP (cleanup_error)

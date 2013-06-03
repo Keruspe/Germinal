@@ -25,22 +25,22 @@
 #include "germinal-util.h"
 
 static void
-germinal_exit (GtkWidget *widget    GERMINAL_UNUSED,
-               gpointer   user_data GERMINAL_UNUSED)
+germinal_exit (GtkWidget *widget    G_GNUC_UNUSED,
+               gpointer   user_data G_GNUC_UNUSED)
 {
     gtk_main_quit ();
 }
 
 static gboolean
-do_copy (GtkWidget *widget    GERMINAL_UNUSED,
-         gpointer   user_data GERMINAL_UNUSED)
+do_copy (GtkWidget *widget    G_GNUC_UNUSED,
+         gpointer   user_data G_GNUC_UNUSED)
 {
     vte_terminal_copy_clipboard (VTE_TERMINAL (user_data));
     return TRUE;
 }
 
 static gboolean
-do_paste (GtkWidget *widget GERMINAL_UNUSED,
+do_paste (GtkWidget *widget G_GNUC_UNUSED,
           gpointer   user_data)
 {
     vte_terminal_paste_clipboard (VTE_TERMINAL (user_data));
@@ -95,7 +95,7 @@ open_url (gchar *url)
 }
 
 static gboolean
-do_copy_url (GtkWidget *widget GERMINAL_UNUSED,
+do_copy_url (GtkWidget *widget G_GNUC_UNUSED,
              gpointer   user_data)
 {
     gchar *url = get_url (VTE_TERMINAL (user_data), NULL);
@@ -109,7 +109,7 @@ do_copy_url (GtkWidget *widget GERMINAL_UNUSED,
 }
 
 static gboolean
-do_open_url (GtkWidget *widget GERMINAL_UNUSED,
+do_open_url (GtkWidget *widget G_GNUC_UNUSED,
              gpointer   user_data)
 {
     return open_url (get_url (VTE_TERMINAL (user_data), NULL));
@@ -146,7 +146,7 @@ update_font_size (VteTerminal  *terminal,
 }
 
 static gboolean
-do_zoom (GtkWidget *widget GERMINAL_UNUSED,
+do_zoom (GtkWidget *widget G_GNUC_UNUSED,
          gpointer   user_data)
 {
     update_font_size (VTE_TERMINAL (user_data), FONT_SIZE_DELTA_INC);
@@ -154,7 +154,7 @@ do_zoom (GtkWidget *widget GERMINAL_UNUSED,
 }
 
 static gboolean
-do_dezoom (GtkWidget *widget GERMINAL_UNUSED,
+do_dezoom (GtkWidget *widget G_GNUC_UNUSED,
            gpointer   user_data)
 {
     update_font_size (VTE_TERMINAL (user_data), FONT_SIZE_DELTA_DEC);
@@ -162,7 +162,7 @@ do_dezoom (GtkWidget *widget GERMINAL_UNUSED,
 }
 
 static gboolean
-do_reset_zoom (GtkWidget *widget GERMINAL_UNUSED,
+do_reset_zoom (GtkWidget *widget G_GNUC_UNUSED,
                gpointer   user_data)
 {
     update_font_size (VTE_TERMINAL (user_data), FONT_SIZE_DELTA_RESET);
