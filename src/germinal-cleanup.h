@@ -19,7 +19,11 @@
 
 #include "germinal-util.h"
 
-#define GERMINAL_REGEX_CLEANUP    GERMINAL_CLEANUP (cleanup_regex)
+#define GERMINAL_ERROR_CLEANUP    GERMINAL_CLEANUP (cleanup_error)
+#define GERMINAL_FONT_CLEANUP     GERMINAL_CLEANUP (cleanup_font)
+#define GERMINAL_SETTINGS_CLEANUP GERMINAL_CLEANUP (cleanup_settings)
+#define GERMINAL_STR_CLEANUP      GERMINAL_CLEANUP (cleanup_str)
+#define GERMINAL_STRV_CLEANUP     GERMINAL_CLEANUP (cleanup_strv)
 
 static void
 cleanup_error (GError **error)
