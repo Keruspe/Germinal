@@ -475,14 +475,6 @@ main(int   argc,
     MENU_ACTION (dezoom,     _("_Dezoom"));
     MENU_ACTION (reset_zoom, _("_Reset zoom"));
 
-    MENU_SEPARATOR;
-
-    GtkWidget *im_submenu = gtk_menu_new ();
-    vte_terminal_im_append_menuitems (VTE_TERMINAL (terminal), GTK_MENU_SHELL (im_submenu));
-    GtkWidget *im_menu_item = gtk_menu_item_new_with_mnemonic (_("Input _Methods"));
-    gtk_menu_item_set_submenu (GTK_MENU_ITEM (im_menu_item), im_submenu);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), im_menu_item);
-
     gtk_widget_show_all (menu);
 
     /* Bind signals */
