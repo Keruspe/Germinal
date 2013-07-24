@@ -57,16 +57,12 @@
     SETTING_SIGNAL_FULL (key, fn, obj)
 #define SETTING(key, fn) SETTING_FULL (key, fn, terminal)
 
-#define MENU_ACTION(name, label)                                               \
-    GtkAction* name##_action = gtk_action_new (#name,                          \
-                                               label,                          \
-                                               NULL, /* tooltip */             \
-                                               NULL); /* stock_id */           \
-    GtkWidget *name##_menu_item = gtk_action_create_menu_item (name##_action); \
-    g_signal_connect (G_OBJECT (name##_action),                                \
-                      "activate",                                              \
-                      G_CALLBACK (do_##name),                                  \
-                      terminal);                                               \
+#define MENU_ACTION(name, label)                                        \
+    GtkWidget *name##_menu_item = gtk_menu_item_new_with_label (label); \
+    g_signal_connect (G_OBJECT (name##_menu_item),                      \
+                      "activate",                                       \
+                      G_CALLBACK (do_##name),                           \
+                      terminal);                                        \
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), name##_menu_item)
 
 #define MENU_SEPARATOR \
