@@ -35,9 +35,12 @@ bin_PROGRAMS = germinal
 
 # Sources
 
+germinal_c_sources = \
+	src/germinal.c
+
 germinal_SOURCES = \
 	src/germinal-util.h \
-	src/germinal.c
+	$(germinal_c_sources)
 
 # CFLAGS
 
@@ -75,7 +78,7 @@ EXTRA_DIST = \
 	autogen.sh
 
 CLEANFILES = \
-	${germinal_SOURCES:.c=.o} \
+	${germinal_c_sources:.c=.o} \
 	$(applications_DATA) \
 	$(gsettings_SCHEMAS) \
 	gschemas.compiled
