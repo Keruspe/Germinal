@@ -1,6 +1,9 @@
 germinal
+test-regexp
 Makefile
 configure
 germinal.desktop
 *.xml
 *.xml.in
+*.log
+*.trs

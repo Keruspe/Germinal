@@ -18,11 +18,10 @@
  */
 
 #include "config.h"
+#include "germinal-cleanup.h"
 
 #include <glib/gi18n-lib.h>
 #include <vte/vte.h>
-
-#include "germinal-util.h"
 
 static void
 germinal_exit (GtkWidget *widget    G_GNUC_UNUSED,

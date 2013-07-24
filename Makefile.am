@@ -1,6 +1,6 @@
 # This file is part of Germinal.
 #
-# Copyright 2011 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
+# Copyright 2011-2013 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
 #
 # Germinal is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -39,8 +39,22 @@ germinal_c_sources = \
 	src/germinal.c
 
 germinal_SOURCES = \
+	src/germinal-cleanup.h \
 	src/germinal-util.h \
 	$(germinal_c_sources)
+
+# Tests
+
+TESTS = \
+	tests/test-regexp
+
+tests_test_regexp_SOURCES = \
+	tests/test-regexp.c
+
+tests_test_regexp_LDADD = \
+	$(GLIB_LIBS)
+
+noinst_PROGRAMS = $(TESTS)
 
 # CFLAGS
 
@@ -48,6 +62,7 @@ AM_CFLAGS = \
 	-Wall -Wextra -pedantic \
 	-O2 -march=native \
 	-DLOCALEDIR=\"${localedir}\" \
+	-I src/ \
 	$(GLIB_CFLAGS) \
 	$(GIO_CFLAGS) \
 	$(GTK_CFLAGS) \

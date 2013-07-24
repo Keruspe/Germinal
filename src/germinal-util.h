@@ -75,38 +75,7 @@
                       data)
 
 static void
-cleanup_error (GError **error)
-{
-    if (*error)
-        g_error_free (*error);
-}
-
-static void
-cleanup_font (PangoFontDescription **font)
-{
-    pango_font_description_free (*font);
-}
-
-static void
 cleanup_regex (GRegex **regex)
 {
     g_regex_unref (*regex);
-}
-
-static void
-cleanup_settings (GSettings **settings)
-{
-    g_object_unref (*settings);
-}
-
-static void
-cleanup_str (gchar **str)
-{
-    g_free (*str);
-}
-
-static void
-cleanup_strv (gchar ***strv)
-{
-    g_strfreev (*strv);
 }
