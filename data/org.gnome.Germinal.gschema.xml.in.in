@@ -74,15 +74,6 @@
       </_description>
     </key>
 
-    <key name="opacity" type="d">
-      <range min="0" max="1" />
-      <default>1</default>
-      <_summary>The opacity/transparency</_summary>
-      <_description>
-        0 is for fully transparent, 1 for fully opaque
-      </_description>
-    </key>
-
     <key name="term" type="s">
       <default>'xterm-256color'</default>
       <_summary>The value of the TERM env variable</_summary>

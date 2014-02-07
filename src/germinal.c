@@ -354,14 +354,6 @@ update_colors (GSettings   *settings,
     return NULL;
 }
 
-static void
-update_opacity (GSettings   *settings,
-                const gchar *key,
-                gpointer     user_data)
-{
-    gtk_widget_set_opacity (GTK_WIDGET (user_data), g_settings_get_double (settings, key));
-}
-
 int
 main(int   argc,
      char *argv[])
@@ -424,8 +416,6 @@ main(int   argc,
     SETTING (FONT,             font);
     SETTING (SCROLLBACK,       scrollback);
     SETTING (WORD_CHARS,       word_chars);
-
-    SETTING_FULL (OPACITY, opacity, window);
 
     /* PTY settings */
     GERMINAL_PTY_CLEANUP VtePty *pty = vte_terminal_pty_new (term, VTE_PTY_DEFAULT, NULL);

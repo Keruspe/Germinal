@@ -34,23 +34,20 @@
 #define BACKCOLOR_KEY        "backcolor"
 #define FONT_KEY             "font"
 #define FORECOLOR_KEY        "forecolor"
-#define OPACITY_KEY          "opacity"
 #define PALETTE_KEY          "palette"
 #define SCROLLBACK_KEY       "scrollback-lines"
 #define STARTUP_COMMAND_KEY  "startup-command"
 #define TERM_KEY             "term"
 #define WORD_CHARS_KEY       "word-chars"
 
-#define SETTING_SIGNAL_FULL(key, fn, obj)       \
+#define SETTING_SIGNAL(key, fn)                 \
     g_signal_connect (G_OBJECT (settings),      \
                       "changed::" key##_KEY,    \
                       G_CALLBACK (update_##fn), \
-                      obj)
-#define SETTING_SIGNAL(key, fn) SETTING_SIGNAL_FULL (key, fn, terminal)
-#define SETTING_FULL(key, fn, obj)          \
-    update_##fn (settings, key##_KEY, obj); \
-    SETTING_SIGNAL_FULL (key, fn, obj)
-#define SETTING(key, fn) SETTING_FULL (key, fn, terminal)
+                      terminal)
+#define SETTING(key, fn)                         \
+    update_##fn (settings, key##_KEY, terminal); \
+    SETTING_SIGNAL (key, fn)
 
 #define MENU_ACTION(name, label)                                        \
     GtkWidget *name##_menu_item = gtk_menu_item_new_with_label (label); \
