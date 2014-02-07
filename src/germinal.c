@@ -401,11 +401,12 @@ main(int   argc,
 
     /* Vte settings */
     GtkWidget *terminal = vte_terminal_new ();
-    vte_terminal_set_mouse_autohide (VTE_TERMINAL (terminal), TRUE);
-    vte_terminal_set_audible_bell (VTE_TERMINAL (terminal), FALSE);
-    vte_terminal_set_visible_bell (VTE_TERMINAL (terminal), FALSE);
-    vte_terminal_set_scroll_on_output (VTE_TERMINAL (terminal), FALSE);
-    vte_terminal_set_scroll_on_keystroke (VTE_TERMINAL (terminal), TRUE);
+    VteTerminal *term = VTE_TERMINAL (terminal);
+    vte_terminal_set_mouse_autohide      (term, TRUE);
+    vte_terminal_set_audible_bell        (term, FALSE);
+    vte_terminal_set_visible_bell        (term, FALSE);
+    vte_terminal_set_scroll_on_output    (term, FALSE);
+    vte_terminal_set_scroll_on_keystroke (term, TRUE);
 
     /* Fill window */
     gtk_container_add (GTK_CONTAINER (window), terminal);
@@ -417,7 +418,7 @@ main(int   argc,
                                                              G_REGEX_CASELESS | G_REGEX_OPTIMIZE,
                                                              G_REGEX_MATCH_NOTEMPTY,
                                                              NULL); /* error */
-    vte_terminal_match_add_gregex (VTE_TERMINAL (terminal),
+    vte_terminal_match_add_gregex (term,
                                    url_regexp,
                                    0);
 
@@ -437,9 +438,9 @@ main(int   argc,
     SETTING_FULL (OPACITY, opacity, window);
 
     /* PTY settings */
-    GERMINAL_PTY_CLEANUP VtePty *pty = vte_terminal_pty_new (VTE_TERMINAL (terminal), VTE_PTY_DEFAULT, NULL);
+    GERMINAL_PTY_CLEANUP VtePty *pty = vte_terminal_pty_new (term, VTE_PTY_DEFAULT, NULL);
     vte_pty_set_term (pty, get_setting (settings, TERM_KEY));
-    vte_terminal_set_pty_object (VTE_TERMINAL (terminal), pty);
+    vte_terminal_set_pty_object (term, pty);
 
     /* Launch base command */
     gchar GERMINAL_STR_CLEANUP *cwd = g_get_current_dir ();
@@ -459,7 +460,7 @@ main(int   argc,
                    pty,
                    &child_pid,
                    NULL); /* error */
-    vte_terminal_watch_child (VTE_TERMINAL (terminal), child_pid);
+    vte_terminal_watch_child (term, child_pid);
 
     /* Populate right click menu */
     GtkWidget *menu = gtk_menu_new ();
