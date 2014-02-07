@@ -19,8 +19,11 @@
 
 #include "germinal-util.h"
 
+#include <vte/vte.h>
+
 #define GERMINAL_ERROR_CLEANUP    GERMINAL_CLEANUP (cleanup_error)
 #define GERMINAL_FONT_CLEANUP     GERMINAL_CLEANUP (cleanup_font)
+#define GERMINAL_PTY_CLEANUP      GERMINAL_CLEANUP (cleanup_pty)
 #define GERMINAL_SETTINGS_CLEANUP GERMINAL_CLEANUP (cleanup_settings)
 #define GERMINAL_STR_CLEANUP      GERMINAL_CLEANUP (cleanup_str)
 #define GERMINAL_STRV_CLEANUP     GERMINAL_CLEANUP (cleanup_strv)
@@ -36,6 +39,12 @@ static void
 cleanup_font (PangoFontDescription **font)
 {
     pango_font_description_free (*font);
+}
+
+static void
+cleanup_pty (VtePty **pty)
+{
+    g_object_unref (*pty);
 }
 
 static void

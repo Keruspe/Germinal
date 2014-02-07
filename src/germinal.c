@@ -21,7 +21,6 @@
 #include "germinal-cleanup.h"
 
 #include <glib/gi18n-lib.h>
-#include <vte/vte.h>
 
 static void
 germinal_exit (GtkWidget *widget    G_GNUC_UNUSED,
@@ -409,10 +408,9 @@ main(int   argc,
     vte_terminal_set_scroll_on_keystroke (VTE_TERMINAL (terminal), TRUE);
 
     /* PTY settings */
-    VtePty *pty = vte_terminal_pty_new (VTE_TERMINAL (terminal), VTE_PTY_DEFAULT, NULL);
+    GERMINAL_PTY_CLEANUP VtePty *pty = vte_terminal_pty_new (VTE_TERMINAL (terminal), VTE_PTY_DEFAULT, NULL);
     vte_pty_set_term (pty, "xterm-256color");
     vte_terminal_set_pty_object (VTE_TERMINAL (terminal), pty);
-    g_object_unref (pty);
 
     /* Fill window */
     gtk_container_add (GTK_CONTAINER (window), terminal);
