@@ -91,5 +91,13 @@
       </_description>
     </key>
 
+    <key name="term" type="s">
+      <default>'xterm-256color'</default>
+      <_summary>The value of the TERM env variable</_summary>
+      <_description>
+        By default, vte uses xterm, we use xterm-256color
+      </_description>
+    </key>
+
   </schema>
 </schemalist>

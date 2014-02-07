@@ -407,11 +407,6 @@ main(int   argc,
     vte_terminal_set_scroll_on_output (VTE_TERMINAL (terminal), FALSE);
     vte_terminal_set_scroll_on_keystroke (VTE_TERMINAL (terminal), TRUE);
 
-    /* PTY settings */
-    GERMINAL_PTY_CLEANUP VtePty *pty = vte_terminal_pty_new (VTE_TERMINAL (terminal), VTE_PTY_DEFAULT, NULL);
-    vte_pty_set_term (pty, "xterm-256color");
-    vte_terminal_set_pty_object (VTE_TERMINAL (terminal), pty);
-
     /* Fill window */
     gtk_container_add (GTK_CONTAINER (window), terminal);
     gtk_widget_grab_focus (terminal);
@@ -440,6 +435,11 @@ main(int   argc,
     SETTING (WORD_CHARS,       word_chars);
 
     SETTING_FULL (OPACITY, opacity, window);
+
+    /* PTY settings */
+    GERMINAL_PTY_CLEANUP VtePty *pty = vte_terminal_pty_new (VTE_TERMINAL (terminal), VTE_PTY_DEFAULT, NULL);
+    vte_pty_set_term (pty, get_setting (settings, TERM_KEY));
+    vte_terminal_set_pty_object (VTE_TERMINAL (terminal), pty);
 
     /* Launch base command */
     gchar GERMINAL_STR_CLEANUP *cwd = g_get_current_dir ();

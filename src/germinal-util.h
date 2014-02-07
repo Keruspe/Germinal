@@ -39,6 +39,7 @@
 #define PALETTE_KEY          "palette"
 #define SCROLLBACK_KEY       "scrollback-lines"
 #define STARTUP_COMMAND_KEY  "startup-command"
+#define TERM_KEY             "term"
 #define WORD_CHARS_KEY       "word-chars"
 
 #define SETTING_SIGNAL_FULL(key, fn, obj)       \
