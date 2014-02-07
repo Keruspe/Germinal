@@ -355,21 +355,12 @@ update_colors (GSettings   *settings,
 }
 
 static void
-update_background_image (GSettings   *settings,
-                         const gchar *key,
-                         gpointer     user_data)
-{
-    gchar GERMINAL_STR_CLEANUP *setting = get_setting (settings, key);
-    vte_terminal_set_background_image_file (VTE_TERMINAL (user_data), setting);
-}
-static void
 update_opacity (GSettings   *settings,
                 const gchar *key,
                 gpointer     user_data)
 {
     gtk_widget_set_opacity (GTK_WIDGET (user_data), g_settings_get_double (settings, key));
 }
-
 
 int
 main(int   argc,
@@ -430,7 +421,6 @@ main(int   argc,
     SETTING_SIGNAL (FORECOLOR, colors);
     SETTING_SIGNAL (PALETTE,   colors);
 
-    SETTING (BACKGROUND_IMAGE, background_image);
     SETTING (FONT,             font);
     SETTING (SCROLLBACK,       scrollback);
     SETTING (WORD_CHARS,       word_chars);

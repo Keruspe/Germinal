@@ -74,14 +74,6 @@
       </_description>
     </key>
 
-    <key name="background-image" type="s">
-      <default>''</default>
-      <_summary>The background image</_summary>
-      <_description>
-        The background image
-      </_description>
-    </key>
-
     <key name="opacity" type="d">
       <range min="0" max="1" />
       <default>1</default>

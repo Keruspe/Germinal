@@ -32,7 +32,6 @@
 #define URL_REGEXP         CHARACTER "+://(" QUOTED_TEXT "|" PAREN_TEXT "|" SQUARE_BRACED_TEXT "|" DUMB_USERS_TEXT "|" STRAIGHT_TEXT_ONLY ")+"
 
 #define BACKCOLOR_KEY        "backcolor"
-#define BACKGROUND_IMAGE_KEY "background-image"
 #define FONT_KEY             "font"
 #define FORECOLOR_KEY        "forecolor"
 #define OPACITY_KEY          "opacity"
