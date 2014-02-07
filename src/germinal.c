@@ -408,6 +408,12 @@ main(int   argc,
     vte_terminal_set_scroll_on_output (VTE_TERMINAL (terminal), FALSE);
     vte_terminal_set_scroll_on_keystroke (VTE_TERMINAL (terminal), TRUE);
 
+    /* PTY settings */
+    VtePty *pty = vte_terminal_pty_new (VTE_TERMINAL (terminal), VTE_PTY_DEFAULT, NULL);
+    vte_pty_set_term (pty, "xterm-256color");
+    vte_terminal_set_pty_object (VTE_TERMINAL (terminal), pty);
+    g_object_unref (pty);
+
     /* Fill window */
     gtk_container_add (GTK_CONTAINER (window), terminal);
     gtk_widget_grab_focus (terminal);
@@ -439,23 +445,23 @@ main(int   argc,
 
     /* Launch base command */
     gchar GERMINAL_STR_CLEANUP *cwd = g_get_current_dir ();
-    
+
     if (G_LIKELY (command == NULL))
     {
         gchar GERMINAL_STR_CLEANUP *setting = get_setting (settings, STARTUP_COMMAND_KEY);
         command = g_strsplit (setting , " ", 0);
     }
 
-    vte_terminal_fork_command_full (VTE_TERMINAL (terminal),
-                                    VTE_PTY_DEFAULT,
-                                    cwd,
-                                    command,
-                                    NULL, /* env */
-                                    G_SPAWN_SEARCH_PATH,
-                                    NULL, /* child setup */
-                                    NULL, /* child setup data */
-                                    NULL, /* child pid */
-                                    NULL); /* error */
+    GPid child_pid;
+    g_spawn_async (cwd,
+                   command,
+                   NULL, /* env */
+                   G_SPAWN_DO_NOT_REAP_CHILD | G_SPAWN_SEARCH_PATH,
+                   (GSpawnChildSetupFunc)vte_pty_child_setup,
+                   pty,
+                   &child_pid,
+                   NULL); /* error */
+    vte_terminal_watch_child (VTE_TERMINAL (terminal), child_pid);
 
     /* Populate right click menu */
     GtkWidget *menu = gtk_menu_new ();
