@@ -34,6 +34,7 @@ main (G_GNUC_UNUSED gint argc,
 {
     const gchar *expect_failure[] = {
         "foobar",
+        "82:/foo",
         NULL
     };
 
@@ -43,7 +44,8 @@ main (G_GNUC_UNUSED gint argc,
     };
 
     const gchar *expect_subpart[][2] = {
-        { "Google <http://google.com/>", "http://google.com/" },
+        { "Google <http://google.com/>",    "http://google.com/"       },
+        { "foo:http://foo.bar:1234/[42] .", "http://foo.bar:1234/[42]" },
         { NULL }
     };
 
