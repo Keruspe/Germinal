@@ -408,10 +408,6 @@ main(int   argc,
     SETTING (FONT,       font);
     SETTING (SCROLLBACK, scrollback);
 
-    /* PTY settings */
-    GERMINAL_PTY_CLEANUP VtePty *pty = vte_terminal_pty_new_sync (term, VTE_PTY_DEFAULT, NULL, NULL);
-    vte_terminal_set_pty (term, pty);
-
     /* Launch base command */
     gchar GERMINAL_STR_CLEANUP *cwd = g_get_current_dir ();
 
@@ -421,19 +417,21 @@ main(int   argc,
         command = g_strsplit (setting , " ", 0);
     }
 
-    gchar GERMINAL_STRV_CLEANUP **envp = g_get_environ ();
-    envp = g_environ_setenv (envp, "TERM", get_setting (settings, TERM_KEY), TRUE);
+    /* Override TERM */
+    gchar GERMINAL_STRV_CLEANUP **envp = g_environ_setenv (NULL, "TERM", get_setting (settings, TERM_KEY), TRUE);
 
-    GPid child_pid;
-    g_spawn_async (cwd,
-                   command,
-                   envp,
-                   G_SPAWN_DO_NOT_REAP_CHILD | G_SPAWN_SEARCH_PATH,
-                   (GSpawnChildSetupFunc)vte_pty_child_setup,
-                   pty,
-                   &child_pid,
-                   NULL); /* error */
-    vte_terminal_watch_child (term, child_pid);
+    /* Spawn our command */
+    vte_terminal_spawn_sync (term,
+                             VTE_PTY_DEFAULT,
+                             cwd,
+                             command,
+                             envp,
+                             G_SPAWN_SEARCH_PATH,
+                             NULL, /* child_setup */
+                             NULL, /* child_setup_data */
+                             NULL, /* child_pid */
+                             NULL, /* cancellable */
+                             NULL); /* error */
 
     /* Populate right click menu */
     GtkWidget *menu = gtk_menu_new ();
