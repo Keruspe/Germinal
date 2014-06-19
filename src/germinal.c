@@ -410,8 +410,6 @@ main(int   argc,
 
     /* PTY settings */
     GERMINAL_PTY_CLEANUP VtePty *pty = vte_terminal_pty_new_sync (term, VTE_PTY_DEFAULT, NULL, NULL);
-    // FIXME
-    //vte_pty_set_term (pty, get_setting (settings, TERM_KEY));
     vte_terminal_set_pty (term, pty);
 
     /* Launch base command */
@@ -423,10 +421,13 @@ main(int   argc,
         command = g_strsplit (setting , " ", 0);
     }
 
+    gchar GERMINAL_STRV_CLEANUP **envp = g_get_environ ();
+    envp = g_environ_setenv (envp, "TERM", get_setting (settings, TERM_KEY), TRUE);
+
     GPid child_pid;
     g_spawn_async (cwd,
                    command,
-                   NULL, /* env */
+                   envp,
                    G_SPAWN_DO_NOT_REAP_CHILD | G_SPAWN_SEARCH_PATH,
                    (GSpawnChildSetupFunc)vte_pty_child_setup,
                    pty,
