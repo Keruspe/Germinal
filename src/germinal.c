@@ -296,7 +296,8 @@ update_word_chars (GSettings   *settings,
                    gpointer     user_data)
 {
     gchar GERMINAL_STR_CLEANUP *setting = get_setting (settings, key);
-    vte_terminal_set_word_chars (VTE_TERMINAL (user_data), setting);
+    // FIXME
+    //vte_terminal_set_word_chars (VTE_TERMINAL (user_data), setting);
 }
 
 static void
@@ -305,7 +306,8 @@ update_font (GSettings   *settings,
              gpointer     user_data)
 {
     gchar GERMINAL_STR_CLEANUP *setting = get_setting (settings, key);
-    vte_terminal_set_font_from_string (VTE_TERMINAL (user_data), setting);
+    PangoFontDescription GERMINAL_FONT_CLEANUP *font = pango_font_description_from_string (setting);
+    vte_terminal_set_font (VTE_TERMINAL (user_data), font);
     update_font_size (VTE_TERMINAL (user_data), FONT_SIZE_DELTA_SET_DEFAULT);
 }
 
@@ -418,9 +420,10 @@ main(int   argc,
     SETTING (WORD_CHARS,       word_chars);
 
     /* PTY settings */
-    GERMINAL_PTY_CLEANUP VtePty *pty = vte_terminal_pty_new (term, VTE_PTY_DEFAULT, NULL);
-    vte_pty_set_term (pty, get_setting (settings, TERM_KEY));
-    vte_terminal_set_pty_object (term, pty);
+    GERMINAL_PTY_CLEANUP VtePty *pty = vte_terminal_pty_new_sync (term, VTE_PTY_DEFAULT, NULL, NULL);
+    // FIXME
+    //vte_pty_set_term (pty, get_setting (settings, TERM_KEY));
+    vte_terminal_set_pty (term, pty);
 
     /* Launch base command */
     gchar GERMINAL_STR_CLEANUP *cwd = g_get_current_dir ();
