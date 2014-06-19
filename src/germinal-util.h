@@ -38,7 +38,6 @@
 #define SCROLLBACK_KEY       "scrollback-lines"
 #define STARTUP_COMMAND_KEY  "startup-command"
 #define TERM_KEY             "term"
-#define WORD_CHARS_KEY       "word-chars"
 
 #define SETTING_SIGNAL(key, fn)                 \
     g_signal_connect (G_OBJECT (settings),      \

@@ -9,14 +9,6 @@
       </_description>
     </key>
 
-    <key name="word-chars" type="s">
-      <default>'.:a-zA-Z0-9@/_#-'</default>
-      <_summary>Chars considered as part of a word when selecting with a double clic</_summary>
-      <_description>
-        Chars considered as part of a word when selecting with a double clic
-      </_description>
-    </key>
-
     <key name="font" type="s">
       <default>'DejaVu Sans Mono 8.5'</default>
       <_summary>The font to use</_summary>
