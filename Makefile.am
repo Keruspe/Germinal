@@ -67,6 +67,7 @@ AM_CFLAGS = \
 	$(GIO_CFLAGS) \
 	$(GTK_CFLAGS) \
 	$(GDK_CFLAGS) \
+	$(PANGO_CFLAGS) \
 	$(VTE_CFLAGS)
 
 # LDADD
