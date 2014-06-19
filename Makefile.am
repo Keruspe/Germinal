@@ -1,6 +1,6 @@
 # This file is part of Germinal.
 #
-# Copyright 2011-2013 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
+# Copyright 2011-2014 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
 #
 # Germinal is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ AM_CFLAGS = \
 	-Wall -Wextra -pedantic \
 	-O2 -march=native \
 	-DLOCALEDIR=\"${localedir}\" \
-	-I src/ \
+	-I $(srcdir)/src/ \
 	$(GLIB_CFLAGS) \
 	$(GIO_CFLAGS) \
 	$(GTK_CFLAGS) \

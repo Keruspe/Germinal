@@ -1,3 +1,15 @@
+NEW in 6 (19/06/2014)
+=============
+
+- The color palette is now configurable
+- The content of the TERM variable is now configurable
+
+NEW in 5 (09/05/2012)
+=============
+
+- Improved URL recognition
+- The startup command is now overridable
+
 NEW in 4 (27/02/2012)
 =============
 

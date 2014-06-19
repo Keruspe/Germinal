@@ -1,6 +1,6 @@
 # This file is part of Germinal.
 #
-# Copyright 2011 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
+# Copyright 2011-2014 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
 #
 # Germinal is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 # along with Germinal.  If not, see <http://www.gnu.org/licenses/>.
 
 AC_PREREQ([2.68])
-AC_INIT([Germinal],[5],[Marc-Antoine@Perennou.com])
+AC_INIT([Germinal],[6],[Marc-Antoine@Perennou.com])
 
 AC_SUBST([PACKAGE_NAME], ["$PACKAGE_NAME"])
 AC_SUBST([PACKAGE_VERSION], ["$PACKAGE_VERSION"])
