@@ -1,7 +1,7 @@
 /*
  * This file is part of Germinal.
  *
- * Copyright 2011-2013 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
+ * Copyright 2011-2014 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
  *
  * Germinal is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -253,14 +253,14 @@ get_setting (GSettings   *settings,
     return (name) ? g_settings_get_string (settings, name) : NULL;
 }
 
-static GdkColor *
+static GdkRGBA *
 get_palette (GSettings   *settings,
              const gchar *name,
              gsize *palette_size)
 {
     gchar GERMINAL_STRV_CLEANUP **colors = NULL;
     guint size, i;
-    GdkColor *palette;
+    GdkRGBA *palette;
 
     colors = g_settings_get_strv (settings, name);
     size = g_strv_length (colors);
@@ -274,9 +274,9 @@ get_palette (GSettings   *settings,
         return get_palette (settings, name, palette_size);
     }
 
-    palette = g_new(GdkColor, size);
+    palette = g_new(GdkRGBA, size);
     for (i = 0 ; i < size ; ++i)
-        gdk_color_parse(colors[i], &palette[i]);
+        gdk_rgba_parse (&palette[i], colors[i]);
 
     *palette_size = size;
     return palette;
@@ -309,13 +309,13 @@ update_font (GSettings   *settings,
     update_font_size (VTE_TERMINAL (user_data), FONT_SIZE_DELTA_SET_DEFAULT);
 }
 
-static GdkColor *
+static GdkRGBA *
 update_colors (GSettings   *settings,
                const gchar *key, /* NULL for initialization */
                gpointer     user_data) /* NULL to get the palette */
 {
-    static GdkColor forecolor, backcolor;
-    static GdkColor *palette = NULL;
+    static GdkRGBA forecolor, backcolor;
+    static GdkRGBA *palette = NULL;
     static gsize palette_size;
 
     if (!user_data)
@@ -324,20 +324,20 @@ update_colors (GSettings   *settings,
     if (key == NULL)
     {
         gchar GERMINAL_STR_CLEANUP *backcolor_str = get_setting (settings, BACKCOLOR_KEY);
-        gdk_color_parse (backcolor_str, &backcolor);
+        gdk_rgba_parse (&backcolor, backcolor_str);
         gchar GERMINAL_STR_CLEANUP *forecolor_str = get_setting (settings, FORECOLOR_KEY);
-        gdk_color_parse (forecolor_str, &forecolor);
+        gdk_rgba_parse (&forecolor, forecolor_str);
         palette = get_palette(settings, PALETTE_KEY, &palette_size);
     }
     else if (strcmp (key, BACKCOLOR_KEY) == 0)
     {
         gchar GERMINAL_STR_CLEANUP *backcolor_str = get_setting (settings, BACKCOLOR_KEY);
-        gdk_color_parse (backcolor_str, &backcolor);
+        gdk_rgba_parse (&backcolor, backcolor_str);
     }
     else if (strcmp (key, FORECOLOR_KEY) == 0)
     {
         gchar GERMINAL_STR_CLEANUP *forecolor_str = get_setting (settings, FORECOLOR_KEY);
-        gdk_color_parse (forecolor_str, &forecolor);
+        gdk_rgba_parse (&forecolor, forecolor_str);
     }
     else if (strcmp (key, PALETTE_KEY) == 0)
     {
