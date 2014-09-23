@@ -379,7 +379,6 @@ main(int   argc,
     VteTerminal *term = VTE_TERMINAL (terminal);
     vte_terminal_set_mouse_autohide      (term, TRUE);
     vte_terminal_set_audible_bell        (term, FALSE);
-    vte_terminal_set_visible_bell        (term, FALSE);
     vte_terminal_set_scroll_on_output    (term, FALSE);
     vte_terminal_set_scroll_on_keystroke (term, TRUE);
 
