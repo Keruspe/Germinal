@@ -9,10 +9,13 @@ By default, germinal launches tmux, but you can specify a custom command by addi
 need for quoting, example: "germinal su - -c rm -rf /tmp/*" will execute "su - -c rm -rf /tmp/*" instead of tmux).
 
 To build it, go into the Germinal directory
+
+```
 ./autogen.sh
 ./configure --prefix=/usr --sysconfdir=/etc
 make
 sudo make install
+```
 
 You can see more information [here](http://www.imagination-land.org/posts/2015-01-31-germinal-7-released.html).
 
