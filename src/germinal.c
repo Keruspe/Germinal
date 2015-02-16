@@ -291,6 +291,16 @@ update_scrollback (GSettings   *settings,
 }
 
 static void
+update_word_chars (GSettings   *settings,
+                   const gchar *key,
+                   gpointer     user_data)
+{
+    gchar GERMINAL_STR_CLEANUP *setting = get_setting (settings, key);
+    // FIXME
+    //vte_terminal_set_word_chars (VTE_TERMINAL (user_data), setting);
+}
+
+static void
 update_font (GSettings   *settings,
              const gchar *key,
              gpointer     user_data)
@@ -404,8 +414,9 @@ main(int   argc,
     SETTING_SIGNAL (FORECOLOR, colors);
     SETTING_SIGNAL (PALETTE,   colors);
 
-    SETTING (FONT,       font);
-    SETTING (SCROLLBACK, scrollback);
+    SETTING (FONT,             font);
+    SETTING (SCROLLBACK,       scrollback);
+    SETTING (WORD_CHARS,       word_chars);
 
     /* Launch base command */
     gchar GERMINAL_STR_CLEANUP *cwd = g_get_current_dir ();
