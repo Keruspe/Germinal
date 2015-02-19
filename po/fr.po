@@ -21,39 +21,39 @@ msgstr ""
 msgid "Couldn't exec"
 msgstr "Impossible d'exécuter"
 
-#: ../src/germinal.c:369
+#: ../src/germinal.c:379
 msgid "the command to launch"
 msgstr "la commande à lancer"
 
-#: ../src/germinal.c:379
+#: ../src/germinal.c:389
 msgid " - minimalist vte-based terminal emulator"
 msgstr " - émulateur de terminal minimaliste basé sur vte"
 
-#: ../src/germinal.c:458
+#: ../src/germinal.c:469
 msgid "Copy url"
 msgstr "Copier la cible du lien"
 
-#: ../src/germinal.c:459
+#: ../src/germinal.c:470
 msgid "Open url"
 msgstr "Suivre le lien"
 
-#: ../src/germinal.c:463
+#: ../src/germinal.c:474
 msgid "Copy"
 msgstr "Copier"
 
-#: ../src/germinal.c:464
+#: ../src/germinal.c:475
 msgid "Paste"
 msgstr "Coller"
 
-#: ../src/germinal.c:468
+#: ../src/germinal.c:479
 msgid "Zoom"
 msgstr "Zoomer"
 
-#: ../src/germinal.c:469
+#: ../src/germinal.c:480
 msgid "Dezoom"
 msgstr "Dézoomzer"
 
-#: ../src/germinal.c:470
+#: ../src/germinal.c:481
 msgid "Reset zoom"
 msgstr "Restaurer zoom"
 
@@ -66,33 +66,41 @@ msgid "Number of lines to keep in the buffer"
 msgstr "Nombre de lignes à garder dans le tampon"
 
 #: ../data/org.gnome.Germinal.gschema.xml.in.in.h:2
+msgid ""
+"List of ASCII punctuation characters that are not to be treated as part of a "
+"word when doing word-wise selection"
+msgstr ""
+"Liste des caractères de ponctuation ASCII qui ne doivent pas être considérés "
+"comme faisant partie d'un mot quand on le selectionne"
+
+#: ../data/org.gnome.Germinal.gschema.xml.in.in.h:3
 msgid "The font to use"
 msgstr "La police à utiliser"
 
-#: ../data/org.gnome.Germinal.gschema.xml.in.in.h:3
+#: ../data/org.gnome.Germinal.gschema.xml.in.in.h:4
 msgid "The foreground color"
 msgstr "La couleur de premier plan"
 
-#: ../data/org.gnome.Germinal.gschema.xml.in.in.h:4
+#: ../data/org.gnome.Germinal.gschema.xml.in.in.h:5
 msgid "The background color"
 msgstr "La couleur de fond"
 
-#: ../data/org.gnome.Germinal.gschema.xml.in.in.h:5
+#: ../data/org.gnome.Germinal.gschema.xml.in.in.h:6
 msgid "The color palette"
 msgstr "La palette de couleurs"
 
-#: ../data/org.gnome.Germinal.gschema.xml.in.in.h:6
+#: ../data/org.gnome.Germinal.gschema.xml.in.in.h:7
 msgid "Command to launch at startup"
 msgstr "Commande à lancer au démarrage"
 
-#: ../data/org.gnome.Germinal.gschema.xml.in.in.h:7
+#: ../data/org.gnome.Germinal.gschema.xml.in.in.h:8
 msgid "If none is specified, tmux will be used"
 msgstr "Si aucune n'est spécifiée, tmux sera utilisé"
 
-#: ../data/org.gnome.Germinal.gschema.xml.in.in.h:8
+#: ../data/org.gnome.Germinal.gschema.xml.in.in.h:9
 msgid "The value of the TERM env variable"
 msgstr "La valeur de la variable d'environnement TERM"
 
-#: ../data/org.gnome.Germinal.gschema.xml.in.in.h:9
+#: ../data/org.gnome.Germinal.gschema.xml.in.in.h:10
 msgid "By default, vte uses xterm, we use xterm-256color"
 msgstr "Par défaut, vte utilise xterm et nous utilisons xterm-256color"
