@@ -97,7 +97,7 @@ open_url (gchar *url)
                         NULL, /* child setup data */
                         NULL, /* child pid */
                         &error))
-        fprintf (stderr, _("Couldn't exec \"%s %s\": %s"), browser, url, error->message);
+        g_warning ("%s \"%s %s\": %s", _("Couldn't exec"), browser, url, error->message);
 
     return TRUE;
 }
@@ -391,7 +391,7 @@ main(int   argc,
                              GETTEXT_PACKAGE,
                              &error))
     {
-        fprintf (stderr, "Error: %s", error->message);
+        g_critical ("%s", error->message);
         return 1;
     }
 
@@ -459,26 +459,26 @@ main(int   argc,
                                   NULL, /* cancellable */
                                   &error))
     {
-        fprintf (stderr, "Error: %s", error->message);
+        g_critical ("%s", error->message);
         return 1;
     }
 
     /* Populate right click menu */
     GtkWidget *menu = gtk_menu_new ();
 
-    MENU_ACTION (copy_url, _("Copy _url"));
-    MENU_ACTION (open_url, _("_Open url"));
+    MENU_ACTION (copy_url, _("Copy url"));
+    MENU_ACTION (open_url, _("Open url"));
 
     MENU_SEPARATOR;
 
-    MENU_ACTION (copy,  _("_Copy"));
-    MENU_ACTION (paste, _("_Paste"));
+    MENU_ACTION (copy,  _("Copy"));
+    MENU_ACTION (paste, _("Paste"));
 
     MENU_SEPARATOR;
 
-    MENU_ACTION (zoom,       _("_Zoom"));
-    MENU_ACTION (dezoom,     _("_Dezoom"));
-    MENU_ACTION (reset_zoom, _("_Reset zoom"));
+    MENU_ACTION (zoom,       _("Zoom"));
+    MENU_ACTION (dezoom,     _("Dezoom"));
+    MENU_ACTION (reset_zoom, _("Reset zoom"));
 
     gtk_widget_show_all (menu);
 
