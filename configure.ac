@@ -16,7 +16,7 @@
 # along with Germinal.  If not, see <http://www.gnu.org/licenses/>.
 
 AC_PREREQ([2.68])
-AC_INIT([Germinal],[7],[Marc-Antoine@Perennou.com])
+AC_INIT([Germinal],[8],[Marc-Antoine@Perennou.com])
 
 AC_SUBST([PACKAGE_NAME], ["$PACKAGE_NAME"])
 AC_SUBST([PACKAGE_VERSION], ["$PACKAGE_VERSION"])
