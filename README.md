@@ -17,6 +17,6 @@ make
 sudo make install
 ```
 
-You can see more information [here](http://www.imagination-land.org/posts/2015-01-31-germinal-7-released.html).
+You can see more information [here](http://www.imagination-land.org/posts/2015-02-19-germinal-8-released.html).
 
-Latest release tarball available [here](http://www.imagination-land.org/files/germinal/germinal-7.tar.xz).
+Latest release tarball available [here](http://www.imagination-land.org/files/germinal/germinal-8.tar.xz).
