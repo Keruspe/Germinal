@@ -360,6 +360,8 @@ int
 main(int   argc,
      char *argv[])
 {
+    GError GERMINAL_ERROR_CLEANUP *error = NULL;
+
     /* Options */
     gchar GERMINAL_STRV_CLEANUP **command = NULL;
     GOptionEntry options[] =
@@ -372,12 +374,16 @@ main(int   argc,
     textdomain(GETTEXT_PACKAGE);
     bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
     bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-    gtk_init_with_args (&argc,
-                        &argv,
-                        N_(" - minimalist vte-based terminal emulator"),
-                        options,
-                        GETTEXT_PACKAGE,
-                        NULL); /* error */
+    if (!gtk_init_with_args (&argc,
+                             &argv,
+                             N_(" - minimalist vte-based terminal emulator"),
+                             options,
+                             GETTEXT_PACKAGE,
+                             &error))
+    {
+        fprintf (stderr, "Error: %s", error->message);
+        return 1;
+    }
 
     /* Window settings */
     GtkWidget *window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -430,17 +436,21 @@ main(int   argc,
     gchar GERMINAL_STRV_CLEANUP **envp = g_environ_setenv (NULL, "TERM", get_setting (settings, TERM_KEY), TRUE);
 
     /* Spawn our command */
-    vte_terminal_spawn_sync (term,
-                             VTE_PTY_DEFAULT,
-                             cwd,
-                             command,
-                             envp,
-                             G_SPAWN_SEARCH_PATH,
-                             NULL, /* child_setup */
-                             NULL, /* child_setup_data */
-                             NULL, /* child_pid */
-                             NULL, /* cancellable */
-                             NULL); /* error */
+    if (!vte_terminal_spawn_sync (term,
+                                  VTE_PTY_DEFAULT,
+                                  cwd,
+                                  command,
+                                  envp,
+                                  G_SPAWN_SEARCH_PATH,
+                                  NULL, /* child_setup */
+                                  NULL, /* child_setup_data */
+                                  NULL, /* child_pid */
+                                  NULL, /* cancellable */
+                                  &error))
+    {
+        fprintf (stderr, "Error: %s", error->message);
+        return 1;
+    }
 
     /* Populate right click menu */
     GtkWidget *menu = gtk_menu_new ();
