@@ -97,7 +97,7 @@ open_url (gchar *url)
                         NULL, /* child setup data */
                         NULL, /* child pid */
                         &error))
-        fprintf (stderr, _("Couldn't exec \"%s %s\": %s"), browser, url, error->message);
+        g_warning (_("Couldn't exec \"%s %s\": %s"), browser, url, error->message);
 
     return TRUE;
 }
@@ -381,7 +381,7 @@ main(int   argc,
                              GETTEXT_PACKAGE,
                              &error))
     {
-        fprintf (stderr, "Error: %s", error->message);
+        g_critical ("%s", error->message);
         return 1;
     }
 
@@ -448,7 +448,7 @@ main(int   argc,
                                   NULL, /* cancellable */
                                   &error))
     {
-        fprintf (stderr, "Error: %s", error->message);
+        g_critical ("%s", error->message);
         return 1;
     }
 
