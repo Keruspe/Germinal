@@ -6,7 +6,7 @@ You also need to add "new-session" at the end of your .tmux.conf so that tmux at
 
 To configure it, open dconf-editor and go into /org/gnome/Germinal
 By default, germinal launches tmux, but you can specify a custom command by adding extra args to the commandline (no
-need for quoting, example: "germinal su - -c rm -rf /tmp/*" will execute "su - -c rm -rf /tmp/*" instead of tmux).
+need for quoting, example: "germinal /bin/bash -l" will execute "/bin/bash -l" instead of tmux).
 
 To build it, go into the Germinal directory
 
