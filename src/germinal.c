@@ -29,6 +29,16 @@ germinal_exit (GtkWidget *widget    G_GNUC_UNUSED,
     gtk_main_quit ();
 }
 
+static void
+on_child_exited (VteTerminal *vteterminal,
+                 gint         status,
+                 gpointer     user_data)
+{
+    if (status)
+        g_critical ("child exited with code %d. Did you add 'new-session' to your '~/.tmux.conf'?");
+    germinal_exit (GTK_WIDGET (vteterminal), user_data);
+}
+
 static gboolean
 do_copy (GtkWidget *widget    G_GNUC_UNUSED,
          gpointer   user_data G_GNUC_UNUSED)
@@ -464,7 +474,7 @@ main(int   argc,
 
     /* Bind signals */
     CONNECT_SIGNAL (terminal, "button-press-event", on_button_press, menu);
-    CONNECT_SIGNAL (terminal, "child-exited",       germinal_exit,   NULL);
+    CONNECT_SIGNAL (terminal, "child-exited",       on_child_exited, NULL);
     CONNECT_SIGNAL (window,   "destroy",            germinal_exit,   NULL);
     CONNECT_SIGNAL (window,   "key-press-event",    on_key_press,    terminal);
 
