@@ -395,10 +395,7 @@ main(int   argc,
         return 1;
     }
 
-    /* Window settings */
     GtkWidget *window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-    gtk_window_maximize (GTK_WINDOW (window));
-    gtk_window_set_decorated (GTK_WINDOW (window), FALSE);
 
     /* Vte settings */
     GtkWidget *terminal = vte_terminal_new ();
@@ -412,6 +409,10 @@ main(int   argc,
     gtk_container_add (GTK_CONTAINER (window), terminal);
     gtk_widget_grab_focus (terminal);
     gtk_widget_show_all (window);
+
+    /* Window settings */
+    gtk_window_set_decorated (GTK_WINDOW (window), FALSE);
+    gtk_window_maximize (GTK_WINDOW (window));
 
     /* Url matching stuff */
     GRegex GERMINAL_REGEX_CLEANUP *url_regexp = g_regex_new (URL_REGEXP,
