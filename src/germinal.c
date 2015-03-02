@@ -35,7 +35,7 @@ on_child_exited (VteTerminal *vteterminal,
                  gpointer     user_data)
 {
     if (status)
-        g_critical ("child exited with code %d. Did you add 'new-session' to your '~/.tmux.conf'?");
+        g_critical ("child exited with code %d. Did you add 'new-session' to your '~/.tmux.conf'?", status);
     germinal_exit (GTK_WIDGET (vteterminal), user_data);
 }
 
