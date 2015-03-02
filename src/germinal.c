@@ -426,10 +426,10 @@ main(int   argc,
     /* Apply user settings */
     GSettings GERMINAL_SETTINGS_CLEANUP *settings = g_settings_new ("org.gnome.Germinal");
 
-    update_colors (settings, NULL, terminal);
     SETTING_SIGNAL (BACKCOLOR, colors);
     SETTING_SIGNAL (FORECOLOR, colors);
     SETTING_SIGNAL (PALETTE,   colors);
+    update_colors (settings, NULL, terminal);
 
     SETTING (FONT,                 font);
     SETTING (SCROLLBACK,           scrollback);

@@ -45,9 +45,9 @@
                       "changed::" key##_KEY,    \
                       G_CALLBACK (update_##fn), \
                       terminal)
-#define SETTING(key, fn)                         \
-    update_##fn (settings, key##_KEY, terminal); \
-    SETTING_SIGNAL (key, fn)
+#define SETTING(key, fn)     \
+    SETTING_SIGNAL (key, fn); \
+    update_##fn (settings, key##_KEY, terminal)
 
 #define MENU_ACTION(name, label)                                        \
     GtkWidget *name##_menu_item = gtk_menu_item_new_with_label (label); \
