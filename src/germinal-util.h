@@ -19,10 +19,6 @@
 
 #include <gtk/gtk.h>
 
-#define GERMINAL_CLEANUP(x) __attribute__((cleanup(x)))
-
-#define GERMINAL_REGEX_CLEANUP    GERMINAL_CLEANUP (cleanup_regex)
-
 #define CHARACTER          "[a-zA-Z]"
 #define STRAIGHT_TEXT_ONLY "[^ \t\n\r()\\[\\]\"<>]*[^,' \t\n\r()\\[\\]\"<>]+"
 #define QUOTED_TEXT        "\"[^\"\n\r]+\""
@@ -66,8 +62,3 @@
                       G_CALLBACK (fn),        \
                       data)
 
-static void
-cleanup_regex (GRegex **regex)
-{
-    g_regex_unref (*regex);
-}

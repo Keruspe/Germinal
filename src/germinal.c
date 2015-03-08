@@ -80,9 +80,9 @@ open_url (gchar *url)
     if (!url)
         return FALSE;
 
-    GError GERMINAL_ERROR_CLEANUP *error = NULL;
+    g_autoptr (GError) error = NULL;
     /* Always strdup because we free later */
-    gchar GERMINAL_STR_CLEANUP *browser = g_strdup (g_getenv ("BROWSER"));
+    g_autofree gchar *browser = g_strdup (g_getenv ("BROWSER"));
 
     /* If BROWSER is not in env, try xdg-open or fallback to firefox */
     if (!browser && !(browser = g_find_program_in_path ("xdg-open")))
@@ -268,7 +268,7 @@ get_palette (GSettings   *settings,
              const gchar *name,
              gsize *palette_size)
 {
-    gchar GERMINAL_STRV_CLEANUP **colors = NULL;
+    g_auto (GStrv) colors = NULL;
     guint size, i;
     GdkRGBA *palette;
 
@@ -305,7 +305,7 @@ update_word_char_exceptions (GSettings   *settings,
                              const gchar *key,
                              gpointer     user_data)
 {
-    gchar GERMINAL_STR_CLEANUP *setting = get_setting (settings, key);
+    g_autofree gchar *setting = get_setting (settings, key);
 
     vte_terminal_set_word_char_exceptions (VTE_TERMINAL (user_data), setting);
 }
@@ -315,7 +315,7 @@ update_font (GSettings   *settings,
              const gchar *key,
              gpointer     user_data)
 {
-    gchar GERMINAL_STR_CLEANUP *setting = get_setting (settings, key);
+    g_autofree gchar *setting = get_setting (settings, key);
     PangoFontDescription GERMINAL_FONT_CLEANUP *font = pango_font_description_from_string (setting);
     vte_terminal_set_font (VTE_TERMINAL (user_data), font);
     update_font_size (VTE_TERMINAL (user_data), FONT_SIZE_DELTA_SET_DEFAULT);
@@ -335,20 +335,20 @@ update_colors (GSettings   *settings,
 
     if (key == NULL)
     {
-        gchar GERMINAL_STR_CLEANUP *backcolor_str = get_setting (settings, BACKCOLOR_KEY);
+        g_autofree gchar *backcolor_str = get_setting (settings, BACKCOLOR_KEY);
         gdk_rgba_parse (&backcolor, backcolor_str);
-        gchar GERMINAL_STR_CLEANUP *forecolor_str = get_setting (settings, FORECOLOR_KEY);
+        g_autofree gchar *forecolor_str = get_setting (settings, FORECOLOR_KEY);
         gdk_rgba_parse (&forecolor, forecolor_str);
         palette = get_palette(settings, PALETTE_KEY, &palette_size);
     }
     else if (strcmp (key, BACKCOLOR_KEY) == 0)
     {
-        gchar GERMINAL_STR_CLEANUP *backcolor_str = get_setting (settings, BACKCOLOR_KEY);
+        g_autofree gchar *backcolor_str = get_setting (settings, BACKCOLOR_KEY);
         gdk_rgba_parse (&backcolor, backcolor_str);
     }
     else if (strcmp (key, FORECOLOR_KEY) == 0)
     {
-        gchar GERMINAL_STR_CLEANUP *forecolor_str = get_setting (settings, FORECOLOR_KEY);
+        g_autofree gchar *forecolor_str = get_setting (settings, FORECOLOR_KEY);
         gdk_rgba_parse (&forecolor, forecolor_str);
     }
     else if (strcmp (key, PALETTE_KEY) == 0)
@@ -370,10 +370,10 @@ int
 main(int   argc,
      char *argv[])
 {
-    GError GERMINAL_ERROR_CLEANUP *error = NULL;
+    g_autoptr (GError) error = NULL;
 
     /* Options */
-    gchar GERMINAL_STRV_CLEANUP **command = NULL;
+    g_auto (GStrv) command = NULL;
     GOptionEntry options[] =
     {
         { G_OPTION_REMAINING, 'e', 0, G_OPTION_ARG_STRING_ARRAY, &command, N_("the command to launch"), "command" },
@@ -415,7 +415,7 @@ main(int   argc,
     gtk_window_maximize (GTK_WINDOW (window));
 
     /* Url matching stuff */
-    GRegex GERMINAL_REGEX_CLEANUP *url_regexp = g_regex_new (URL_REGEXP,
+    g_autoptr (GRegex) url_regexp = g_regex_new (URL_REGEXP,
                                                              G_REGEX_CASELESS | G_REGEX_OPTIMIZE,
                                                              G_REGEX_MATCH_NOTEMPTY,
                                                              NULL); /* error */
@@ -424,7 +424,7 @@ main(int   argc,
                                    0);
 
     /* Apply user settings */
-    GSettings GERMINAL_SETTINGS_CLEANUP *settings = g_settings_new ("org.gnome.Germinal");
+    g_autoptr (GSettings) settings = g_settings_new ("org.gnome.Germinal");
 
     SETTING_SIGNAL (BACKCOLOR, colors);
     SETTING_SIGNAL (FORECOLOR, colors);
@@ -436,16 +436,16 @@ main(int   argc,
     SETTING (WORD_CHAR_EXCEPTIONS, word_char_exceptions);
 
     /* Launch base command */
-    gchar GERMINAL_STR_CLEANUP *cwd = g_get_current_dir ();
+    g_autofree gchar *cwd = g_get_current_dir ();
 
     if (G_LIKELY (command == NULL))
     {
-        gchar GERMINAL_STR_CLEANUP *setting = get_setting (settings, STARTUP_COMMAND_KEY);
+        g_autofree gchar *setting = get_setting (settings, STARTUP_COMMAND_KEY);
         command = g_strsplit (setting , " ", 0);
     }
 
     /* Override TERM */
-    gchar GERMINAL_STRV_CLEANUP **envp = g_environ_setenv (NULL, "TERM", get_setting (settings, TERM_KEY), TRUE);
+    g_auto (GStrv) envp = g_environ_setenv (NULL, "TERM", get_setting (settings, TERM_KEY), TRUE);
 
     /* Spawn our command */
     if (!vte_terminal_spawn_sync (term,
