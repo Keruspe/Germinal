@@ -10,10 +10,10 @@
     </key>
 
     <key name="word-char-exceptions" type="s">
-      <default>'|'</default>
-      <_summary>List of ASCII punctuation characters that are not to be treated as part of a word when doing word-wise selection</_summary>
+      <default>'-#%&+,./:;=?@\\_~\302\267'</default>
+      <_summary>List of ASCII punctuation characters that should be considered as part of a word when doing word-wise selection</_summary>
       <_description>
-        List of ASCII punctuation characters that are not to be treated as part of a word when doing word-wise selection
+        List of ASCII punctuation characters that should be considered as part of a word when doing word-wise selection
       </_description>
     </key>
 
