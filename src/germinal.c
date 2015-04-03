@@ -202,25 +202,12 @@ on_key_press (GtkWidget   *widget,
     /* Ctrl + foo */
     if (event->state & GDK_CONTROL_MASK)
     {
-        /* Ctrl + Shift + foo */
-        if (event->state & GDK_SHIFT_MASK)
-        {
-            switch (event->keyval)
-            {
-            case GDK_KEY_C:
-                return do_copy (widget, user_data);
-            case GDK_KEY_V:
-                return do_paste (widget, user_data);
-            case GDK_KEY_Q:
-                return do_quit (widget, user_data);
-            case GDK_KEY_O:
-                return launch_cmd ("tmux split-window -v");
-            case GDK_KEY_E:
-                return launch_cmd ("tmux split-window -h");
-            }
-        }
         switch (event->keyval)
         {
+        case GDK_KEY_C:
+            return do_copy (widget, user_data);
+        case GDK_KEY_V:
+            return do_paste (widget, user_data);
         case GDK_KEY_KP_Add:
         case GDK_KEY_plus:
             return do_zoom (widget, user_data);
@@ -230,6 +217,13 @@ on_key_press (GtkWidget   *widget,
         case GDK_KEY_KP_0:
         case GDK_KEY_0:
             return do_reset_zoom (widget, user_data);
+        case GDK_KEY_Q:
+        case GDK_KEY_q:
+            return do_quit (widget, user_data);
+        case GDK_KEY_O:
+            return launch_cmd ("tmux split-window -v");
+        case GDK_KEY_E:
+            return launch_cmd ("tmux split-window -h");
         }
     }
 
