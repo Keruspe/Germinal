@@ -226,6 +226,8 @@ on_key_press (GtkWidget   *widget,
             return launch_cmd ("tmux split-window -h");
         case GDK_KEY_Tab:
             return launch_cmd ("tmux next-window");
+        case GDK_KEY_ISO_Left_Tab:
+            return launch_cmd ("tmux previous-window");
         case GDK_KEY_N:
         case GDK_KEY_n:
             return launch_cmd ("tmux new-window");
