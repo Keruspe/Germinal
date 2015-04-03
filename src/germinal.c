@@ -213,6 +213,10 @@ on_key_press (GtkWidget   *widget,
                 return do_paste (widget, user_data);
             case GDK_KEY_Q:
                 return do_quit (widget, user_data);
+            case GDK_KEY_O:
+                return launch_cmd ("tmux split-window -v");
+            case GDK_KEY_E:
+                return launch_cmd ("tmux split-window -h");
             }
         }
         switch (event->keyval)
