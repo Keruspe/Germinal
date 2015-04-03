@@ -178,6 +178,14 @@ do_reset_zoom (GtkWidget *widget G_GNUC_UNUSED,
 }
 
 static gboolean
+do_quit (GtkWidget *widget    G_GNUC_UNUSED,
+         gpointer   user_data G_GNUC_UNUSED)
+{
+    gtk_main_quit ();
+    return TRUE;
+}
+
+static gboolean
 on_key_press (GtkWidget   *widget,
               GdkEventKey *event,
               gpointer     user_data)
@@ -194,11 +202,11 @@ on_key_press (GtkWidget   *widget,
             switch (event->keyval)
             {
             case GDK_KEY_C:
-                do_copy (widget, user_data);
-                return TRUE;
+                return do_copy (widget, user_data);
             case GDK_KEY_V:
-                do_paste (widget, user_data);
-                return TRUE;
+                return do_paste (widget, user_data);
+            case GDK_KEY_Q:
+                return do_quit (widget, user_data);
             }
         }
         switch (event->keyval)
@@ -480,6 +488,10 @@ main(int   argc,
     MENU_ACTION (zoom,       _("Zoom"));
     MENU_ACTION (dezoom,     _("Dezoom"));
     MENU_ACTION (reset_zoom, _("Reset zoom"));
+
+    MENU_SEPARATOR;
+
+    MENU_ACTION (quit,       _("Quit"));
 
     gtk_widget_show_all (menu);
 
