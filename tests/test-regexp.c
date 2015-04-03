@@ -35,9 +35,9 @@ main (G_GNUC_UNUSED gint argc,
     };
 
     g_autoptr (GRegex) url_regexp = g_regex_new (URL_REGEXP,
-                                                             G_REGEX_CASELESS | G_REGEX_OPTIMIZE,
-                                                             G_REGEX_MATCH_NOTEMPTY,
-                                                             NULL); /* error */
+                                                 G_REGEX_CASELESS | G_REGEX_OPTIMIZE,
+                                                 G_REGEX_MATCH_NOTEMPTY,
+                                                 NULL); /* error */
 
     STRV_FOREACH (expect_failure, txt)
         FAIL  (*txt);

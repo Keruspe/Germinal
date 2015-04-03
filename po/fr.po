@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Germinal\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-19 17:33+0100\n"
+"POT-Creation-Date: 2015-04-03 16:47+0200\n"
 "PO-Revision-Date: 2011-09-23 16:05+0100\n"
 "Last-Translator: Marc-Antoine Perennou <Marc-Antoine@Perennou.com>\n"
 "Language-Team: French\n"
@@ -21,41 +21,45 @@ msgstr ""
 msgid "Couldn't exec"
 msgstr "Impossible d'exécuter"
 
-#: ../src/germinal.c:379
+#: ../src/germinal.c:387
 msgid "the command to launch"
 msgstr "la commande à lancer"
 
-#: ../src/germinal.c:389
+#: ../src/germinal.c:397
 msgid " - minimalist vte-based terminal emulator"
 msgstr " - émulateur de terminal minimaliste basé sur vte"
 
-#: ../src/germinal.c:469
+#: ../src/germinal.c:478
 msgid "Copy url"
 msgstr "Copier la cible du lien"
 
-#: ../src/germinal.c:470
+#: ../src/germinal.c:479
 msgid "Open url"
 msgstr "Suivre le lien"
 
-#: ../src/germinal.c:474
+#: ../src/germinal.c:483
 msgid "Copy"
 msgstr "Copier"
 
-#: ../src/germinal.c:475
+#: ../src/germinal.c:484
 msgid "Paste"
 msgstr "Coller"
 
-#: ../src/germinal.c:479
+#: ../src/germinal.c:488
 msgid "Zoom"
 msgstr "Zoomer"
 
-#: ../src/germinal.c:480
+#: ../src/germinal.c:489
 msgid "Dezoom"
 msgstr "Dézoomzer"
 
-#: ../src/germinal.c:481
+#: ../src/germinal.c:490
 msgid "Reset zoom"
 msgstr "Restaurer zoom"
+
+#: ../src/germinal.c:494
+msgid "Quit"
+msgstr "Quitter"
 
 #: ../data/germinal.desktop.in.h:1
 msgid "Minimalist vte-based terminal emulator"
@@ -67,11 +71,11 @@ msgstr "Nombre de lignes à garder dans le tampon"
 
 #: ../data/org.gnome.Germinal.gschema.xml.in.in.h:2
 msgid ""
-"List of ASCII punctuation characters that are not to be treated as part of a "
+"List of ASCII punctuation characters that should be considered as part of a "
 "word when doing word-wise selection"
 msgstr ""
-"Liste des caractères de ponctuation ASCII qui ne doivent pas être considérés "
-"comme faisant partie d'un mot quand on le selectionne"
+"Liste des caractères de ponctuation ASCII qui doivent être considérés comme "
+"faisant partie d'un mot quand on le selectionne"
 
 #: ../data/org.gnome.Germinal.gschema.xml.in.in.h:3
 msgid "The font to use"

@@ -19,4 +19,6 @@ sudo make install
 
 You can see more information [here](http://www.imagination-land.org/posts/2015-01-31-germinal-7-released.html).
 
-Latest release tarball available [here](http://www.imagination-land.org/files/germinal/germinal-10.tar.xz).
+Latest release is [Germinal 11](http://www.imagination-land.org/posts/2015-04-03-germinal-11-released.html).
+
+Direct link to download: <http://www.imagination-land.org/files/germinal/germinal-11.tar.xz>
