@@ -186,6 +186,12 @@ do_quit (GtkWidget *widget    G_GNUC_UNUSED,
 }
 
 static gboolean
+launch_cmd (const gchar *cmd)
+{
+    return g_spawn_command_line_async (cmd, NULL);
+}
+
+static gboolean
 on_key_press (GtkWidget   *widget,
               GdkEventKey *event,
               gpointer     user_data)
