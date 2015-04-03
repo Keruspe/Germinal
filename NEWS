@@ -6,7 +6,7 @@ NEW in 11 (Not released yet)
 - use new g_autoptr stuff from glib
 - new setting: word-char-exceptions matching the new one from vte
 - fix live changes from settings with new glib
-- you can now quit from the right click menu or with ctrl-shit-q
+- you can now quit from the right click menu or with ctrl-shift-q
 
 NEW in 10 (22/02/2015)
 =============
