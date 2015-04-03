@@ -430,9 +430,9 @@ main(int   argc,
 
     /* Url matching stuff */
     g_autoptr (GRegex) url_regexp = g_regex_new (URL_REGEXP,
-                                                             G_REGEX_CASELESS | G_REGEX_OPTIMIZE,
-                                                             G_REGEX_MATCH_NOTEMPTY,
-                                                             NULL); /* error */
+                                                 G_REGEX_CASELESS | G_REGEX_OPTIMIZE,
+                                                 G_REGEX_MATCH_NOTEMPTY,
+                                                 NULL); /* error */
     vte_terminal_match_add_gregex (term,
                                    url_regexp,
                                    0);
