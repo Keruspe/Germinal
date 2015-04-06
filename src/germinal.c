@@ -229,7 +229,6 @@ on_key_press (GtkWidget   *widget,
         case GDK_KEY_ISO_Left_Tab:
             return launch_cmd ("tmux previous-window");
         case GDK_KEY_N:
-        case GDK_KEY_n:
             return launch_cmd ("tmux new-window");
         case GDK_KEY_w:
             return launch_cmd ("tmux kill-pane");
