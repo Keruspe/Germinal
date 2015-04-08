@@ -218,7 +218,6 @@ on_key_press (GtkWidget   *widget,
         case GDK_KEY_0:
             return do_reset_zoom (widget, user_data);
         case GDK_KEY_Q:
-        case GDK_KEY_q:
             return do_quit (widget, user_data);
         case GDK_KEY_O:
             return launch_cmd ("tmux split-window -v");
