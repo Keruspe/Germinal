@@ -228,8 +228,10 @@ on_key_press (GtkWidget   *widget,
         case GDK_KEY_E:
             return launch_cmd ("tmux split-window -h");
         case GDK_KEY_N:
+        case GDK_KEY_Tab:
             return launch_cmd ("tmux next-window");
         case GDK_KEY_P:
+        case GDK_KEY_ISO_Left_Tab:
             return launch_cmd ("tmux previous-window");
         case GDK_KEY_T:
             return launch_cmd ("tmux new-window");
@@ -237,10 +239,6 @@ on_key_press (GtkWidget   *widget,
             return launch_cmd ("tmux kill-pane");
         case GDK_KEY_X:
             return launch_cmd ("tmux resize-pane -Z");
-        case GDK_KEY_Tab:
-        case GDK_KEY_ISO_Left_Tab:
-            /* TODO */
-            return TRUE;
         }
     }
 
