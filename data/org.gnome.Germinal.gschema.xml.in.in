@@ -10,7 +10,7 @@
     </key>
 
     <key name="word-char-exceptions" type="s">
-      <default>'-#%&amp;+,./:;=?@\\_~\302\267'</default>
+      <default>'-#%&amp;+,./;=?@\\_~\302\267'</default>
       <_summary>List of ASCII punctuation characters that should be considered as part of a word when doing word-wise selection</_summary>
       <_description>
         List of ASCII punctuation characters that should be considered as part of a word when doing word-wise selection
@@ -26,7 +26,7 @@
     </key>
 
     <key name="forecolor" type="s">
-      <default>'#C34897'</default>
+      <default>'#C64B9A'</default>
       <_summary>The foreground color</_summary>
       <_description>
         The foreground color
@@ -34,7 +34,7 @@
     </key>
 
     <key name="backcolor" type="s">
-      <default>'#101010'</default>
+      <default>'#212121'</default>
       <_summary>The background color</_summary>
       <_description>
         The background color
