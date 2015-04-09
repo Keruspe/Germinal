@@ -204,10 +204,12 @@ on_key_press (GtkWidget   *widget,
     {
         switch (event->keyval)
         {
+        /* Clipboard */
         case GDK_KEY_C:
             return do_copy (widget, user_data);
         case GDK_KEY_V:
             return do_paste (widget, user_data);
+        /* Zoom */
         case GDK_KEY_KP_Add:
         case GDK_KEY_plus:
             return do_zoom (widget, user_data);
@@ -217,20 +219,24 @@ on_key_press (GtkWidget   *widget,
         case GDK_KEY_KP_0:
         case GDK_KEY_0:
             return do_reset_zoom (widget, user_data);
+        /* Quit */
         case GDK_KEY_Q:
             return do_quit (widget, user_data);
+        /* Terminator-like tmux commands */
         case GDK_KEY_O:
             return launch_cmd ("tmux split-window -v");
         case GDK_KEY_E:
             return launch_cmd ("tmux split-window -h");
-        case GDK_KEY_Tab:
+        case GDK_KEY_N:
             return launch_cmd ("tmux next-window");
-        case GDK_KEY_ISO_Left_Tab:
+        case GDK_KEY_P:
             return launch_cmd ("tmux previous-window");
         case GDK_KEY_T:
             return launch_cmd ("tmux new-window");
         case GDK_KEY_W:
             return launch_cmd ("tmux kill-pane");
+        case GDK_KEY_X:
+            return launch_cmd ("tmux resize-pane -Z");
         case GDK_KEY_Tab:
         case GDK_KEY_ISO_Left_Tab:
             /* TODO */
