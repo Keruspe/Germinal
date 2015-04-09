@@ -233,6 +233,10 @@ on_key_press (GtkWidget   *widget,
         case GDK_KEY_P:
         case GDK_KEY_ISO_Left_Tab:
             return launch_cmd ("tmux select-pane -t :.-");
+        case GDK_KEY_Page_Up:
+            return launch_cmd ("tmux next-window");
+        case GDK_KEY_Page_Down:
+            return launch_cmd ("tmux previous-window");
         case GDK_KEY_T:
             return launch_cmd ("tmux new-window");
         case GDK_KEY_W:
