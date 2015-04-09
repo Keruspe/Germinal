@@ -227,10 +227,14 @@ on_key_press (GtkWidget   *widget,
             return launch_cmd ("tmux next-window");
         case GDK_KEY_ISO_Left_Tab:
             return launch_cmd ("tmux previous-window");
-        case GDK_KEY_N:
+        case GDK_KEY_T:
             return launch_cmd ("tmux new-window");
-        case GDK_KEY_w:
+        case GDK_KEY_W:
             return launch_cmd ("tmux kill-pane");
+        case GDK_KEY_Tab:
+        case GDK_KEY_ISO_Left_Tab:
+            /* TODO */
+            return TRUE;
         }
     }
 
