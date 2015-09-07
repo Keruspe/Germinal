@@ -1,3 +1,3 @@
-src/germinal.c
-data/germinal.desktop.in
-data/org.gnome.Germinal.gschema.xml.in.in
+src/germinal/germinal.c
+data/desktop/org.gnome.Germinal.desktop.in.in
+data/gsettings/org.gnome.Germinal.gschema.xml

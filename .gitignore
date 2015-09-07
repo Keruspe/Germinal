@@ -2,7 +2,7 @@ germinal
 test-regexp
 Makefile
 configure
-germinal.desktop
+org.gnome.Germinal.desktop
 *.xml
 *.xml.in
 *.log

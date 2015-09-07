@@ -82,7 +82,6 @@ PKG_CHECK_MODULES(PANGO, [pango])
 AC_CONFIG_FILES([
   Makefile
   po/Makefile.in
-  data/org.gnome.Germinal.gschema.xml.in
 ])
 AC_OUTPUT
 AC_MSG_RESULT([

@@ -1,8 +1,10 @@
 [Desktop Entry]
+Type=Application
 Name=Germinal
 _Comment=Minimalist vte-based terminal emulator
-Exec=germinal
+_Keywords=Terminal;
 Icon=utilities-terminal
-Type=Application
-Categories=GTK;Utility;TerminalEmulator;System;
+Exec=germinal
+Terminal=false
+Categories=GTK;GNOME;Utility;TerminalEmulator;System;
 StartupNotify=true

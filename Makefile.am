@@ -1,6 +1,6 @@
 # This file is part of Germinal.
 #
-# Copyright 2011-2014 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
+# Copyright 2011-2015 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
 #
 # Germinal is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,102 +15,67 @@
 # You should have received a copy of the GNU General Public License
 # along with Germinal.  If not, see <http://www.gnu.org/licenses/>.
 
-ACLOCAL_AMFLAGS  = -I m4
 SUBDIRS = po
 
-# Directories
+ACLOCAL_AMFLAGS  = -I m4 ${ACLOCAL_FLAGS}
+AM_MAKEFLAGS = --no-print-directory
 
-applicationsdir = $(datadir)/applications
+AM_CFLAGS =                          \
+	-include config.h            \
+	-I $(srcdir)/src/germinal/   \
+	-DLOCALEDIR=\"${localedir}\" \
+	$(GLIB_CFLAGS)               \
+	$(GTK_CFLAGS)                \
+	$(PANGO_CFLAGS)              \
+	$(VTE_CFLAGS)                \
+	$(NULL)
 
-# Data stuff
+AM_LIBS =            \
+	$(GLIB_LIBS) \
+	$(GTK_LIBS)  \
+	$(VTE_LIBS)  \
+	$(NULL)
 
-gsettings_SCHEMAS = data/org.gnome.Germinal.gschema.xml
+EXTRA_DIST =       \
+	autogen.sh \
+	README.md  \
+	$(NULL)
 
-applications_in_files = data/germinal.desktop.in
-applications_DATA = $(applications_in_files:.desktop.in=.desktop)
+CLEANFILES =
+SUFFIXES =
+
+bin_PROGRAMS =
+
+TESTS=
+noinst_PROGRAMS= \
+	$(TESTS) \
+	$(NULL)
+
+@INTLTOOL_XML_NOMERGE_RULE@
 
 # Binaries
 
-bin_PROGRAMS = germinal
+include src/germinal.mk
 
-# Sources
+# Data
 
-germinal_c_sources = \
-	src/germinal.c
+include data/desktop.mk
+include data/gsettings.mk
 
-germinal_SOURCES = \
-	src/germinal-cleanup.h \
-	src/germinal-util.h \
-	$(germinal_c_sources)
+# Tests stuff
 
-# Tests
+include tests/regexp.mk
 
-TESTS = \
-	tests/test-regexp
-
-tests_test_regexp_SOURCES = \
-	tests/test-regexp.c
-
-tests_test_regexp_LDADD = \
-	$(GLIB_LIBS)
-
-noinst_PROGRAMS = $(TESTS)
-
-# CFLAGS
-
-AM_CFLAGS = \
-	-Wall -Wextra -pedantic \
-	-O2 -march=native \
-	-DLOCALEDIR=\"${localedir}\" \
-	-I $(srcdir)/src/ \
-	$(GLIB_CFLAGS) \
-	$(GTK_CFLAGS) \
-	$(PANGO_CFLAGS) \
-	$(VTE_CFLAGS)
-
-# LDADD
-
-AM_LDFLAGS = \
-	-Wl,--as-needed \
-	-Wl,-O2
-
-AM_LIBS = \
-	$(GLIB_LIBS) \
-	$(GTK_LIBS) \
-	$(VTE_LIBS)
-
-germinal_LDADD = \
-	$(AM_LIBS)
-
-# Distribution stuff
-
-EXTRA_DIST = \
-	$(applications_in_files) \
-	data/org.gnome.Germinal.gschema.xml.in.in \
-	autogen.sh
-
-CLEANFILES = \
-	${germinal_c_sources:.c=.o} \
-	$(applications_DATA) \
-	$(gsettings_SCHEMAS) \
-	gschemas.compiled
-
-# Special rules
-
-@INTLTOOL_DESKTOP_RULE@
-@INTLTOOL_XML_NOMERGE_RULE@
-@GSETTINGS_RULES@
+# Maintainance stuff
 
 update-po:
 	$(MAKE) -C po $@
 
-gschemas.compiled: $(gsettings_SCHEMAS:.xml=.valid)
-	$(AM_V_GEN) $(GLIB_COMPILE_SCHEMAS) --targetdir=. .
-
 release:
-	git commit -asm "Release $(PACKAGE_NAME) $(PACKAGE_VERSION)"
+	$(MAKE) update-po && \
+	$(MAKE) distcheck && \
+	git commit -asm "Release $(PACKAGE_NAME) $(PACKAGE_VERSION)" && \
 	git tag -sm "Release $(PACKAGE_NAME) $(PACKAGE_VERSION)" v$(PACKAGE_VERSION)
-	$(MAKE) distcheck
 
 # Generate a ChangeLog file from 'git log'
 dist-hook:

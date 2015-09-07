@@ -1,7 +1,7 @@
 /*
  * This file is part of Germinal.
  *
- * Copyright 2013 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
+ * Copyright 2013-2015 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
  *
  * Germinal is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Germinal.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-#include "config.h"
 
 #include <gtk/gtk.h>
 
