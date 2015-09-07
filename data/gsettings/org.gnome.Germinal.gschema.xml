@@ -1,44 +1,44 @@
 <schemalist>
-    <schema id="org.gnome.Germinal" path="/org/gnome/Germinal/" gettext-domain="@GETTEXT_PACKAGE@">
+    <schema id="org.gnome.Germinal" path="/org/gnome/Germinal/">
 
     <key name="scrollback-lines" type="i">
       <default>65536</default>
-      <_summary>Number of lines to keep in the buffer</_summary>
-      <_description>
+      <summary>Number of lines to keep in the buffer</summary>
+      <description>
         Number of lines to keep in the buffer
-      </_description>
+      </description>
     </key>
 
     <key name="word-char-exceptions" type="s">
       <default>'-#%&amp;+,./;=?@\\_~\302\267'</default>
-      <_summary>List of ASCII punctuation characters that should be considered as part of a word when doing word-wise selection</_summary>
-      <_description>
+      <summary>List of ASCII punctuation characters that should be considered as part of a word when doing word-wise selection</summary>
+      <description>
         List of ASCII punctuation characters that should be considered as part of a word when doing word-wise selection
-      </_description>
+      </description>
     </key>
 
     <key name="font" type="s">
       <default>'DejaVu Sans Mono 8.5'</default>
-      <_summary>The font to use</_summary>
-      <_description>
+      <summary>The font to use</summary>
+      <description>
         The font to use
-      </_description>
+      </description>
     </key>
 
     <key name="forecolor" type="s">
       <default>'#C64B9A'</default>
-      <_summary>The foreground color</_summary>
-      <_description>
+      <summary>The foreground color</summary>
+      <description>
         The foreground color
-      </_description>
+      </description>
     </key>
 
     <key name="backcolor" type="s">
       <default>'#212121'</default>
-      <_summary>The background color</_summary>
-      <_description>
+      <summary>The background color</summary>
+      <description>
         The background color
-      </_description>
+      </description>
     </key>
 
     <key name="palette" type="as">
@@ -63,23 +63,23 @@
           '#ffffffffffff'
         ]
       </default>
-      <_summary>The color palette</_summary>
+      <summary>The color palette</summary>
     </key>
 
     <key name="startup-command" type="s">
       <default>'tmux -u2 a'</default>
-      <_summary>Command to launch at startup</_summary>
-      <_description>
+      <summary>Command to launch at startup</summary>
+      <description>
         If none is specified, tmux will be used
-      </_description>
+      </description>
     </key>
 
     <key name="term" type="s">
       <default>'xterm-256color'</default>
-      <_summary>The value of the TERM env variable</_summary>
-      <_description>
+      <summary>The value of the TERM env variable</summary>
+      <description>
         By default, vte uses xterm, we use xterm-256color
-      </_description>
+      </description>
     </key>
 
   </schema>
