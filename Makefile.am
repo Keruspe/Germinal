@@ -64,9 +64,7 @@ AM_CFLAGS = \
 	-DLOCALEDIR=\"${localedir}\" \
 	-I $(srcdir)/src/ \
 	$(GLIB_CFLAGS) \
-	$(GIO_CFLAGS) \
 	$(GTK_CFLAGS) \
-	$(GDK_CFLAGS) \
 	$(PANGO_CFLAGS) \
 	$(VTE_CFLAGS)
 
@@ -78,9 +76,7 @@ AM_LDFLAGS = \
 
 AM_LIBS = \
 	$(GLIB_LIBS) \
-	$(GIO_LIBS) \
 	$(GTK_LIBS) \
-	$(GDK_LIBS) \
 	$(VTE_LIBS)
 
 germinal_LDADD = \
