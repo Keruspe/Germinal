@@ -17,7 +17,7 @@
 
 applicationsdir = $(datadir)/applications
 
-germinal_desktop_file = data/desktop/org.gnome.Germinal.desktop
+germinal_desktop_file = %reldir%/desktop/org.gnome.Germinal.desktop
 
 nodist_applications_DATA =       \
 	$(germinal_desktop_file) \
@@ -36,6 +36,6 @@ CLEANFILES +=                                         \
 
 SUFFIXES += .desktop.in.in .desktop.in
 .desktop.in.in.desktop.in:
-	@ $(MKDIR_P) data/desktop
+	@ $(MKDIR_P) %reldir%/desktop
 	$(M_V_GEN) cp $< $@
 
