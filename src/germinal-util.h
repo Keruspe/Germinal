@@ -21,6 +21,7 @@
 
 #include <gtk/gtk.h>
 
+/* Url Regexp */
 #define CHARACTER          "[a-zA-Z]"
 #define STRAIGHT_TEXT_ONLY "[^ \t\n\r()\\[\\]\"<>]*[^,' \t\n\r()\\[\\]\"<>]+"
 #define QUOTED_TEXT        "\"[^\"\n\r]+\""
@@ -29,6 +30,7 @@
 #define DUMB_USERS_TEXT    "<[^\n\r<>]+>"
 #define URL_REGEXP         CHARACTER "+://(" QUOTED_TEXT "|" PAREN_TEXT "|" SQUARE_BRACED_TEXT "|" DUMB_USERS_TEXT "|" STRAIGHT_TEXT_ONLY ")+"
 
+/* Settings keys */
 #define BACKCOLOR_KEY            "backcolor"
 #define FONT_KEY                 "font"
 #define FORECOLOR_KEY            "forecolor"
@@ -38,15 +40,18 @@
 #define TERM_KEY                 "term"
 #define WORD_CHAR_EXCEPTIONS_KEY "word-char-exceptions"
 
+/* Watch a setting's changes */
 #define SETTING_SIGNAL(key, fn)                 \
     g_signal_connect (G_OBJECT (settings),      \
                       "changed::" key##_KEY,    \
                       G_CALLBACK (update_##fn), \
                       terminal)
+/* Watch a setting's changes and initialize with current value */
 #define SETTING(key, fn)     \
     SETTING_SIGNAL (key, fn); \
     update_##fn (settings, key##_KEY, terminal)
 
+/* Create a menu item, add it to the menu and bind its action */
 #define MENU_ACTION(name, label)                                        \
     GtkWidget *name##_menu_item = gtk_menu_item_new_with_label (label); \
     g_signal_connect (G_OBJECT (name##_menu_item),                      \
@@ -55,9 +60,11 @@
                       terminal);                                        \
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), name##_menu_item)
 
+/* Add a separator to the menu */
 #define MENU_SEPARATOR \
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), gtk_separator_menu_item_new ())
 
+/* Bind a singal to a callback */
 #define CONNECT_SIGNAL(obj, signal, fn, data) \
     g_signal_connect (G_OBJECT (obj),         \
                       signal,                 \
