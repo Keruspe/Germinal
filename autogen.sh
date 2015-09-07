@@ -1,4 +1,8 @@
 #!/bin/sh
-autoreconf -i -Wall
-intltoolize --force --automake
 
+main() {
+    autoreconf -i -Wall
+    intltoolize --force --automake
+}
+
+main "${@}"

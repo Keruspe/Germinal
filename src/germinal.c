@@ -17,7 +17,6 @@
  * along with Germinal.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "config.h"
 #include "germinal-cleanup.h"
 
 #include <glib/gi18n-lib.h>

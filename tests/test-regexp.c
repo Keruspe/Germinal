@@ -40,7 +40,9 @@ main (G_GNUC_UNUSED gint argc,
                                                  NULL); /* error */
 
     STRV_FOREACH (expect_failure, txt)
-        FAIL  (*txt);
+    {
+        FAIL (*txt);
+    }
 
     STRV_FOREACH (expect_self, txt)
     {

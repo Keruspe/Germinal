@@ -17,6 +17,8 @@
  * along with Germinal.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "config.h"
+
 #include <gtk/gtk.h>
 
 #define CHARACTER          "[a-zA-Z]"

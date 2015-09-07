@@ -1,10 +1,9 @@
 Germinal is a minimalist vte-based terminal emulator.
-It won't evolve much since it's just a small project inspired by Sakura to fit my needs
 
-You need glib 2.28, gtk+ 3, vte 2.91 and tmux.
-You also need to add "new-session" at the end of your .tmux.conf so that tmux attach creates a new one if none exist.
+You will need tmux for Germinal to work out of the box.
+You need to add `new-session` in your `~/.tmux.conf` so that tmux attach creates a new one if none exist.
 
-To configure it, open dconf-editor and go into /org/gnome/Germinal
+To configure it, open dconf-editor and go into /org/gnome/Germinal.
 By default, germinal launches tmux, but you can specify a custom command by adding extra args to the commandline (no
 need for quoting, example: `germinal /bin/bash -l` will execute `/bin/bash -l` instead of tmux).
 
