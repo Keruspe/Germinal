@@ -7,6 +7,24 @@ To configure it, open dconf-editor and go into /org/gnome/Germinal.
 By default, germinal launches tmux, but you can specify a custom command by adding extra args to the commandline (no
 need for quoting, example: `germinal /bin/bash -l` will execute `/bin/bash -l` instead of tmux).
 
+List of available keyboard actions:
+
+    - `<Ctrl><+>`          -> Zoom
+    - `<Ctrl><->`          -> De-Zoom
+    - `<Ctrl><0>`          -> Reset Zoom
+    - `<Ctrl><Shift><C>`   -> Copy
+    - `<Ctrl><Shift><V>`   -> Paste
+    - `<Ctrl><Shift><Q>`   -> Quit
+    - `<Ctrl><Shift><O>`   -> Split window (like terminator)
+    - `<Ctrl><Shift><E>`   -> Split window (like terminator)
+    - `<Ctrl><Tab>`        -> Next tab
+    - `<Ctrl><Shift><Tab>` -> Previous tab
+    - `<Ctrl><Shift><T>`   -> New tab
+    - `<Ctrl><Shift><N>`   -> Next pane
+    - `<Ctrl><Shift><P>`   -> Previous pane
+    - `<Ctrl><Shift><W>`   -> Close current pane
+    - `<Ctrl><Shift><X>`   -> Resize current pane
+
 To build it, go into the Germinal directory
 
 ```
