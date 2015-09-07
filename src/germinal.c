@@ -246,7 +246,7 @@ on_key_press (GtkWidget   *widget,
         }
     }
 
-    return FALSE;
+    return GTK_WIDGET_GET_CLASS (user_data)->key_press_event (user_data, event);
 }
 
 static gboolean
