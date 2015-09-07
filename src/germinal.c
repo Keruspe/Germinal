@@ -241,25 +241,28 @@ on_key_press (GtkWidget   *widget,
         /* Quit */
         case GDK_KEY_Q:
             return do_quit (widget, user_data);
-        /* Terminator-like tmux commands */
+        /* Window split (inspired by terminator) */
         case GDK_KEY_O:
             return launch_cmd ("tmux split-window -v");
         case GDK_KEY_E:
             return launch_cmd ("tmux split-window -h");
-        case GDK_KEY_N:
+        /* Next/Previous window (tab) */
         case GDK_KEY_Tab:
-            return launch_cmd ("tmux select-pane -t :.+");
-        case GDK_KEY_P:
-        case GDK_KEY_ISO_Left_Tab:
-            return launch_cmd ("tmux select-pane -t :.-");
-        case GDK_KEY_Page_Up:
             return launch_cmd ("tmux next-window");
-        case GDK_KEY_Page_Down:
+        case GDK_KEY_ISO_Left_Tab:
             return launch_cmd ("tmux previous-window");
+        /* New window (tab) */
         case GDK_KEY_T:
             return launch_cmd ("tmux new-window");
+        /* Next/Previous pane */
+        case GDK_KEY_N:
+            return launch_cmd ("tmux select-pane -t :.+");
+        case GDK_KEY_P:
+            return launch_cmd ("tmux select-pane -t :.-");
+        /* Close current pane */
         case GDK_KEY_W:
             return launch_cmd ("tmux kill-pane");
+        /* Resize current pane */
         case GDK_KEY_X:
             return launch_cmd ("tmux resize-pane -Z");
         }
