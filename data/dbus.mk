@@ -15,29 +15,21 @@
 # You should have received a copy of the GNU General Public License
 # along with Germinal.  If not, see <http://www.gnu.org/licenses/>.
 
-applicationsdir = $(datadir)/applications
-
-germinal_desktop_file = %reldir%/desktop/org.gnome.Germinal.desktop
-
-nodist_applications_DATA =       \
-	$(germinal_desktop_file) \
+nodist_dbusservices_DATA =                       \
+	%reldir%/dbus/org.gnome.Germinal.service \
 	$(NULL)
 
-@INTLTOOL_DESKTOP_RULE@
-
-EXTRA_DIST +=                                            \
-	$(germinal_desktop_file:.desktop=.desktop.in.in) \
-	$(NULL)
-
-CLEANFILES +=                                         \
-	$(germinal_desktop_file)                      \
-	$(germinal_desktop_file:.desktop=.desktop.in) \
-	$(NULL)
-
-SUFFIXES += .desktop.in.in .desktop.in
-.desktop.in.in.desktop.in:
-	@ $(MKDIR_P) %reldir%/desktop
+SUFFIXES += .service .dbus.in
+.dbus.in.service:
+	@ $(MKDIR_P) %reldir%/dbus
 	$(AM_V_GEN) $(SED)                  \
 	    -e 's,[@]bindir[@],$(bindir),g' \
 	    <$^ >$@
 
+EXTRA_DIST += \
+	$(nodist_dbusservices_DATA:.service=.dbus.in) \
+	$(NULL)
+
+CLEANFILES += \
+	$(nodist_dbusservices_DATA) \
+	$(NULL)

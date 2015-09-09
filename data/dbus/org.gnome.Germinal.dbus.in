@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=org.gnome.Germinal
+Exec=@bindir@/germinal --gapplication-service
