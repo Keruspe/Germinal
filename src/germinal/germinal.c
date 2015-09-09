@@ -23,8 +23,7 @@
 
 #include <stdlib.h>
 
-/* FIXME: drop me */
-static GStrv *_command;
+static GStrv command = NULL;
 
 static void
 germinal_exit (GtkWidget *widget G_GNUC_UNUSED,
@@ -484,17 +483,17 @@ germinal_activate (GApplication *application)
     /* Launch base command */
     g_autofree gchar *cwd = g_get_current_dir ();
 
-    if (G_LIKELY (!*_command))
+    if (G_LIKELY (!command))
     {
         g_autofree gchar *setting = get_setting (settings, STARTUP_COMMAND_KEY);
-        *_command = g_strsplit (setting , " ", 0);
+        command = g_strsplit (setting , " ", 0);
     }
 
     /* Override TERM */
     g_auto (GStrv) envp = g_environ_setenv (NULL, "TERM", get_setting (settings, TERM_KEY), TRUE);
 
     /* Spawn our command */
-    if (!vte_terminal_spawn_sync (term, VTE_PTY_DEFAULT, cwd, *_command, envp, G_SPAWN_SEARCH_PATH,
+    if (!vte_terminal_spawn_sync (term, VTE_PTY_DEFAULT, cwd, command, envp, G_SPAWN_SEARCH_PATH,
                                   NULL, /* child_setup */
                                   NULL, /* child_setup_data */
                                   NULL, /* child_pid */
@@ -534,39 +533,37 @@ germinal_activate (GApplication *application)
     CONNECT_SIGNAL (window,   "key-press-event",    on_key_press,    terminal);
 }
 
+static gint
+germinal_handle_options (GApplication *gapp,
+                         GVariantDict *options)
+{
+    g_variant_lookup ((GVariant *) options, G_OPTION_REMAINING, "as", &command, NULL);
+
+    return 0;
+}
+
 gint
 main(gint   argc,
      gchar *argv[])
 {
-    g_autoptr (GError) error = NULL;
-
-    /* Options */
-    g_auto (GStrv) command = NULL;
-    GOptionEntry options[] =
-    {
-        { G_OPTION_REMAINING, 'e', 0, G_OPTION_ARG_STRING_ARRAY, &command, N_("the command to launch"), "command" },
-        { NULL, '\0', 0, G_OPTION_ARG_NONE, NULL, NULL, NULL }
-    };
-
     /* Gettext and gtk initialization */
     textdomain(GETTEXT_PACKAGE);
     bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
     bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 
-    if (!gtk_init_with_args (&argc, &argv, N_(" - minimalist vte-based terminal emulator"), options, GETTEXT_PACKAGE, &error))
-    {
-        g_critical ("%s", error->message);
-        return EXIT_FAILURE;
-    }
-    _command = &command;
-
+    gtk_init (&argc, &argv);
     g_object_set (gtk_settings_get_default (), "gtk-application-prefer-dark-theme", TRUE, NULL);
 
     /* GtkApplication initialization */
     GtkApplication *app = gtk_application_new ("org.gnome.Germinal", G_APPLICATION_SEND_ENVIRONMENT | G_APPLICATION_NON_UNIQUE);
     GApplication *gapp = G_APPLICATION (app);
+    GApplicationClass *klass = G_APPLICATION_GET_CLASS (gapp);
+    g_autoptr (GError) error = NULL;
 
-    G_APPLICATION_GET_CLASS (gapp)->activate = germinal_activate;
+    g_application_add_main_option (gapp, G_OPTION_REMAINING, 'e', 0, G_OPTION_ARG_STRING_ARRAY, N_("the command to launch"), "command");
+
+    klass->activate = germinal_activate;
+    klass->handle_local_options = germinal_handle_options;
     g_application_register (gapp, NULL, &error);
 
     if (error)
