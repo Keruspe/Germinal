@@ -563,7 +563,7 @@ main(gint   argc,
     g_object_set (gtk_settings_get_default (), "gtk-application-prefer-dark-theme", TRUE, NULL);
 
     /* GtkApplication initialization */
-    GtkApplication *app = gtk_application_new ("org.gnome.Germinal", G_APPLICATION_FLAGS_NONE);
+    GtkApplication *app = gtk_application_new ("org.gnome.Germinal", G_APPLICATION_SEND_ENVIRONMENT | G_APPLICATION_NON_UNIQUE);
     GApplication *gapp = G_APPLICATION (app);
 
     G_APPLICATION_GET_CLASS (gapp)->activate = germinal_activate;
