@@ -21,11 +21,13 @@
 
 #include <glib/gi18n-lib.h>
 
+#include <stdlib.h>
+
 static void
-germinal_exit (GtkWidget *widget    G_GNUC_UNUSED,
-               gpointer   user_data G_GNUC_UNUSED)
+germinal_exit (GtkWidget *widget G_GNUC_UNUSED,
+               gpointer   user_data)
 {
-    gtk_main_quit ();
+    g_application_quit (G_APPLICATION (user_data));
 }
 
 static void
@@ -196,10 +198,9 @@ do_reset_zoom (GtkWidget *widget G_GNUC_UNUSED,
 }
 
 static gboolean
-do_quit (GtkWidget *widget,
-         gpointer   user_data)
+do_quit (GtkWidget *widget)
 {
-    germinal_exit (widget, user_data);
+    germinal_exit (NULL, gtk_window_get_application (GTK_WINDOW (widget)));
 
     return TRUE;
 }
@@ -240,7 +241,7 @@ on_key_press (GtkWidget   *widget,
             return do_reset_zoom (widget, user_data);
         /* Quit */
         case GDK_KEY_Q:
-            return do_quit (widget, user_data);
+            return do_quit (widget);
         /* Window split (inspired by terminator) */
         case GDK_KEY_O:
             return launch_cmd ("tmux split-window -v");
@@ -429,6 +430,11 @@ update_colors (GSettings   *settings,
     return NULL;
 }
 
+static void
+germinal_activate (GApplication *application G_GNUC_UNUSED)
+{
+}
+
 gint
 main(gint   argc,
      gchar *argv[])
@@ -451,11 +457,25 @@ main(gint   argc,
     if (!gtk_init_with_args (&argc, &argv, N_(" - minimalist vte-based terminal emulator"), options, GETTEXT_PACKAGE, &error))
     {
         g_critical ("%s", error->message);
-        return 1;
+        return EXIT_FAILURE;
+    }
+
+    g_object_set (gtk_settings_get_default (), "gtk-application-prefer-dark-theme", TRUE, NULL);
+
+    GtkApplication *app = gtk_application_new ("org.gnome.Germinal", G_APPLICATION_FLAGS_NONE);
+    GApplication *gapp = G_APPLICATION (app);
+
+    G_APPLICATION_GET_CLASS (gapp)->activate = germinal_activate;
+    g_application_register (gapp, NULL, &error);
+
+    if (error)
+    {
+        fprintf (stderr, "%s: %s\n", _("Failed to register the gtk application"), error->message);
+        return EXIT_FAILURE;
     }
 
     /* Create window */
-    GtkWidget *window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+    GtkWidget *window = gtk_application_window_new (app);
     GtkWindow *win = GTK_WINDOW (window);
 
     /* Vte settings */
@@ -545,16 +565,15 @@ main(gint   argc,
 
     /* Bind signals */
     CONNECT_SIGNAL (terminal, "button-press-event", on_button_press, menu);
-    CONNECT_SIGNAL (terminal, "child-exited",       on_child_exited, NULL);
-    CONNECT_SIGNAL (window,   "destroy",            germinal_exit,   NULL);
+    CONNECT_SIGNAL (terminal, "child-exited",       on_child_exited, gapp);
     CONNECT_SIGNAL (window,   "key-press-event",    on_key_press,    terminal);
 
     /* Launch program */
-    gtk_main ();
+    gint ret = g_application_run (gapp, argc, argv);
 
     /* Free memory */
     g_free (get_url (NULL, NULL));
     g_free (update_colors (NULL, NULL, NULL));
 
-    return 0;
+    return ret;
 }
