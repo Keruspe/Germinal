@@ -537,7 +537,7 @@ static gint
 germinal_handle_options (GApplication *gapp,
                          GVariantDict *options)
 {
-    g_variant_lookup ((GVariant *) options, G_OPTION_REMAINING, "as", &command, NULL);
+//    g_variant_lookup ((GVariant *) options, G_OPTION_REMAINING, "as", &command, NULL);
 
     return 0;
 }
