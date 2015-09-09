@@ -23,6 +23,9 @@
 
 #include <stdlib.h>
 
+/* FIXME: drop me */
+static GStrv *_command;
+
 static void
 germinal_exit (GtkWidget *widget G_GNUC_UNUSED,
                gpointer   user_data)
@@ -431,48 +434,10 @@ update_colors (GSettings   *settings,
 }
 
 static void
-germinal_activate (GApplication *application G_GNUC_UNUSED)
-{
-}
-
-gint
-main(gint   argc,
-     gchar *argv[])
+germinal_activate (GApplication *application)
 {
     g_autoptr (GError) error = NULL;
-
-    /* Options */
-    g_auto (GStrv) command = NULL;
-    GOptionEntry options[] =
-    {
-        { G_OPTION_REMAINING, 'e', 0, G_OPTION_ARG_STRING_ARRAY, &command, N_("the command to launch"), "command" },
-        { NULL, '\0', 0, G_OPTION_ARG_NONE, NULL, NULL, NULL }
-    };
-
-    /* Gettext and gtk initialization */
-    textdomain(GETTEXT_PACKAGE);
-    bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
-    bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-
-    if (!gtk_init_with_args (&argc, &argv, N_(" - minimalist vte-based terminal emulator"), options, GETTEXT_PACKAGE, &error))
-    {
-        g_critical ("%s", error->message);
-        return EXIT_FAILURE;
-    }
-
-    g_object_set (gtk_settings_get_default (), "gtk-application-prefer-dark-theme", TRUE, NULL);
-
-    GtkApplication *app = gtk_application_new ("org.gnome.Germinal", G_APPLICATION_FLAGS_NONE);
-    GApplication *gapp = G_APPLICATION (app);
-
-    G_APPLICATION_GET_CLASS (gapp)->activate = germinal_activate;
-    g_application_register (gapp, NULL, &error);
-
-    if (error)
-    {
-        fprintf (stderr, "%s: %s\n", _("Failed to register the gtk application"), error->message);
-        return EXIT_FAILURE;
-    }
+    GtkApplication *app = GTK_APPLICATION (application);
 
     /* Create window */
     GtkWidget *window = gtk_application_window_new (app);
@@ -519,17 +484,17 @@ main(gint   argc,
     /* Launch base command */
     g_autofree gchar *cwd = g_get_current_dir ();
 
-    if (G_LIKELY (!command))
+    if (G_LIKELY (!*_command))
     {
         g_autofree gchar *setting = get_setting (settings, STARTUP_COMMAND_KEY);
-        command = g_strsplit (setting , " ", 0);
+        *_command = g_strsplit (setting , " ", 0);
     }
 
     /* Override TERM */
     g_auto (GStrv) envp = g_environ_setenv (NULL, "TERM", get_setting (settings, TERM_KEY), TRUE);
 
     /* Spawn our command */
-    if (!vte_terminal_spawn_sync (term, VTE_PTY_DEFAULT, cwd, command, envp, G_SPAWN_SEARCH_PATH,
+    if (!vte_terminal_spawn_sync (term, VTE_PTY_DEFAULT, cwd, *_command, envp, G_SPAWN_SEARCH_PATH,
                                   NULL, /* child_setup */
                                   NULL, /* child_setup_data */
                                   NULL, /* child_pid */
@@ -537,7 +502,7 @@ main(gint   argc,
                                   &error))
     {
         g_critical ("%s", error->message);
-        return 1;
+        return;
     }
 
     /* Populate right click menu */
@@ -565,8 +530,56 @@ main(gint   argc,
 
     /* Bind signals */
     CONNECT_SIGNAL (terminal, "button-press-event", on_button_press, menu);
-    CONNECT_SIGNAL (terminal, "child-exited",       on_child_exited, gapp);
+    CONNECT_SIGNAL (terminal, "child-exited",       on_child_exited, application);
     CONNECT_SIGNAL (window,   "key-press-event",    on_key_press,    terminal);
+}
+
+gint
+main(gint   argc,
+     gchar *argv[])
+{
+    g_autoptr (GError) error = NULL;
+
+    /* Options */
+    g_auto (GStrv) command = NULL;
+    GOptionEntry options[] =
+    {
+        { G_OPTION_REMAINING, 'e', 0, G_OPTION_ARG_STRING_ARRAY, &command, N_("the command to launch"), "command" },
+        { NULL, '\0', 0, G_OPTION_ARG_NONE, NULL, NULL, NULL }
+    };
+
+    /* Gettext and gtk initialization */
+    textdomain(GETTEXT_PACKAGE);
+    bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
+    bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
+
+    if (!gtk_init_with_args (&argc, &argv, N_(" - minimalist vte-based terminal emulator"), options, GETTEXT_PACKAGE, &error))
+    {
+        g_critical ("%s", error->message);
+        return EXIT_FAILURE;
+    }
+    _command = &command;
+
+    g_object_set (gtk_settings_get_default (), "gtk-application-prefer-dark-theme", TRUE, NULL);
+
+    /* GtkApplication initialization */
+    GtkApplication *app = gtk_application_new ("org.gnome.Germinal", G_APPLICATION_FLAGS_NONE);
+    GApplication *gapp = G_APPLICATION (app);
+
+    G_APPLICATION_GET_CLASS (gapp)->activate = germinal_activate;
+    g_application_register (gapp, NULL, &error);
+
+    if (error)
+    {
+        fprintf (stderr, "%s: %s\n", _("Failed to register the gtk application"), error->message);
+        return EXIT_FAILURE;
+    }
+
+    if (g_application_get_is_remote (gapp))
+    {
+        g_application_activate (gapp);
+        return EXIT_SUCCESS;
+    }
 
     /* Launch program */
     gint ret = g_application_run (gapp, argc, argv);
