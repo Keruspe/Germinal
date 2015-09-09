@@ -26,7 +26,7 @@ GLIB_MIN_MINOR="44"
 GLIB_API_REQUIRED="G_ENCODE_VERSION($GLIB_MIN_MAJOR, $GLIB_MIN_MINOR)"
 
 GTK_MIN_MAJOR="3"
-GTK_MIN_MINOR="4"
+GTK_MIN_MINOR="0"
 GDK_API_REQUIRED="G_ENCODE_VERSION($GTK_MIN_MAJOR, $GTK_MIN_MINOR)"
 
 GLIB_REQUIRED="$GLIB_MIN_MAJOR.$GLIB_MIN_MINOR.0"
@@ -78,13 +78,6 @@ PKG_CHECK_MODULES(GLIB,  [glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED])
 PKG_CHECK_MODULES(GTK,   [gtk+-3.0 >= $GTK_REQUIRED  gdk-3.0 >= $GTK_REQUIRED])
 PKG_CHECK_MODULES(VTE,   [vte-2.91 >= $VTE_REQUIRED])
 PKG_CHECK_MODULES(PANGO, [pango])
-
-PKG_CHECK_MODULES(DBUS, [dbus-1])
-AC_ARG_WITH([dbusservicesdir],
-            AS_HELP_STRING([--with-dbusservicesdir=DIR], [D-Bus system service directory]),
-            [],
-            [with_dbusservicesdir=`$PKG_CONFIG --variable=session_bus_services_dir dbus-1`])
-AC_SUBST([dbusservicesdir], [$with_dbusservicesdir])
 
 AC_CONFIG_FILES([
   Makefile

@@ -37,7 +37,5 @@ CLEANFILES +=                                         \
 SUFFIXES += .desktop.in.in .desktop.in
 .desktop.in.in.desktop.in:
 	@ $(MKDIR_P) %reldir%/desktop
-	$(AM_V_GEN) $(SED)                  \
-	    -e 's,[@]bindir[@],$(bindir),g' \
-	    <$^ >$@
+	$(M_V_GEN) cp $< $@
 

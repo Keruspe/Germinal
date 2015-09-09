@@ -19,9 +19,6 @@ SUBDIRS = po
 
 ACLOCAL_AMFLAGS  = -I m4 ${ACLOCAL_FLAGS}
 AM_MAKEFLAGS = --no-print-directory
-AM_DISTCHECK_CONFIGURE_FLAGS =                                        \
-	--with-dbusservicesdir="$$dc_install_base/$(dbusservicesdir)" \
-	$(NULL)
 
 AM_CFLAGS =                          \
 	-include config.h            \
@@ -62,7 +59,6 @@ include src/germinal.mk
 
 # Data
 
-include data/dbus.mk
 include data/desktop.mk
 include data/gsettings.mk
 
