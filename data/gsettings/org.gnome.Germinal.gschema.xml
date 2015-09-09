@@ -67,7 +67,7 @@
     </key>
 
     <key name="startup-command" type="s">
-      <default>'tmux -u2 a'</default>
+      <default>'tmux -u2 new -As0'</default>
       <summary>Command to launch at startup</summary>
       <description>
         If none is specified, tmux will be used
