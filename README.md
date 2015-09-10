@@ -1,3 +1,8 @@
+<a href="https://scan.coverity.com/projects/germinal">
+  <img alt="Coverity Scan Build Status"
+       src="https://scan.coverity.com/projects/6315/badge.svg"/>
+</a>
+
 Germinal is a minimalist vte-based terminal emulator.
 
 You will need tmux for Germinal to work out of the box.
