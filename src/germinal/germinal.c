@@ -529,7 +529,6 @@ germinal_activate (GApplication *application)
     /* Bind signals */
     CONNECT_SIGNAL (terminal, "button-press-event", on_button_press, menu);
     CONNECT_SIGNAL (terminal, "child-exited",       on_child_exited, application);
-    CONNECT_SIGNAL (window,   "destroy",            germinal_exit,   application);
     CONNECT_SIGNAL (window,   "key-press-event",    on_key_press,    terminal);
 }
 
