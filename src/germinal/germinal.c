@@ -532,6 +532,14 @@ germinal_activate (GApplication *application)
     CONNECT_SIGNAL (window,   "key-press-event",    on_key_press,    terminal);
 }
 
+static gboolean
+_germinal_activate (gpointer user_data)
+{
+    germinal_activate (G_APPLICATION (user_data));
+
+    return G_SOURCE_REMOVE;
+}
+
 static gint
 germinal_handle_options (GApplication *gapp,
                          GVariantDict *options)
@@ -541,7 +549,7 @@ germinal_handle_options (GApplication *gapp,
     if (v)
         g_object_set_data (G_OBJECT (gapp), "germinal-command", g_variant_dup_strv (v, NULL));
 
-    germinal_activate (gapp);
+    g_idle_add (_germinal_activate, gapp);
 
     return -1;
 }
