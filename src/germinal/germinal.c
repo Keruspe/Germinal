@@ -532,31 +532,32 @@ germinal_activate (GApplication *application)
     CONNECT_SIGNAL (window,   "key-press-event",    on_key_press,    terminal);
 }
 
+static gint
+germinal_handle_options (GApplication *gapp,
+                         GVariantDict *options)
+{
+    g_autoptr (GVariant) v = g_variant_dict_lookup_value (options, G_OPTION_REMAINING, NULL);
+
+    if (v)
+        g_object_set_data (G_OBJECT (gapp), "germinal-command", g_variant_dup_strv (v, NULL));
+
+    germinal_activate (gapp);
+
+    return -1;
+}
+
 gint
 main (gint   argc,
       gchar *argv[])
 {
     g_autoptr (GError) error = NULL;
 
-    /* Options */
-    g_auto (GStrv) command = NULL;
-    GOptionEntry options[] =
-    {
-        { G_OPTION_REMAINING, 'e', 0, G_OPTION_ARG_STRING_ARRAY, &command, N_("the command to launch"), "command" },
-        { NULL, '\0', 0, G_OPTION_ARG_NONE, NULL, NULL, NULL }
-    };
-
     /* Gettext and gtk initialization */
     textdomain(GETTEXT_PACKAGE);
     bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
     bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 
-    if (!gtk_init_with_args (&argc, &argv, N_(" - minimalist vte-based terminal emulator"), options, GETTEXT_PACKAGE, &error))
-    {
-        g_critical ("%s", error->message);
-        return 1;
-    }
-
+    gtk_init (&argc, &argv);
     g_object_set (gtk_settings_get_default (), "gtk-application-prefer-dark-theme", TRUE, NULL);
 
     /* GtkApplication initialization */
@@ -564,7 +565,10 @@ main (gint   argc,
     GApplication *gapp = G_APPLICATION (app);
     GApplicationClass *klass = G_APPLICATION_GET_CLASS (gapp);
 
+    g_application_add_main_option (gapp, G_OPTION_REMAINING, 'e', 0, G_OPTION_ARG_STRING_ARRAY, N_("the command to launch"), "command");
+
     klass->activate = germinal_activate;
+    klass->handle_local_options = germinal_handle_options;
     g_application_register (gapp, NULL, &error);
 
     if (error)
@@ -579,12 +583,11 @@ main (gint   argc,
         return EXIT_SUCCESS;
     }
 
-    g_object_set_data (G_OBJECT (app), "germinal-command", command);
-
     /* Launch program */
     gint ret = g_application_run (gapp, argc, argv);
 
     /* Free memory */
+    g_strfreev (g_object_get_data (G_OBJECT (app), "germinal-command"));
     g_free (get_url (NULL, NULL));
     g_free (update_colors (NULL, NULL, NULL));
 
