@@ -21,11 +21,13 @@
 
 #include <glib/gi18n-lib.h>
 
+#include <stdlib.h>
+
 static void
-germinal_exit (GtkWidget *widget    G_GNUC_UNUSED,
-               gpointer   user_data G_GNUC_UNUSED)
+germinal_exit (GtkWidget *widget G_GNUC_UNUSED,
+               gpointer   user_data)
 {
-    gtk_main_quit ();
+    g_application_quit (G_APPLICATION (user_data));
 }
 
 static void
@@ -240,7 +242,7 @@ on_key_press (GtkWidget   *widget,
             return do_reset_zoom (widget, user_data);
         /* Quit */
         case GDK_KEY_Q:
-            return do_quit (widget, user_data);
+            return do_quit (widget, gtk_window_get_application (GTK_WINDOW (widget)));
         /* Window split (inspired by terminator) */
         case GDK_KEY_O:
             return launch_cmd ("tmux split-window -v");
@@ -429,33 +431,13 @@ update_colors (GSettings   *settings,
     return NULL;
 }
 
-gint
-main(gint   argc,
-     gchar *argv[])
+static void
+germinal_activate (GApplication *application)
 {
     g_autoptr (GError) error = NULL;
 
-    /* Options */
-    g_auto (GStrv) command = NULL;
-    GOptionEntry options[] =
-    {
-        { G_OPTION_REMAINING, 'e', 0, G_OPTION_ARG_STRING_ARRAY, &command, N_("the command to launch"), "command" },
-        { NULL, '\0', 0, G_OPTION_ARG_NONE, NULL, NULL, NULL }
-    };
-
-    /* Gettext and gtk initialization */
-    textdomain(GETTEXT_PACKAGE);
-    bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
-    bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-
-    if (!gtk_init_with_args (&argc, &argv, N_(" - minimalist vte-based terminal emulator"), options, GETTEXT_PACKAGE, &error))
-    {
-        g_critical ("%s", error->message);
-        return 1;
-    }
-
     /* Create window */
-    GtkWidget *window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+    GtkWidget *window = gtk_application_window_new (GTK_APPLICATION (application));
     GtkWindow *win = GTK_WINDOW (window);
 
     /* Vte settings */
@@ -498,6 +480,7 @@ main(gint   argc,
 
     /* Launch base command */
     g_autofree gchar *cwd = g_get_current_dir ();
+    GStrv command = g_object_get_data (G_OBJECT (application), "germinal-command");
 
     if (G_LIKELY (!command))
     {
@@ -517,7 +500,7 @@ main(gint   argc,
                                   &error))
     {
         g_critical ("%s", error->message);
-        return 1;
+        _exit (EXIT_FAILURE);
     }
 
     /* Populate right click menu */
@@ -545,16 +528,66 @@ main(gint   argc,
 
     /* Bind signals */
     CONNECT_SIGNAL (terminal, "button-press-event", on_button_press, menu);
-    CONNECT_SIGNAL (terminal, "child-exited",       on_child_exited, NULL);
-    CONNECT_SIGNAL (window,   "destroy",            germinal_exit,   NULL);
+    CONNECT_SIGNAL (terminal, "child-exited",       on_child_exited, application);
+    CONNECT_SIGNAL (window,   "destroy",            germinal_exit,   application);
     CONNECT_SIGNAL (window,   "key-press-event",    on_key_press,    terminal);
+}
+
+gint
+main (gint   argc,
+      gchar *argv[])
+{
+    g_autoptr (GError) error = NULL;
+
+    /* Options */
+    g_auto (GStrv) command = NULL;
+    GOptionEntry options[] =
+    {
+        { G_OPTION_REMAINING, 'e', 0, G_OPTION_ARG_STRING_ARRAY, &command, N_("the command to launch"), "command" },
+        { NULL, '\0', 0, G_OPTION_ARG_NONE, NULL, NULL, NULL }
+    };
+
+    /* Gettext and gtk initialization */
+    textdomain(GETTEXT_PACKAGE);
+    bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
+    bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
+
+    if (!gtk_init_with_args (&argc, &argv, N_(" - minimalist vte-based terminal emulator"), options, GETTEXT_PACKAGE, &error))
+    {
+        g_critical ("%s", error->message);
+        return 1;
+    }
+
+    g_object_set (gtk_settings_get_default (), "gtk-application-prefer-dark-theme", TRUE, NULL);
+
+    /* GtkApplication initialization */
+    GtkApplication *app = gtk_application_new ("org.gnome.Germinal", G_APPLICATION_NON_UNIQUE);
+    GApplication *gapp = G_APPLICATION (app);
+    GApplicationClass *klass = G_APPLICATION_GET_CLASS (gapp);
+
+    klass->activate = germinal_activate;
+    g_application_register (gapp, NULL, &error);
+
+    if (error)
+    {
+        fprintf (stderr, "%s: %s\n", _("Failed to register the gtk application"), error->message);
+        return EXIT_FAILURE;
+    }
+
+    if (g_application_get_is_remote (gapp))
+    {
+        g_application_activate (gapp);
+        return EXIT_SUCCESS;
+    }
+
+    g_object_set_data (G_OBJECT (app), "germinal-command", command);
 
     /* Launch program */
-    gtk_main ();
+    gint ret = g_application_run (gapp, argc, argv);
 
     /* Free memory */
     g_free (get_url (NULL, NULL));
     g_free (update_colors (NULL, NULL, NULL));
 
-    return 0;
+    return ret;
 }
