@@ -16,9 +16,9 @@
 # along with Germinal.  If not, see <http://www.gnu.org/licenses/>.
 
 AC_PREREQ([2.69])
-AC_INIT([Germinal],[13],[Marc-Antoine@Perennou.com])
+AC_INIT([Germinal],[14],[Marc-Antoine@Perennou.com])
 
-INTLTOOL_REQUIRED="0.50.0"
+INTLTOOL_REQUIRED="0.50.1"
 PKGCONFIG_REQUIRED="0.22"
 
 GLIB_MIN_MAJOR="2"
