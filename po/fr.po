@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Germinal\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-07 19:42+0200\n"
+"POT-Creation-Date: 2015-09-14 19:03+0200\n"
 "PO-Revision-Date: 2011-09-23 16:05+0100\n"
 "Last-Translator: Marc-Antoine Perennou <Marc-Antoine@Perennou.com>\n"
 "Language-Team: French\n"
@@ -17,49 +17,58 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: ../src/germinal/germinal.c:102
+#: ../src/germinal/germinal.c:104
 msgid "Couldn't exec"
 msgstr "Impossible d'exécuter"
 
-#: ../src/germinal/germinal.c:442
-msgid "the command to launch"
-msgstr "la commande à lancer"
-
-#: ../src/germinal/germinal.c:451
-msgid " - minimalist vte-based terminal emulator"
-msgstr " - émulateur de terminal minimaliste basé sur vte"
-
-#: ../src/germinal/germinal.c:526
+#: ../src/germinal/germinal.c:510
 msgid "Copy url"
 msgstr "Copier la cible du lien"
 
-#: ../src/germinal/germinal.c:527
+#: ../src/germinal/germinal.c:511
 msgid "Open url"
 msgstr "Suivre le lien"
 
-#: ../src/germinal/germinal.c:531
+#: ../src/germinal/germinal.c:515
 msgid "Copy"
 msgstr "Copier"
 
-#: ../src/germinal/germinal.c:532
+#: ../src/germinal/germinal.c:516
 msgid "Paste"
 msgstr "Coller"
 
-#: ../src/germinal/germinal.c:536
+#: ../src/germinal/germinal.c:520
 msgid "Zoom"
 msgstr "Zoomer"
 
-#: ../src/germinal/germinal.c:537
+#: ../src/germinal/germinal.c:521
 msgid "Dezoom"
 msgstr "Dézoomzer"
 
-#: ../src/germinal/germinal.c:538
+#: ../src/germinal/germinal.c:522
 msgid "Reset zoom"
 msgstr "Restaurer zoom"
 
-#: ../src/germinal/germinal.c:542
+#: ../src/germinal/germinal.c:526
 msgid "Quit"
 msgstr "Quitter"
+
+#: ../src/germinal/germinal.c:571
+msgid "the command to launch"
+msgstr "la commande à lancer"
+
+#: ../data/appstream/org.gnome.Germinal.appdata.xml.in.h:1
+msgid "Germinal is a minimalist vte-based terminal emulator"
+msgstr "Germinal est un émulateur de terminal minimaliste basé sur vte"
+
+#: ../data/appstream/org.gnome.Germinal.appdata.xml.in.h:2
+msgid "Germinal is a minimalist terminal emulator aiming for simplicity."
+msgstr "Germinal est un émulateur de terminal visant la simplicité"
+
+#: ../data/appstream/org.gnome.Germinal.appdata.xml.in.h:3
+msgid "You can customize Germinal using dconf-editor, in /org/gnome/Germinal."
+msgstr ""
+"Vous pouvez configurer Germinal avec dconf-editor, donc /org/gnome/Germinal."
 
 #: ../data/desktop/org.gnome.Germinal.desktop.in.in.h:1
 msgid "Minimalist vte-based terminal emulator"
