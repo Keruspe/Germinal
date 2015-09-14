@@ -553,8 +553,6 @@ gint
 main (gint   argc,
       gchar *argv[])
 {
-    g_autoptr (GError) error = NULL;
-
     /* Gettext and gtk initialization */
     textdomain(GETTEXT_PACKAGE);
     bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
@@ -564,7 +562,7 @@ main (gint   argc,
     g_object_set (gtk_settings_get_default (), "gtk-application-prefer-dark-theme", TRUE, NULL);
 
     /* GtkApplication initialization */
-    GtkApplication *app = gtk_application_new ("org.gnome.Germinal", G_APPLICATION_NON_UNIQUE|G_APPLICATION_HANDLES_COMMAND_LINE);
+    GtkApplication *app = gtk_application_new ("org.gnome.Germinal", G_APPLICATION_HANDLES_COMMAND_LINE);
     GApplication *gapp = G_APPLICATION (app);
     GApplicationClass *klass = G_APPLICATION_GET_CLASS (gapp);
 
@@ -572,13 +570,6 @@ main (gint   argc,
 
     klass->command_line = germinal_command_line;
     klass->activate = germinal_activate;
-    g_application_register (gapp, NULL, &error);
-
-    if (error)
-    {
-        fprintf (stderr, "%s: %s\n", _("Failed to register the gtk application"), error->message);
-        return EXIT_FAILURE;
-    }
 
     /* Launch program */
     gint ret = g_application_run (gapp, argc, argv);
