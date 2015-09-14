@@ -431,11 +431,12 @@ update_colors (GSettings   *settings,
     return NULL;
 }
 
-static gint
-germinal_command_line (GApplication            *application,
-                       GApplicationCommandLine *command_line)
+static int
+germinal_create_window (GApplication *application,
+                        GStrv         command)
 {
     g_autoptr (GError) error = NULL;
+    g_auto (GStrv) _free_command = command;
 
     /* Create window */
     GtkWidget *window = gtk_application_window_new (GTK_APPLICATION (application));
@@ -481,8 +482,6 @@ germinal_command_line (GApplication            *application,
 
     /* Launch base command */
     g_autofree gchar *cwd = g_get_current_dir ();
-    g_autoptr (GVariant) v = g_variant_dict_lookup_value (g_application_command_line_get_options_dict (command_line), G_OPTION_REMAINING, NULL);
-    g_auto (GStrv) command = (v) ? g_variant_dup_strv (v, NULL) : NULL;
 
     if (G_LIKELY (!command))
     {
@@ -536,17 +535,20 @@ germinal_command_line (GApplication            *application,
     return EXIT_SUCCESS;
 }
 
+static gint
+germinal_command_line (GApplication            *application,
+                       GApplicationCommandLine *command_line)
+{
+    g_autoptr (GVariant) v = g_variant_dict_lookup_value (g_application_command_line_get_options_dict (command_line), G_OPTION_REMAINING, NULL);
+    GStrv command = (v) ? g_variant_dup_strv (v, NULL) : NULL;
+
+    return germinal_create_window (application, command);
+}
+
 static void
 germinal_activate (GApplication *application)
 {
-    for (GList *wins = gtk_application_get_windows (GTK_APPLICATION (application)); wins; wins = g_list_next (wins))
-    {
-        if (gtk_widget_get_realized (wins->data))
-        {
-            gtk_window_present (wins->data);
-            break;
-        }
-    }
+    germinal_create_window (application, NULL);
 }
 
 gint
