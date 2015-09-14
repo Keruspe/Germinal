@@ -21,6 +21,7 @@ ACLOCAL_AMFLAGS  = -I m4 ${ACLOCAL_FLAGS}
 AM_MAKEFLAGS = --no-print-directory
 AM_DISTCHECK_CONFIGURE_FLAGS =                                        \
 	--with-dbusservicesdir="$$dc_install_base/$(dbusservicesdir)" \
+	--enable-appstream-util                                       \
 	$(NULL)
 
 AM_CFLAGS =                          \
@@ -62,6 +63,7 @@ include src/germinal.mk
 
 # Data
 
+include data/appstream.mk
 include data/dbus.mk
 include data/desktop.mk
 include data/gsettings.mk

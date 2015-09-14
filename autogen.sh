@@ -42,6 +42,7 @@ run_action() {
     local configure_args=(
         --prefix=/usr
         --sysconfdir=/etc
+	--enable-appstream-util
     )
 
     case "${action}" in

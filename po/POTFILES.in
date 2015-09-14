@@ -1,3 +1,4 @@
 src/germinal/germinal.c
+data/appstream/org.gnome.Germinal.appdata.xml.in
 data/desktop/org.gnome.Germinal.desktop.in.in
 data/gsettings/org.gnome.Germinal.gschema.xml

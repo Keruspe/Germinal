@@ -4,6 +4,9 @@ NEW in 13 (Not released yet)
 - automake 1.15 is required
 - .tmux.conf is no longer required
 - gtk+ 3.4.0 is required
+- now all windows will be managed by a single Germinal instance
+- Germinal is now dbus activated
+- appstream file is provided
 
 NEW in 12 (07/09/2015)
 =============
