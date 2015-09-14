@@ -431,8 +431,9 @@ update_colors (GSettings   *settings,
     return NULL;
 }
 
-static void
-germinal_activate (GApplication *application)
+static gint
+germinal_command_line (GApplication            *application,
+                       GApplicationCommandLine *command_line)
 {
     g_autoptr (GError) error = NULL;
 
@@ -480,7 +481,8 @@ germinal_activate (GApplication *application)
 
     /* Launch base command */
     g_autofree gchar *cwd = g_get_current_dir ();
-    GStrv command = g_object_get_data (G_OBJECT (application), "germinal-command");
+    g_autoptr (GVariant) v = g_variant_dict_lookup_value (g_application_command_line_get_options_dict (command_line), G_OPTION_REMAINING, NULL);
+    g_auto (GStrv) command = (v) ? g_variant_dup_strv (v, NULL) : NULL;
 
     if (G_LIKELY (!command))
     {
@@ -500,7 +502,7 @@ germinal_activate (GApplication *application)
                                   &error))
     {
         g_critical ("%s", error->message);
-        _exit (EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
     /* Populate right click menu */
@@ -530,28 +532,21 @@ germinal_activate (GApplication *application)
     CONNECT_SIGNAL (terminal, "button-press-event", on_button_press, menu);
     CONNECT_SIGNAL (terminal, "child-exited",       on_child_exited, application);
     CONNECT_SIGNAL (window,   "key-press-event",    on_key_press,    terminal);
+
+    return EXIT_SUCCESS;
 }
 
-static gboolean
-_germinal_activate (gpointer user_data)
+static void
+germinal_activate (GApplication *application)
 {
-    germinal_activate (G_APPLICATION (user_data));
-
-    return G_SOURCE_REMOVE;
-}
-
-static gint
-germinal_handle_options (GApplication *gapp,
-                         GVariantDict *options)
-{
-    g_autoptr (GVariant) v = g_variant_dict_lookup_value (options, G_OPTION_REMAINING, NULL);
-
-    if (v)
-        g_object_set_data (G_OBJECT (gapp), "germinal-command", g_variant_dup_strv (v, NULL));
-
-    g_idle_add (_germinal_activate, gapp);
-
-    return -1;
+    for (GList *wins = gtk_application_get_windows (GTK_APPLICATION (application)); wins; wins = g_list_next (wins))
+    {
+        if (gtk_widget_get_realized (wins->data))
+        {
+            gtk_window_present (wins->data);
+            break;
+        }
+    }
 }
 
 gint
@@ -569,14 +564,14 @@ main (gint   argc,
     g_object_set (gtk_settings_get_default (), "gtk-application-prefer-dark-theme", TRUE, NULL);
 
     /* GtkApplication initialization */
-    GtkApplication *app = gtk_application_new ("org.gnome.Germinal", G_APPLICATION_NON_UNIQUE);
+    GtkApplication *app = gtk_application_new ("org.gnome.Germinal", G_APPLICATION_NON_UNIQUE|G_APPLICATION_HANDLES_COMMAND_LINE);
     GApplication *gapp = G_APPLICATION (app);
     GApplicationClass *klass = G_APPLICATION_GET_CLASS (gapp);
 
     g_application_add_main_option (gapp, G_OPTION_REMAINING, 'e', 0, G_OPTION_ARG_STRING_ARRAY, N_("the command to launch"), "command");
 
+    klass->command_line = germinal_command_line;
     klass->activate = germinal_activate;
-    klass->handle_local_options = germinal_handle_options;
     g_application_register (gapp, NULL, &error);
 
     if (error)
@@ -585,17 +580,10 @@ main (gint   argc,
         return EXIT_FAILURE;
     }
 
-    if (g_application_get_is_remote (gapp))
-    {
-        g_application_activate (gapp);
-        return EXIT_SUCCESS;
-    }
-
     /* Launch program */
     gint ret = g_application_run (gapp, argc, argv);
 
     /* Free memory */
-    g_strfreev (g_object_get_data (G_OBJECT (app), "germinal-command"));
     g_free (get_url (NULL, NULL));
     g_free (update_colors (NULL, NULL, NULL));
 
