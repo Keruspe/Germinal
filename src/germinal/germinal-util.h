@@ -39,11 +39,25 @@
 #define WORD_CHAR_EXCEPTIONS_KEY "word-char-exceptions"
 
 /* Watch a setting's changes */
-#define SETTING_SIGNAL(key, fn)                 \
-    g_signal_connect (G_OBJECT (settings),      \
-                      "changed::" key##_KEY,    \
-                      G_CALLBACK (update_##fn), \
-                      terminal)
+#define SETTING_SIGNAL(key, fn)                     \
+    g_signal_connect (G_OBJECT (settings),          \
+                      "changed::" key##_KEY,        \
+                      G_CALLBACK (update_all_##fn), \
+                      app)
+
+/* Loop over all windows to apply a settings change */
+#define SETTING_UPDATE_FUNC(fn)                                       \
+    static void                                                       \
+    update_all_##fn (GSettings   *settings,                           \
+                     const gchar *key,                                \
+                     gpointer     user_data)                          \
+    {                                                                 \
+        germinal_windows_foreach (GTK_APPLICATION (user_data),        \
+                                  (GerminalSettingsFunc) update_##fn, \
+                                  settings,                           \
+                                  key);                               \
+    }
+
 
 /* Create a menu item, add it to the menu and bind its action */
 #define MENU_ACTION(name, label)                                        \

@@ -23,6 +23,10 @@
 
 #include <stdlib.h>
 
+typedef void (*GerminalSettingsFunc) (GSettings   *settings,
+                                      const gchar *key,
+                                      gpointer     user_data);
+
 static void
 on_child_exited (VteTerminal *vteterminal,
                  gint         status,
@@ -462,15 +466,8 @@ germinal_create_window (GApplication *application,
 
     vte_terminal_match_add_gregex (term, url_regexp, 0);
 
-    /* Apply and track user settings */
-    g_autoptr (GSettings) settings = g_settings_new ("org.gnome.Germinal");
-
-    SETTING_SIGNAL (BACKCOLOR,            colors);
-    SETTING_SIGNAL (FORECOLOR,            colors);
-    SETTING_SIGNAL (PALETTE,              colors);
-    SETTING_SIGNAL (FONT,                 font);
-    SETTING_SIGNAL (SCROLLBACK,           scrollback);
-    SETTING_SIGNAL (WORD_CHAR_EXCEPTIONS, word_char_exceptions);
+    /* Apply user settings */
+    GSettings *settings = g_object_get_data (G_OBJECT (application), "germinal-settings");
 
     update_colors               (settings, NULL,                     terminal);
     update_font                 (settings, FONT_KEY,                 terminal);
@@ -546,6 +543,21 @@ germinal_activate (GApplication *application)
     germinal_create_window (application, g_get_environ(), NULL);
 }
 
+static void
+germinal_windows_foreach (GtkApplication      *application,
+                          GerminalSettingsFunc fn,
+                          GSettings           *settings,
+                          const gchar         *key)
+{
+    for (GList *w = gtk_application_get_windows (application); w; w = w->next)
+        fn (settings, key, w->data);
+}
+
+SETTING_UPDATE_FUNC (colors);
+SETTING_UPDATE_FUNC (font);
+SETTING_UPDATE_FUNC (scrollback);
+SETTING_UPDATE_FUNC (word_char_exceptions);
+
 gint
 main (gint   argc,
       gchar *argv[])
@@ -567,6 +579,18 @@ main (gint   argc,
 
     klass->command_line = germinal_command_line;
     klass->activate = germinal_activate;
+
+    /* track user settings */
+    g_autoptr (GSettings) settings = g_settings_new ("org.gnome.Germinal");
+
+    SETTING_SIGNAL (BACKCOLOR,            colors);
+    SETTING_SIGNAL (FORECOLOR,            colors);
+    SETTING_SIGNAL (PALETTE,              colors);
+    SETTING_SIGNAL (FONT,                 font);
+    SETTING_SIGNAL (SCROLLBACK,           scrollback);
+    SETTING_SIGNAL (WORD_CHAR_EXCEPTIONS, word_char_exceptions);
+
+    g_object_set_data (G_OBJECT (app), "germinal-settings", settings);
 
     /* Launch program */
     gint ret = g_application_run (gapp, argc, argv);
