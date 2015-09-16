@@ -475,8 +475,6 @@ germinal_create_window (GApplication *application,
     SETTING (WORD_CHAR_EXCEPTIONS, word_char_exceptions);
 
     /* Launch base command */
-    g_autofree gchar *cwd = g_get_current_dir ();
-
     if (G_LIKELY (!command))
     {
         g_autofree gchar *setting = get_setting (settings, STARTUP_COMMAND_KEY);
@@ -487,7 +485,7 @@ germinal_create_window (GApplication *application,
     g_auto (GStrv) envp = g_environ_setenv (env, "TERM", get_setting (settings, TERM_KEY), TRUE);
 
     /* Spawn our command */
-    if (!vte_terminal_spawn_sync (term, VTE_PTY_DEFAULT, cwd, command, envp, G_SPAWN_SEARCH_PATH,
+    if (!vte_terminal_spawn_sync (term, VTE_PTY_DEFAULT, NULL /* cwd */, command, envp, G_SPAWN_SEARCH_PATH,
                                   NULL, /* child_setup */
                                   NULL, /* child_setup_data */
                                   NULL, /* child_pid */
