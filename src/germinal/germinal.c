@@ -37,7 +37,7 @@ on_child_exited (VteTerminal *vteterminal,
 {
     if (status)
         g_critical ("child exited with code %d", status);
-    germinal_exit (GTK_WIDGET (vteterminal), user_data);
+    gtk_window_close (GTK_WINDOW (user_data));
 }
 
 static gboolean
@@ -530,7 +530,7 @@ germinal_create_window (GApplication *application,
 
     /* Bind signals */
     CONNECT_SIGNAL (terminal, "button-press-event", on_button_press, menu);
-    CONNECT_SIGNAL (terminal, "child-exited",       on_child_exited, application);
+    CONNECT_SIGNAL (terminal, "child-exited",       on_child_exited, win);
     CONNECT_SIGNAL (window,   "key-press-event",    on_key_press,    terminal);
 
     return EXIT_SUCCESS;
