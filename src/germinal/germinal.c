@@ -24,13 +24,6 @@
 #include <stdlib.h>
 
 static void
-germinal_exit (GtkWidget *widget G_GNUC_UNUSED,
-               gpointer   user_data)
-{
-    g_application_quit (G_APPLICATION (user_data));
-}
-
-static void
 on_child_exited (VteTerminal *vteterminal,
                  gint         status,
                  gpointer     user_data)
@@ -201,7 +194,7 @@ static gboolean
 do_quit (GtkWidget *widget,
          gpointer   user_data)
 {
-    germinal_exit (widget, user_data);
+    gtk_window_close (GTK_WINDOW (user_data));
 
     return TRUE;
 }
@@ -242,7 +235,7 @@ on_key_press (GtkWidget   *widget,
             return do_reset_zoom (widget, user_data);
         /* Quit */
         case GDK_KEY_Q:
-            return do_quit (widget, gtk_window_get_application (GTK_WINDOW (widget)));
+            return do_quit (widget, widget));
         /* Window split (inspired by terminator) */
         case GDK_KEY_O:
             return launch_cmd ("tmux split-window -v");
