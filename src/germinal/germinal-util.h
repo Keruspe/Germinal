@@ -44,10 +44,6 @@
                       "changed::" key##_KEY,    \
                       G_CALLBACK (update_##fn), \
                       terminal)
-/* Watch a setting's changes and initialize with current value */
-#define SETTING(key, fn)     \
-    SETTING_SIGNAL (key, fn); \
-    update_##fn (settings, key##_KEY, terminal)
 
 /* Create a menu item, add it to the menu and bind its action */
 #define MENU_ACTION(name, label)                                        \

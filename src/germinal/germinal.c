@@ -465,14 +465,17 @@ germinal_create_window (GApplication *application,
     /* Apply and track user settings */
     g_autoptr (GSettings) settings = g_settings_new ("org.gnome.Germinal");
 
-    SETTING_SIGNAL (BACKCOLOR, colors);
-    SETTING_SIGNAL (FORECOLOR, colors);
-    SETTING_SIGNAL (PALETTE,   colors);
-    update_colors (settings, NULL, terminal);
+    SETTING_SIGNAL (BACKCOLOR,            colors);
+    SETTING_SIGNAL (FORECOLOR,            colors);
+    SETTING_SIGNAL (PALETTE,              colors);
+    SETTING_SIGNAL (FONT,                 font);
+    SETTING_SIGNAL (SCROLLBACK,           scrollback);
+    SETTING_SIGNAL (WORD_CHAR_EXCEPTIONS, word_char_exceptions);
 
-    SETTING (FONT,                 font);
-    SETTING (SCROLLBACK,           scrollback);
-    SETTING (WORD_CHAR_EXCEPTIONS, word_char_exceptions);
+    update_colors               (settings, NULL,                     terminal);
+    update_font                 (settings, FONT_KEY,                 terminal);
+    update_scrollback           (settings, SCROLLBACK_KEY,           terminal);
+    update_word_char_exceptions (settings, WORD_CHAR_EXCEPTIONS_KEY, terminal);
 
     /* Launch base command */
     if (G_LIKELY (!command))
