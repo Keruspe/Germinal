@@ -235,7 +235,7 @@ on_key_press (GtkWidget   *widget,
             return do_reset_zoom (widget, user_data);
         /* Quit */
         case GDK_KEY_Q:
-            return do_quit (widget, widget));
+            return do_quit (widget, widget);
         /* Window split (inspired by terminator) */
         case GDK_KEY_O:
             return launch_cmd ("tmux split-window -v");

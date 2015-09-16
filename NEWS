@@ -1,5 +1,8 @@
-NEW in 14 (Not released yet)
+NEW in 14 (16/09/2015)
 =============
+
+- gtk+ 3.10.0 is required
+- fix a few bugs introduced in v13
 
 NEW in 13 (14/09/2015)
 =============
