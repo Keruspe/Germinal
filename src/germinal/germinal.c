@@ -550,7 +550,7 @@ germinal_windows_foreach (GtkApplication      *application,
                           const gchar         *key)
 {
     for (GList *w = gtk_application_get_windows (application); w; w = w->next)
-        fn (settings, key, w->data);
+        fn (settings, key, gtk_container_get_children (GTK_CONTAINER (w->data))->data);
 }
 
 SETTING_UPDATE_FUNC (colors);
