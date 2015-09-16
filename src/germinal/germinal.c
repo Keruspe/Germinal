@@ -564,7 +564,7 @@ main (gint   argc,
     g_object_set (gtk_settings_get_default (), "gtk-application-prefer-dark-theme", TRUE, NULL);
 
     /* GtkApplication initialization */
-    GtkApplication *app = gtk_application_new ("org.gnome.Germinal", G_APPLICATION_HANDLES_COMMAND_LINE);
+    GtkApplication *app = gtk_application_new ("org.gnome.Germinal", G_APPLICATION_HANDLES_COMMAND_LINE|G_APPLICATION_SEND_ENVIRONMENT);
     GApplication *gapp = G_APPLICATION (app);
     GApplicationClass *klass = G_APPLICATION_GET_CLASS (gapp);
 
