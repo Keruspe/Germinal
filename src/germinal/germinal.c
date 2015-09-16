@@ -433,6 +433,7 @@ update_colors (GSettings   *settings,
 
 static int
 germinal_create_window (GApplication *application,
+                        gchar       **env,
                         GStrv         command)
 {
     g_autoptr (GError) error = NULL;
@@ -490,7 +491,7 @@ germinal_create_window (GApplication *application,
     }
 
     /* Override TERM */
-    g_auto (GStrv) envp = g_environ_setenv (NULL, "TERM", get_setting (settings, TERM_KEY), TRUE);
+    g_auto (GStrv) envp = g_environ_setenv (env, "TERM", get_setting (settings, TERM_KEY), TRUE);
 
     /* Spawn our command */
     if (!vte_terminal_spawn_sync (term, VTE_PTY_DEFAULT, cwd, command, envp, G_SPAWN_SEARCH_PATH,
@@ -542,13 +543,13 @@ germinal_command_line (GApplication            *application,
     g_autoptr (GVariant) v = g_variant_dict_lookup_value (g_application_command_line_get_options_dict (command_line), G_OPTION_REMAINING, NULL);
     GStrv command = (v) ? g_variant_dup_strv (v, NULL) : NULL;
 
-    return germinal_create_window (application, command);
+    return germinal_create_window (application, g_strdupv ((gchar **) g_application_command_line_get_environ (command_line)), command);
 }
 
 static void
 germinal_activate (GApplication *application)
 {
-    germinal_create_window (application, NULL);
+    germinal_create_window (application, g_get_environ(), NULL);
 }
 
 gint
