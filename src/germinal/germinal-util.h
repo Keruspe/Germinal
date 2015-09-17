@@ -17,7 +17,12 @@
  * along with Germinal.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef __GERMINAL_UTIL_H__
+#define __GERMINAL_UTIL_H__
+
 #include <gtk/gtk.h>
+
+G_BEGIN_DECLS
 
 /* Url Regexp */
 #define CHARACTER          "[a-zA-Z]"
@@ -81,3 +86,6 @@
                       G_CALLBACK (fn),        \
                       data)
 
+#endif /* __GERMINAL_UTIL_H__ */
+
+G_END_DECLS

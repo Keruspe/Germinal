@@ -17,9 +17,14 @@
  * along with Germinal.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef __GERMINAL_CLEANUP_H__
+#define __GERMINAL_CLEANUP_H__
+
 #include "germinal-util.h"
 
 #include <vte/vte.h>
+
+G_BEGIN_DECLS
 
 #define GERMINAL_CLEANUP(x) __attribute__((cleanup(x)))
 
@@ -30,3 +35,7 @@ cleanup_font (PangoFontDescription **font)
 {
     pango_font_description_free (*font);
 }
+
+G_END_DECLS
+
+#endif /* __GERMINAL_CLEANUP_H__ */
