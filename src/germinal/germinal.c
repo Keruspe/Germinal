@@ -73,6 +73,22 @@ get_url (VteTerminal    *terminal,
 }
 
 static gboolean
+germinal_spawn (gchar  **cmd,
+                GError **error)
+{
+    g_auto (GStrv) env = g_get_environ ();
+
+    return g_spawn_async (g_get_home_dir (),
+                          cmd,
+                          env,
+                          G_SPAWN_SEARCH_PATH,
+                          NULL, /* child setup */
+                          NULL, /* child setup data */
+                          NULL, /* child pid */
+                          error);
+}
+
+static gboolean
 open_url (gchar *url)
 {
     if (!url)
@@ -90,14 +106,7 @@ open_url (gchar *url)
 
     gchar *cmd[] = {browser, url, NULL};
 
-    if (!g_spawn_async (NULL, /* working directory */
-                        cmd,
-                        NULL, /* env */
-                        G_SPAWN_SEARCH_PATH,
-                        NULL, /* child setup */
-                        NULL, /* child setup data */
-                        NULL, /* child pid */
-                        &error))
+    if (!germinal_spawn (cmd, &error))
         g_warning ("%s \"%s %s\": %s", _("Couldn't exec"), browser, url, error->message);
 
     return TRUE;
@@ -204,9 +213,14 @@ do_quit (GtkWidget *widget,
 }
 
 static gboolean
-launch_cmd (const gchar *cmd)
+launch_cmd (const gchar *_cmd)
 {
-    return g_spawn_command_line_async (cmd, NULL);
+    g_auto (GStrv) cmd = NULL;
+
+    if (!g_shell_parse_argv (_cmd, NULL, &cmd, NULL))
+        return FALSE;
+
+    return germinal_spawn (cmd, NULL);
 }
 
 static gboolean
