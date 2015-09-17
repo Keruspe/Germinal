@@ -484,7 +484,7 @@ germinal_create_window (GApplication *application,
     g_auto (GStrv) envp = g_environ_setenv (g_get_environ (), "TERM", get_setting (settings, TERM_KEY), TRUE);
 
     /* Spawn our command */
-    if (!vte_terminal_spawn_sync (term, VTE_PTY_DEFAULT, NULL /* cwd */, command, envp, G_SPAWN_SEARCH_PATH,
+    if (!vte_terminal_spawn_sync (term, VTE_PTY_DEFAULT, g_get_home_dir (), command, envp, G_SPAWN_SEARCH_PATH,
                                   NULL, /* child_setup */
                                   NULL, /* child_setup_data */
                                   NULL, /* child_pid */
