@@ -70,16 +70,13 @@ AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE], ["$GETTEXT_PACKAGE"], [Gettext Package])
 AC_SUBST(GETTEXT_PACKAGE)
 IT_PROG_INTLTOOL([$INTLTOOL_REQUIRED])
 
-GLIB_GSETTINGS
-
-APPSTREAM_XML
-
 PKG_PROG_PKG_CONFIG([$PKGCONFIG_REQUIRED])
 
-PKG_CHECK_MODULES(GLIB,  [glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED])
-PKG_CHECK_MODULES(GTK,   [gtk+-3.0 >= $GTK_REQUIRED  gdk-3.0 >= $GTK_REQUIRED])
-PKG_CHECK_MODULES(VTE,   [vte-2.91 >= $VTE_REQUIRED])
-PKG_CHECK_MODULES(PANGO, [pango])
+PKG_CHECK_MODULES(GLIB,      [glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED])
+PKG_CHECK_MODULES(GTK,       [gtk+-3.0 >= $GTK_REQUIRED  gdk-3.0 >= $GTK_REQUIRED])
+PKG_CHECK_MODULES(VTE,       [vte-2.91 >= $VTE_REQUIRED])
+PKG_CHECK_MODULES(PANGO,     [pango])
+PKG_CHECK_MODULES(APPSTREAM, [appstream-glib])
 
 PKG_CHECK_MODULES(DBUS, [dbus-1])
 AC_ARG_WITH([dbusservicesdir],
@@ -87,6 +84,10 @@ AC_ARG_WITH([dbusservicesdir],
             [],
             [with_dbusservicesdir=`$PKG_CONFIG --variable=session_bus_services_dir dbus-1`])
 AC_SUBST([dbusservicesdir], [$with_dbusservicesdir])
+
+GLIB_GSETTINGS
+
+APPSTREAM_XML
 
 AC_CONFIG_FILES([
   Makefile
