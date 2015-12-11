@@ -15,8 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Germinal.  If not, see <http://www.gnu.org/licenses/>.
 
-germinal_gschema_file = %reldir%/gsettings/org.gnome.Germinal.gschema.xml
-gschemas_compiled = %reldir%/gsettings/gschemas.compiled
+germinal_gschema_file = %D%/gsettings/org.gnome.Germinal.gschema.xml
+gschemas_compiled = %D%/gsettings/gschemas.compiled
 
 gsettings_SCHEMAS =              \
 	$(germinal_gschema_file) \
@@ -25,7 +25,7 @@ gsettings_SCHEMAS =              \
 @GSETTINGS_RULES@
 
 $(germinal_gschema_file:.xml=.valid): $(germinal_gschema_file)
-	@ $(MKDIR_P) %reldir%/gsettings
+	@ $(MKDIR_P) %D%/gsettings
 
 $(gschemas_compiled): $(gsettings_SCHEMAS:.xml=.valid)
 	$(AM_V_GEN) $(GLIB_COMPILE_SCHEMAS) --targetdir=$(srcdir) .

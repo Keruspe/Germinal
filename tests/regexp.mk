@@ -15,18 +15,18 @@
 # You should have received a copy of the GNU General Public License
 # along with Germinal.  If not, see <http://www.gnu.org/licenses/>.
 
-TESTS +=                         \
-	%reldir%/bin/test-regexp \
+TESTS +=                    \
+	%D%/bin/test-regexp \
 	$(NULL)
 
-%canon_reldir%_bin_test_regexp_SOURCES = \
-	%reldir%/regexp/test-regexp.c    \
+%C%_bin_test_regexp_SOURCES =    \
+	%D%/regexp/test-regexp.c \
 	$(NULL)
 
-%canon_reldir%_bin_test_regexp_CFLAGS = \
-	$(AM_CFLAGS)                    \
+%C%_bin_test_regexp_CFLAGS = \
+	$(AM_CFLAGS)         \
 	$(NULL)
 
-%canon_reldir%_bin_test_regexp_LDADD = \
-	$(GLIB_LIBS)                   \
+%C%_bin_test_regexp_LDADD = \
+	$(GLIB_LIBS)        \
 	$(NULL)

@@ -18,16 +18,16 @@
 @APPSTREAM_XML_RULES@
 @INTLTOOL_XML_RULE@
 
-appstream_in_files = \
+appstream_in_files =                                     \
 	data/appstream/org.gnome.Germinal.appdata.xml.in \
 	$(NULL)
 
 appstream_XML = $(appstream_in_files:.xml.in=.xml)
 
-EXTRA_DIST += \
+EXTRA_DIST +=                 \
 	$(appstream_in_files) \
 	$(NULL)
 
-CLEANFILES += \
+CLEANFILES +=            \
 	$(appstream_XML) \
 	$(NULL)

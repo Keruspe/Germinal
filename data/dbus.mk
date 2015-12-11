@@ -15,21 +15,21 @@
 # You should have received a copy of the GNU General Public License
 # along with Germinal.  If not, see <http://www.gnu.org/licenses/>.
 
-nodist_dbusservices_DATA =                       \
-	%reldir%/dbus/org.gnome.Germinal.service \
+nodist_dbusservices_DATA =                  \
+	%D%/dbus/org.gnome.Germinal.service \
 	$(NULL)
 
 SUFFIXES += .service .dbus.in
 .dbus.in.service:
-	@ $(MKDIR_P) %reldir%/dbus
+	@ $(MKDIR_P) %D%/dbus
 	$(AM_V_GEN) $(SED)                  \
 	    -e 's,[@]bindir[@],$(bindir),g' \
 	    <$^ >$@
 
-EXTRA_DIST += \
+EXTRA_DIST +=                                         \
 	$(nodist_dbusservices_DATA:.service=.dbus.in) \
 	$(NULL)
 
-CLEANFILES += \
+CLEANFILES +=                       \
 	$(nodist_dbusservices_DATA) \
 	$(NULL)
