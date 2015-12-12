@@ -544,7 +544,15 @@ static gint
 germinal_command_line (GApplication            *application,
                        GApplicationCommandLine *command_line)
 {
-    g_autoptr (GVariant) v = g_variant_dict_lookup_value (g_application_command_line_get_options_dict (command_line), G_OPTION_REMAINING, NULL);
+    GVariantDict *dict = g_application_command_line_get_options_dict (command_line);
+
+    if (g_variant_dict_contains (dict, "version"))
+    {
+        g_application_command_line_print (command_line, PACKAGE_STRING "\n");
+        return 0;
+    }
+
+    g_autoptr (GVariant) v = g_variant_dict_lookup_value (dict, G_OPTION_REMAINING, NULL);
     GStrv command = (v) ? g_variant_dup_strv (v, NULL) : NULL;
 
     return germinal_create_window (application, command);
@@ -588,6 +596,7 @@ main (gint   argc,
     GApplication *gapp = G_APPLICATION (app);
     GApplicationClass *klass = G_APPLICATION_GET_CLASS (gapp);
 
+    g_application_add_main_option (gapp, "version",          'v', 0, G_OPTION_ARG_NONE,         N_("display the version"),   "version");
     g_application_add_main_option (gapp, G_OPTION_REMAINING, 'e', 0, G_OPTION_ARG_STRING_ARRAY, N_("the command to launch"), "command");
 
     klass->command_line = germinal_command_line;
