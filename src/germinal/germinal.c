@@ -381,6 +381,17 @@ update_word_char_exceptions (GSettings   *settings,
 }
 
 static void
+update_bell (GSettings   *settings,
+             const gchar *key,
+             gpointer     user_data)
+{
+    gboolean bell = g_settings_get_boolean (settings, key);
+    VteTerminal *term = user_data;
+
+    vte_terminal_set_audible_bell (term, bell);
+}
+
+static void
 update_font (GSettings   *settings,
              const gchar *key,
              gpointer     user_data)
@@ -458,7 +469,6 @@ germinal_create_window (GApplication *application,
     VteTerminal *term = VTE_TERMINAL (terminal);
 
     vte_terminal_set_mouse_autohide      (term, TRUE);
-    vte_terminal_set_audible_bell        (term, FALSE);
     vte_terminal_set_scroll_on_output    (term, FALSE);
     vte_terminal_set_scroll_on_keystroke (term, TRUE);
 
@@ -482,6 +492,7 @@ germinal_create_window (GApplication *application,
     /* Apply user settings */
     GSettings *settings = g_object_get_data (G_OBJECT (application), "germinal-settings");
 
+    update_bell                 (settings, NULL,                     terminal);
     update_colors               (settings, NULL,                     terminal);
     update_font                 (settings, FONT_KEY,                 terminal);
     update_scrollback           (settings, SCROLLBACK_KEY,           terminal);
@@ -574,6 +585,7 @@ germinal_windows_foreach (GtkApplication      *application,
         fn (settings, key, gtk_container_get_children (GTK_CONTAINER (w->data))->data);
 }
 
+SETTING_UPDATE_FUNC (bell);
 SETTING_UPDATE_FUNC (colors);
 SETTING_UPDATE_FUNC (font);
 SETTING_UPDATE_FUNC (scrollback);
@@ -605,6 +617,7 @@ main (gint   argc,
     /* track user settings */
     g_autoptr (GSettings) settings = g_settings_new ("org.gnome.Germinal");
 
+    SETTING_SIGNAL (AUDIBLE_BELL,         bell);
     SETTING_SIGNAL (BACKCOLOR,            colors);
     SETTING_SIGNAL (FORECOLOR,            colors);
     SETTING_SIGNAL (PALETTE,              colors);
@@ -621,6 +634,7 @@ main (gint   argc,
     g_free (get_url (NULL, NULL));
     g_free (update_colors (NULL, NULL, NULL));
 
+    SETTING_SIGNAL_CLEANUP (AUDIBLE_BELL);
     SETTING_SIGNAL_CLEANUP (BACKCOLOR);
     SETTING_SIGNAL_CLEANUP (FORECOLOR);
     SETTING_SIGNAL_CLEANUP (PALETTE);

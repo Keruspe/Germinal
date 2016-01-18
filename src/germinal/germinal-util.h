@@ -34,6 +34,7 @@ G_BEGIN_DECLS
 #define URL_REGEXP         CHARACTER "+://(" QUOTED_TEXT "|" PAREN_TEXT "|" SQUARE_BRACED_TEXT "|" DUMB_USERS_TEXT "|" STRAIGHT_TEXT_ONLY ")+"
 
 /* Settings keys */
+#define AUDIBLE_BELL_KEY         "audible-bell"
 #define BACKCOLOR_KEY            "backcolor"
 #define FONT_KEY                 "font"
 #define FORECOLOR_KEY            "forecolor"

@@ -82,5 +82,13 @@
       </description>
     </key>
 
+    <key name="audible-bell" type="b">
+      <default>false</default>
+      <summary>Activate the audible bell</summary>
+      <description>
+        By default, we disable it
+      </description>
+    </key>
+
   </schema>
 </schemalist>
