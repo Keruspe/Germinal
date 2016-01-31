@@ -1,5 +1,11 @@
-NEW in 15 (Not released yet)
+NEW in 15 (31/01/2016)
 =============
+
+- build system cleanup
+- audible bell is configurable
+- environment handling fixes
+- multi-windows fixes
+- add a --version
 
 NEW in 14 (16/09/2015)
 =============

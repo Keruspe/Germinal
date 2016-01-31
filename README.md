@@ -34,7 +34,7 @@ To build it, go into the Germinal directory
 
 ```
 ./autogen.sh
-./configure --prefix=/usr --sysconfdir=/etc
+./configure --sysconfdir=/etc
 make
 sudo make install
 sudo glib-compile-schemas /usr/share/glib-2.0/schemas/
@@ -42,6 +42,6 @@ sudo glib-compile-schemas /usr/share/glib-2.0/schemas/
 
 You can see more information [here](http://www.imagination-land.org/posts/2015-01-31-germinal-7-released.html).
 
-Latest release is [Germinal 14](http://www.imagination-land.org/posts/2015-09-16-germinal-14-released.html).
+Latest release is [Germinal 15](http://www.imagination-land.org/posts/2016-01-31-germinal-15-released.html).
 
-Direct link to download: <http://www.imagination-land.org/files/germinal/germinal-14.tar.xz>
+Direct link to download: <http://www.imagination-land.org/files/germinal/germinal-15.tar.xz>
