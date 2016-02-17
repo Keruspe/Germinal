@@ -479,6 +479,7 @@ germinal_create_window (GApplication *application,
 
     /* Window settings */
     gtk_window_set_decorated (win, FALSE);
+    gtk_window_set_hide_titlebar_when_maximized (win, TRUE);
     gtk_window_maximize (win);
 
     /* Url matching stuff */
