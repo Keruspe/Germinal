@@ -62,11 +62,9 @@ get_url (VteTerminal    *terminal,
     if (button_event) /* only access to cached url if no button_event available */
     {
         g_free (url); /* free previous url */
-        glong column = (glong)button_event->x / vte_terminal_get_char_width (terminal);
-        glong row = (glong)button_event->y / vte_terminal_get_char_height (terminal);
         gint tag; /* avoid stupid vte segv (said to be optional) */
 
-        url = vte_terminal_match_check (terminal, column, row, &tag);
+        url = vte_terminal_match_check_event (terminal, (GdkEvent *) button_event, &tag);
     }
 
     return url;
