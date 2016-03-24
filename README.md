@@ -42,6 +42,6 @@ sudo glib-compile-schemas /usr/share/glib-2.0/schemas/
 
 You can see more information [here](http://www.imagination-land.org/posts/2015-01-31-germinal-7-released.html).
 
-Latest release is [Germinal 15](http://www.imagination-land.org/posts/2016-01-31-germinal-15-released.html).
+Latest release is [Germinal 16](http://www.imagination-land.org/posts/2016-03-24-germinal-16-released.html).
 
-Direct link to download: <http://www.imagination-land.org/files/germinal/germinal-15.tar.xz>
+Direct link to download: <http://www.imagination-land.org/files/germinal/germinal-16.tar.xz>
