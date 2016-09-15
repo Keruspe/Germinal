@@ -20,8 +20,13 @@
   <screenshots>
     <screenshot type="default">
       <caption>The main UI</caption>
-      <image width="1024" height="768">http://www.imagination-land.org/images/Germinal/Germinal-1.png</image>
+      <image height="768" width="1024">http://www.imagination-land.org/images/Germinal/Germinal-1.png</image>
     </screenshot>
   </screenshots>
-  <updatecontact>Marc-Antoine@Perennou.com</updatecontact>
+  <update_contact>Marc-Antoine@Perennou.com</update_contact>
+  <url type="bugtracker">https://github.com/Keruspe/Germinal/issues</url>
+  <url type="donation">https://paypal.me/keruspe/</url>
+  <url type="help">https://github.com/Keruspe/Germinal/issues</url>
+  <url type="translate">https://github.com/Keruspe/Germinal</url>
+  <translation type="gettext">Germinal</translation>
 </component>

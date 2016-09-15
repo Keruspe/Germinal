@@ -2,5 +2,8 @@
 /po/Makefile
 /bin/
 /tests/bin/
+/data/appstream/*.appdata.xml
+/data/appstream/*.appdata.valid
 /data/dbus/*.service
 /data/desktop/*.desktop
+/test-suite.log
