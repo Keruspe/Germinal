@@ -1,5 +1,8 @@
-NEW in 17 (Not released yet)
+NEW in 17 (15/09/2016)
 =============
+
+- fix startup on gnome 3.22
+- port to newer vte, require pcre2
 
 NEW in 16 (24/03/2016)
 =============
