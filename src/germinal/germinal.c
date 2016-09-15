@@ -21,6 +21,9 @@
 
 #include <glib/gi18n-lib.h>
 
+#define PCRE2_CODE_UNIT_WIDTH 0
+#include <pcre2.h>
+
 #include <stdlib.h>
 
 typedef void (*GerminalSettingsFunc) (GSettings   *settings,
@@ -481,12 +484,12 @@ germinal_create_window (GApplication *application,
     gtk_widget_show_all (window);
 
     /* Url matching stuff */
-    g_autoptr (GRegex) url_regexp = g_regex_new (URL_REGEXP,
-                                                 G_REGEX_CASELESS | G_REGEX_OPTIMIZE,
-                                                 G_REGEX_MATCH_NOTEMPTY,
-                                                 NULL); /* error */
+    g_autoptr (VteRegex) url_regexp = vte_regex_new_for_match (URL_REGEXP,
+                                                              strlen (URL_REGEXP),
+                                                              PCRE2_CASELESS | PCRE2_NOTEMPTY,
+                                                              NULL); /* error */
 
-    vte_terminal_match_add_gregex (term, url_regexp, 0);
+    vte_terminal_match_add_regex (term, url_regexp, 0);
 
     /* Apply user settings */
     GSettings *settings = g_object_get_data (G_OBJECT (application), "germinal-settings");
