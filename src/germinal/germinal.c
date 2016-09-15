@@ -470,15 +470,15 @@ germinal_create_window (GApplication *application,
     vte_terminal_set_scroll_on_output    (term, FALSE);
     vte_terminal_set_scroll_on_keystroke (term, TRUE);
 
+    /* Window settings */
+    gtk_window_maximize (win);
+    gtk_window_set_decorated (win, FALSE);
+    gtk_window_set_hide_titlebar_when_maximized (win, TRUE);
+
     /* Fill window */
     gtk_container_add (GTK_CONTAINER (window), terminal);
     gtk_widget_grab_focus (terminal);
     gtk_widget_show_all (window);
-
-    /* Window settings */
-    gtk_window_set_decorated (win, FALSE);
-    gtk_window_set_hide_titlebar_when_maximized (win, TRUE);
-    gtk_window_maximize (win);
 
     /* Url matching stuff */
     g_autoptr (GRegex) url_regexp = g_regex_new (URL_REGEXP,
