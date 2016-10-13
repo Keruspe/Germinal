@@ -1,5 +1,15 @@
 /Makefile
+/ABOUT-NLS
 /po/Makefile
+/po/Makevars.template
+/po/Rules-quot
+/po/boldquot.sed
+/po/en@boldquot.header
+/po/en@quot.header
+/po/insert-header.sin
+/po/quot.sed
+/po/remove-potcdate.sed
+/po/remove-potcdate.sin
 /bin/
 /tests/bin/
 /data/appstream/*.appdata.xml

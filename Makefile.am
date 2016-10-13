@@ -55,8 +55,6 @@ noinst_PROGRAMS= \
 	$(TESTS) \
 	$(NULL)
 
-@INTLTOOL_XML_NOMERGE_RULE@
-
 # Binaries
 
 include src/germinal.mk

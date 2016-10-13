@@ -16,7 +16,6 @@
 # along with Germinal.  If not, see <http://www.gnu.org/licenses/>.
 
 @APPSTREAM_XML_RULES@
-@INTLTOOL_XML_RULE@
 
 appstream_in_files =                                     \
 	data/appstream/org.gnome.Germinal.appdata.xml.in \

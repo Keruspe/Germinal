@@ -1,8 +1,8 @@
 [Desktop Entry]
 Type=Application
 Name=Germinal
-_Comment=Minimalist vte-based terminal emulator
-_Keywords=Terminal;
+Comment=Minimalist vte-based terminal emulator
+Keywords=Terminal;
 Icon=utilities-terminal
 Exec=@bindir@/germinal
 DBusActivatable=true
