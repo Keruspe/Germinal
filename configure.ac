@@ -1,6 +1,6 @@
 # This file is part of Germinal.
 #
-# Copyright 2011-2014 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
+# Copyright 2011-2016 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
 #
 # Germinal is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,25 +15,36 @@
 # You should have received a copy of the GNU General Public License
 # along with Germinal.  If not, see <http://www.gnu.org/licenses/>.
 
-AC_PREREQ([2.69])
-AC_INIT([Germinal],[17],[Marc-Antoine@Perennou.com])
+m4_define([germinal_version],    [17])
 
-PKGCONFIG_REQUIRED="0.22"
+# Build system requirements
+m4_define([autoconf_required],   [2.69])
+m4_define([automake_required],   [1.15])
+m4_define([pkgconfig_required],  [0.29])
 
-GLIB_MIN_MAJOR="2"
-GLIB_MIN_MINOR="44"
-GLIB_API_REQUIRED="G_ENCODE_VERSION($GLIB_MIN_MAJOR, $GLIB_MIN_MINOR)"
+# Glib and Gtk macros and dependencies
+m4_define([glib_major_required], [2])
+m4_define([glib_minor_required], [44])
+m4_define([glib_api_required],   [G_ENCODE_VERSION(glib_major_required, glib_minor_required)])
+m4_define([glib_required],       [glib_major_required.glib_minor_required.0])
+m4_define([gtk_major_required],  [3])
+m4_define([gtk_minor_required],  [10])
+m4_define([gtk_api_required],    [G_ENCODE_VERSION(gtk_major_required, gtk_minor_required)])
+m4_define([gtk_required],        [gtk_major_required.gtk_minor_required.0])
 
-GTK_MIN_MAJOR="3"
-GTK_MIN_MINOR="10"
-GDK_API_REQUIRED="G_ENCODE_VERSION($GTK_MIN_MAJOR, $GTK_MIN_MINOR)"
+# Other dependencies
+m4_define([vte_required],        [0.46.0])
 
-GLIB_REQUIRED="$GLIB_MIN_MAJOR.$GLIB_MIN_MINOR.0"
-GTK_REQUIRED="$GTK_MIN_MAJOR.$GTK_MIN_MINOR.0"
-VTE_REQUIRED="0.46.0"
+AC_PREREQ(autoconf_required)
+AC_INIT([Germinal], [germinal_version], [Marc-Antoine@Perennou.com], [germinal])
 
-AC_SUBST([PACKAGE_NAME], ["$PACKAGE_NAME"])
-AC_SUBST([PACKAGE_VERSION], ["$PACKAGE_VERSION"])
+AC_SUBST([PACKAGE_NAME])
+AC_SUBST([PACKAGE_VERSION])
+
+AC_DEFINE_UNQUOTED([GLIB_VERSION_MIN_REQUIRED], [glib_api_required], [The lower GLib API version supported])
+AC_DEFINE_UNQUOTED([GLIB_VERSION_MAX_ALLOWED],  [glib_api_required], [The higher GLib API version supported])
+AC_DEFINE_UNQUOTED([GDK_VERSION_MIN_REQUIRED],  [gtk_api_required],  [The lower Gdk API version supported])
+AC_DEFINE_UNQUOTED([GDK_VERSION_MAX_ALLOWED],   [gtk_api_required],  [The higher Gdk API version supported])
 
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_SRCDIR([src/])
@@ -41,10 +52,11 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_PREFIX_DEFAULT([/usr])
 
-AM_INIT_AUTOMAKE([1.15 subdir-objects check-news foreign no-dist-gzip dist-xz tar-ustar -Wall])
-AM_SILENT_RULES([yes])
-
 AC_USE_SYSTEM_EXTENSIONS
+
+AM_INIT_AUTOMAKE(automake_required [subdir-objects check-news foreign no-dist-gzip dist-xz tar-ustar -Wall])
+AM_MAINTAINER_MODE([enable])
+AM_SILENT_RULES([yes])
 
 AC_PROG_AWK
 AC_PROG_SED
@@ -61,38 +73,33 @@ AM_PROG_CC_C_O
 
 AC_C_INLINE
 
-AC_DEFINE_UNQUOTED([GLIB_VERSION_MIN_REQUIRED], [$GLIB_API_REQUIRED], [The lower GLib API version supported])
-AC_DEFINE_UNQUOTED([GLIB_VERSION_MAX_ALLOWED], [$GLIB_API_REQUIRED], [The higher GLib API version supported])
-AC_DEFINE_UNQUOTED([GDK_VERSION_MIN_REQUIRED], [$GDK_API_REQUIRED], [The lower Gdk API version supported])
-AC_DEFINE_UNQUOTED([GDK_VERSION_MAX_ALLOWED], [$GDK_API_REQUIRED], [The higher Gdk API version supported])
-
-GETTEXT_PACKAGE=$PACKAGE_NAME
-AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE], ["$GETTEXT_PACKAGE"], [Gettext Package])
+GETTEXT_PACKAGE=${PACKAGE_NAME}
+AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE], ["${GETTEXT_PACKAGE}"], [Gettext Package])
 AC_SUBST(GETTEXT_PACKAGE)
-
 AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION
 AM_GNU_GETTEXT_REQUIRE_VERSION([0.19.7])
 
-PKG_PROG_PKG_CONFIG([$PKGCONFIG_REQUIRED])
+PKG_PREREQ(pkgconfig_required)
+PKG_PROG_PKG_CONFIG([pkgconfig_required])
 
-PKG_CHECK_MODULES(GLIB,      [glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED])
-PKG_CHECK_MODULES(GTK,       [gtk+-3.0 >= $GTK_REQUIRED  gdk-3.0 >= $GTK_REQUIRED])
-PKG_CHECK_MODULES(VTE,       [vte-2.91 >= $VTE_REQUIRED])
+PKG_CHECK_MODULES(GLIB,      [glib-2.0 >= glib_required gio-2.0 >= glib_required])
+PKG_CHECK_MODULES(GTK,       [gtk+-3.0 >= gtk_required  gdk-3.0 >= gtk_required])
+PKG_CHECK_MODULES(VTE,       [vte-2.91 >= vte_required])
 PKG_CHECK_MODULES(PCRE2,     [libpcre2-8])
 PKG_CHECK_MODULES(PANGO,     [pango])
 PKG_CHECK_MODULES(APPSTREAM, [appstream-glib])
 
-PKG_CHECK_MODULES(DBUS, [dbus-1])
-AC_ARG_WITH([dbusservicesdir],
-            AS_HELP_STRING([--with-dbusservicesdir=DIR], [D-Bus system service directory]),
-            [],
-            [with_dbusservicesdir=`$PKG_CONFIG --variable=session_bus_services_dir dbus-1`])
-AC_SUBST([dbusservicesdir], [$with_dbusservicesdir])
-
 GLIB_GSETTINGS
 
 APPSTREAM_XML
+
+PKG_CHECK_MODULES(DBUS,      [dbus-1])
+AC_ARG_WITH([dbusservicesdir],
+            AS_HELP_STRING([--with-dbusservicesdir=DIR], [D-Bus system service directory]),
+            [],
+            [with_dbusservicesdir=`${PKG_CONFIG} --variable=session_bus_services_dir dbus-1`])
+AC_SUBST([dbusservicesdir], [$with_dbusservicesdir])
 
 AC_CONFIG_FILES([
   Makefile
@@ -100,7 +107,7 @@ AC_CONFIG_FILES([
 ])
 AC_OUTPUT
 AC_MSG_RESULT([
-    $PACKAGE_NAME $VERSION
+    ${PACKAGE_NAME} ${VERSION}
     ===========
 
     prefix:                 ${prefix}
@@ -112,4 +119,6 @@ AC_MSG_RESULT([
     compiler:               ${CC}
     cflags:                 ${CFLAGS}
     ldflags:                ${LDFLAGS}
+
+    DBus user services dir: ${dbusservicesdir}
 ])
