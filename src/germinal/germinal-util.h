@@ -36,6 +36,7 @@ G_BEGIN_DECLS
 /* Settings keys */
 #define AUDIBLE_BELL_KEY         "audible-bell"
 #define BACKCOLOR_KEY            "backcolor"
+#define DECORATED_KEY            "decorated"
 #define FONT_KEY                 "font"
 #define FORECOLOR_KEY            "forecolor"
 #define PALETTE_KEY              "palette"

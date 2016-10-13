@@ -393,6 +393,17 @@ update_bell (GSettings   *settings,
 }
 
 static void
+update_decorated (GSettings   *settings,
+                  const gchar *key,
+                  gpointer     user_data)
+{
+    gboolean decorated = g_settings_get_boolean (settings, key);
+    GtkWidget *term = user_data;
+
+    gtk_window_set_decorated (GTK_WINDOW (gtk_widget_get_parent (term)), FALSE);
+}
+
+static void
 update_font (GSettings   *settings,
              const gchar *key,
              gpointer     user_data)
@@ -475,13 +486,11 @@ germinal_create_window (GApplication *application,
 
     /* Window settings */
     gtk_window_maximize (win);
-    gtk_window_set_decorated (win, FALSE);
     gtk_window_set_hide_titlebar_when_maximized (win, TRUE);
 
     /* Fill window */
     gtk_container_add (GTK_CONTAINER (window), terminal);
     gtk_widget_grab_focus (terminal);
-    gtk_widget_show_all (window);
 
     /* Url matching stuff */
     g_autoptr (VteRegex) url_regexp = vte_regex_new_for_match (URL_REGEXP,
@@ -494,7 +503,8 @@ germinal_create_window (GApplication *application,
     /* Apply user settings */
     GSettings *settings = g_object_get_data (G_OBJECT (application), "germinal-settings");
 
-    update_bell                 (settings, NULL,                     terminal);
+    update_bell                 (settings, AUDIBLE_BELL_KEY,         terminal);
+    update_decorated            (settings, DECORATED_KEY,            terminal);
     update_colors               (settings, NULL,                     terminal);
     update_font                 (settings, FONT_KEY,                 terminal);
     update_scrollback           (settings, SCROLLBACK_KEY,           terminal);
@@ -525,13 +535,13 @@ germinal_create_window (GApplication *application,
     /* Populate right click menu */
     GtkWidget *menu = gtk_menu_new ();
 
-    MENU_ACTION (copy_url, _("Copy url"));
-    MENU_ACTION (open_url, _("Open url"));
+    MENU_ACTION (copy_url,   _("Copy url"));
+    MENU_ACTION (open_url,   _("Open url"));
 
     MENU_SEPARATOR;
 
-    MENU_ACTION (copy,  _("Copy"));
-    MENU_ACTION (paste, _("Paste"));
+    MENU_ACTION (copy,       _("Copy"));
+    MENU_ACTION (paste,      _("Paste"));
 
     MENU_SEPARATOR;
 
@@ -544,6 +554,7 @@ germinal_create_window (GApplication *application,
     MENU_ACTION (quit,       _("Quit"));
 
     gtk_widget_show_all (menu);
+    gtk_widget_show_all (window);
 
     /* Bind signals */
     CONNECT_SIGNAL (terminal, "button-press-event", on_button_press, menu);
@@ -589,6 +600,7 @@ germinal_windows_foreach (GtkApplication      *application,
 
 SETTING_UPDATE_FUNC (bell);
 SETTING_UPDATE_FUNC (colors);
+SETTING_UPDATE_FUNC (decorated);
 SETTING_UPDATE_FUNC (font);
 SETTING_UPDATE_FUNC (scrollback);
 SETTING_UPDATE_FUNC (word_char_exceptions);
@@ -623,6 +635,7 @@ main (gint   argc,
     SETTING_SIGNAL (BACKCOLOR,            colors);
     SETTING_SIGNAL (FORECOLOR,            colors);
     SETTING_SIGNAL (PALETTE,              colors);
+    SETTING_SIGNAL (DECORATED,            decorated);
     SETTING_SIGNAL (FONT,                 font);
     SETTING_SIGNAL (SCROLLBACK,           scrollback);
     SETTING_SIGNAL (WORD_CHAR_EXCEPTIONS, word_char_exceptions);

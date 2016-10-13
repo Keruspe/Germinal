@@ -90,5 +90,12 @@
       </description>
     </key>
 
+    <key name="decorated" type="b">
+      <default>false</default>
+      <summary>Display window decoration</summary>
+      <description>
+        By default, we hide it
+      </description>
+    </key>
   </schema>
 </schemalist>
