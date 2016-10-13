@@ -5,6 +5,8 @@
 
 Germinal is a minimalist vte-based terminal emulator.
 
+Screenshot available here: <http://www.imagination-land.org/images/Germinal/Germinal-1.png>
+
 You will need tmux for Germinal to work out of the box.
 You need to add `new-session` in your `~/.tmux.conf` so that tmux attach creates a new one if none exist.
 
