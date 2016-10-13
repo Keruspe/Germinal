@@ -398,9 +398,10 @@ update_decorated (GSettings   *settings,
                   gpointer     user_data)
 {
     gboolean decorated = g_settings_get_boolean (settings, key);
-    GtkWidget *term = user_data;
+    GtkWindow *win = GTK_WINDOW (gtk_widget_get_parent (user_data));
 
-    gtk_window_set_decorated (GTK_WINDOW (gtk_widget_get_parent (term)), FALSE);
+    gtk_window_set_decorated (win, decorated);
+    gtk_window_set_hide_titlebar_when_maximized (win, !decorated);
 }
 
 static void
@@ -486,7 +487,6 @@ germinal_create_window (GApplication *application,
 
     /* Window settings */
     gtk_window_maximize (win);
-    gtk_window_set_hide_titlebar_when_maximized (win, TRUE);
 
     /* Fill window */
     gtk_container_add (GTK_CONTAINER (window), terminal);
