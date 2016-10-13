@@ -16,4 +16,5 @@
 /data/appstream/*.appdata.valid
 /data/dbus/*.service
 /data/desktop/*.desktop
+/data/gsettings/*.gschema.xml
 /test-suite.log

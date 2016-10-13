@@ -29,11 +29,15 @@ bin_germinal_SOURCES =                  \
 	$(germinal_c_files)             \
 	$(NULL)
 
+bin_germinal_CFLAGS =   \
+	$(GLIB_CFLAGS)  \
+	$(GTK_CFLAGS)   \
+	$(PANGO_CFLAGS) \
+	$(VTE_CFLAGS)   \
+	$(NULL)
+
 bin_germinal_LDADD = \
-	$(AM_LIBS)   \
+	$(GLIB_LIBS) \
+	$(GTK_LIBS)  \
+	$(VTE_LIBS)  \
 	$(NULL)
-
-CLEANFILES +=                     \
-	${germinal_c_files:.c=.o} \
-	$(NULL)
-

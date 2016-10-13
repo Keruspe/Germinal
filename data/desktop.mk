@@ -23,6 +23,14 @@ nodist_applications_DATA =       \
 	$(germinal_desktop_file) \
 	$(NULL)
 
+SUFFIXES += .desktop.in.in .desktop.in .desktop
+.desktop.in.in.desktop.in:
+	@ $(MKDIR_P) $(@D)
+	$(AM_V_GEN) $(SED) -e 's,[@]bindir[@],$(bindir),g' <$< >$@
+.desktop.in.desktop:
+	@ $(MKDIR_P) $(@D)
+	$(AM_V_GEN) $(MSGFMT) --desktop --template $< -o $@ -d $(top_builddir)/po/
+
 EXTRA_DIST +=                                            \
 	$(germinal_desktop_file:.desktop=.desktop.in.in) \
 	$(NULL)
@@ -31,12 +39,3 @@ CLEANFILES +=                                         \
 	$(germinal_desktop_file)                      \
 	$(germinal_desktop_file:.desktop=.desktop.in) \
 	$(NULL)
-
-SUFFIXES += .desktop.in.in .desktop.in .desktop
-.desktop.in.in.desktop.in:
-	@ $(MDIR_P) $($@)
-	$(AM_V_GEN) $(SED) -e 's,[@]bindir[@],$(bindir),g' <$^ >$@
-.desktop.in.desktop:
-	@ $(MDIR_P) $($@)
-	$(AM_V_GEN) $(MSGFMT) --desktop --template $< -o $@ -d $(top_builddir)/po/
-

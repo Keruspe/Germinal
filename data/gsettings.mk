@@ -25,15 +25,21 @@ gsettings_SCHEMAS =              \
 @GSETTINGS_RULES@
 
 $(germinal_gschema_file:.xml=.valid): $(germinal_gschema_file)
-	@ $(MKDIR_P) %D%/gsettings
+	@ $(MKDIR_P) $(@D)
 
 $(gschemas_compiled): $(gsettings_SCHEMAS:.xml=.valid)
 	$(AM_V_GEN) $(GLIB_COMPILE_SCHEMAS) --targetdir=$(srcdir) .
 
-EXTRA_DIST +=                    \
-	$(germinal_gschema_file) \
+SUFFIXES += .gschema.xml.in .gschema.xml
+.gschema.xml.in.gschema.xml:
+	@ $(MKDIR_P) $(@D)
+	$(AM_V_GEN) $(SED) -e 's,[@]GETTEXT_PACKAGE[@],$(GETTEXT_PACKAGE),g' < $< > $@
+
+EXTRA_DIST +=                                 \
+	$(germinal_gschema_file:.xml=.xml.in) \
 	$(NULL)
 
-CLEANFILES +=                \
-	$(gschemas_compiled) \
+CLEANFILES +=                    \
+	$(germinal_gschema_file) \
+	$(gschemas_compiled)     \
 	$(NULL)

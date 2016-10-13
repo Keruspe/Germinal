@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Germinal.  If not, see <http://www.gnu.org/licenses/>.
 
-m4_define([germinal_version],    [17])
+m4_define([germinal_version],    [18])
 
 # Build system requirements
 m4_define([autoconf_required],   [2.69])
@@ -24,7 +24,7 @@ m4_define([pkgconfig_required],  [0.29])
 
 # Glib and Gtk macros and dependencies
 m4_define([glib_major_required], [2])
-m4_define([glib_minor_required], [44])
+m4_define([glib_minor_required], [50])
 m4_define([glib_api_required],   [G_ENCODE_VERSION(glib_major_required, glib_minor_required)])
 m4_define([glib_required],       [glib_major_required.glib_minor_required.0])
 m4_define([gtk_major_required],  [3])

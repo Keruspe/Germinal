@@ -24,20 +24,11 @@ AM_DISTCHECK_CONFIGURE_FLAGS =                                        \
 	--enable-appstream-util                                       \
 	$(NULL)
 
-AM_CFLAGS =                          \
+AM_CPPFLAGS =                        \
 	-include config.h            \
 	-I $(srcdir)/src/germinal/   \
 	-DLOCALEDIR=\"${localedir}\" \
-	$(GLIB_CFLAGS)               \
-	$(GTK_CFLAGS)                \
-	$(PANGO_CFLAGS)              \
-	$(VTE_CFLAGS)                \
-	$(NULL)
-
-AM_LIBS =            \
-	$(GLIB_LIBS) \
-	$(GTK_LIBS)  \
-	$(VTE_LIBS)  \
+	-DG_LOG_USE_STRUCTURED=1     \
 	$(NULL)
 
 EXTRA_DIST =       \

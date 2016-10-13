@@ -3,18 +3,18 @@
 <component type="desktop">
   <id>org.gnome.Germinal.desktop</id>
   <name>Germinal</name>
-  <_summary>Germinal is a minimalist vte-based terminal emulator</_summary>
+  <summary>Germinal is a minimalist vte-based terminal emulator</summary>
   <developer_name>Marc-Antoine Perennou</developer_name>
   <project_license>GPL-3.0</project_license>
   <metadata_license>CC-BY-SA-3.0</metadata_license>
   <project_group>GNOME</project_group>
   <description>
-    <_p>
+    <p>
       Germinal is a minimalist terminal emulator aiming for simplicity.
-    </_p>
-    <_p>
+    </p>
+    <p>
       You can customize Germinal using dconf-editor, in /org/gnome/Germinal.
-    </_p>
+    </p>
   </description>
   <url type="homepage">http://www.imagination-land.org/tags/Germinal.html</url>
   <screenshots>

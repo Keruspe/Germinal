@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Germinal\n"
 "Report-Msgid-Bugs-To: Marc-Antoine@Perennou.com\n"
-"POT-Creation-Date: 2016-10-13 22:20+0200\n"
+"POT-Creation-Date: 2016-10-13 22:48+0200\n"
 "PO-Revision-Date: 2011-09-23 16:05+0100\n"
 "Last-Translator: Marc-Antoine Perennou <Marc-Antoine@Perennou.com>\n"
 "Language-Team: French\n"
@@ -66,6 +66,10 @@ msgstr "la commande à lancer"
 msgid "Germinal"
 msgstr "Germinal"
 
+#: data/appstream/org.gnome.Germinal.appdata.xml.in:6
+msgid "Germinal is a minimalist vte-based terminal emulator"
+msgstr "Germinal est un émulateur de terminal minimaliste basé sur vte"
+
 #: data/appstream/org.gnome.Germinal.appdata.xml.in:12
 msgid "Germinal is a minimalist terminal emulator aiming for simplicity."
 msgstr "Germinal est un émulateur de terminal visant la simplicité"
@@ -91,13 +95,13 @@ msgstr "Terminal;"
 msgid "utilities-terminal"
 msgstr "utilities-terminal"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml:6
-#: data/gsettings/org.gnome.Germinal.gschema.xml:7
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:6
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:7
 msgid "Number of lines to keep in the buffer"
 msgstr "Nombre de lignes à garder dans le tampon"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml:14
-#: data/gsettings/org.gnome.Germinal.gschema.xml:15
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:14
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:15
 msgid ""
 "List of ASCII punctuation characters that should be considered as part of a "
 "word when doing word-wise selection"
@@ -105,53 +109,53 @@ msgstr ""
 "Liste des caractères de ponctuation ASCII qui doivent être considérés comme "
 "faisant partie d'un mot quand on le selectionne"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml:22
-#: data/gsettings/org.gnome.Germinal.gschema.xml:23
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:22
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:23
 msgid "The font to use"
 msgstr "La police à utiliser"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml:30
-#: data/gsettings/org.gnome.Germinal.gschema.xml:31
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:30
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:31
 msgid "The foreground color"
 msgstr "La couleur de premier plan"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml:38
-#: data/gsettings/org.gnome.Germinal.gschema.xml:39
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:38
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:39
 msgid "The background color"
 msgstr "La couleur de fond"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml:66
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:66
 msgid "The color palette"
 msgstr "La palette de couleurs"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml:71
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:71
 msgid "Command to launch at startup"
 msgstr "Commande à lancer au démarrage"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml:72
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:72
 msgid "If none is specified, tmux will be used"
 msgstr "Si aucune n'est spécifiée, tmux sera utilisé"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml:79
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:79
 msgid "The value of the TERM env variable"
 msgstr "La valeur de la variable d'environnement TERM"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml:80
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:80
 msgid "By default, vte uses xterm, we use xterm-256color"
 msgstr "Par défaut, vte utilise xterm et nous utilisons xterm-256color"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml:87
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:87
 msgid "Activate the audible bell"
 msgstr "Activer le beep visuel"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml:88
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:88
 msgid "By default, we disable it"
 msgstr "Par défault, on le désactive"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml:95
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:95
 msgid "Display window decoration"
 msgstr "Afficher la décoration de fenêtre"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml:96
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:96
 msgid "By default, we hide it"
 msgstr "Par défault, on la cache"
