@@ -466,6 +466,21 @@ update_colors (GSettings   *settings,
     return NULL;
 }
 
+static void
+on_temrinal_command_spawned (VteTerminal *terminal G_GNUC_UNUSED,
+                             GPid         pid      G_GNUC_UNUSED,
+                             GError      *error,
+                             gpointer     user_data)
+{
+    if (error)
+    {
+        g_critical ("%s", error->message);
+        g_error_free (error);
+        exit (EXIT_FAILURE);
+    }
+    gtk_widget_show_all (user_data);
+}
+
 static int
 germinal_create_window (GApplication *application,
                         GStrv         command)
@@ -521,16 +536,14 @@ germinal_create_window (GApplication *application,
     g_auto (GStrv) envp = g_environ_setenv (g_get_environ (), "TERM", get_setting (settings, TERM_KEY), TRUE);
 
     /* Spawn our command */
-    if (!vte_terminal_spawn_sync (term, VTE_PTY_DEFAULT, g_get_home_dir (), command, envp, G_SPAWN_SEARCH_PATH,
-                                  NULL, /* child_setup */
-                                  NULL, /* child_setup_data */
-                                  NULL, /* child_pid */
-                                  NULL, /* cancellable */
-                                  &error))
-    {
-        g_critical ("%s", error->message);
-        return EXIT_FAILURE;
-    }
+    vte_terminal_spawn_async (term, VTE_PTY_DEFAULT, g_get_home_dir (), command, envp, G_SPAWN_SEARCH_PATH,
+                              NULL,  /* child_setup */
+                              NULL,  /* child_setup_data */
+                              NULL,  /* child_setup_data_destroy */
+                              -1,    /* timeout */
+                              NULL,  /* cancellable */
+                              on_temrinal_command_spawned,
+                              window);
 
     /* Populate right click menu */
     GtkWidget *menu = gtk_menu_new ();
@@ -554,7 +567,6 @@ germinal_create_window (GApplication *application,
     MENU_ACTION (quit,       _("Quit"));
 
     gtk_widget_show_all (menu);
-    gtk_widget_show_all (window);
 
     /* Bind signals */
     CONNECT_SIGNAL (terminal, "button-press-event", on_button_press, menu);
