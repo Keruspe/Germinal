@@ -17,4 +17,5 @@
 /data/dbus/*.service
 /data/desktop/*.desktop
 /data/gsettings/*.gschema.xml
+/data/systemd/*.service
 /test-suite.log

@@ -1,3 +1,4 @@
 [D-BUS Service]
 Name=org.gnome.Germinal
 Exec=@bindir@/germinal --gapplication-service
+SystemdService=org.gnome.Germinal.service

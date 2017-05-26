@@ -1,6 +1,6 @@
 # This file is part of Germinal.
 #
-# Copyright 2011-2015 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
+# Copyright 2011-2017 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
 #
 # Germinal is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,9 +19,10 @@ SUBDIRS = po
 
 ACLOCAL_AMFLAGS  = -I m4 ${ACLOCAL_FLAGS}
 AM_MAKEFLAGS = --no-print-directory
-AM_DISTCHECK_CONFIGURE_FLAGS =                                        \
-	--with-dbusservicesdir="$$dc_install_base/$(dbusservicesdir)" \
-	--enable-appstream-util                                       \
+AM_DISTCHECK_CONFIGURE_FLAGS =                                              \
+	--with-dbusservicesdir="$$dc_install_base/$(dbusservicesdir)"       \
+	--with-systemduserunitdir="$$dc_install_base/$(systemduserunitdir)" \
+	--enable-appstream-util                                             \
 	$(NULL)
 
 AM_CPPFLAGS =                        \
@@ -56,6 +57,7 @@ include data/appstream.mk
 include data/dbus.mk
 include data/desktop.mk
 include data/gsettings.mk
+include data/systemd.mk
 
 # Tests stuff
 

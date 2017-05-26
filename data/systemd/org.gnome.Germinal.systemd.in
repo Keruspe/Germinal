@@ -1,0 +1,8 @@
+[Unit]
+Description=Germinal
+
+[Service]
+Type=dbus
+BusName=org.gnome.Germinal
+ExecStart=@bindir@/germinal --gapplication-service
+KillMode=process

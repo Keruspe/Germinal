@@ -101,6 +101,12 @@ AC_ARG_WITH([dbusservicesdir],
             [with_dbusservicesdir=`${PKG_CONFIG} --variable=session_bus_services_dir dbus-1`])
 AC_SUBST([dbusservicesdir], [$with_dbusservicesdir])
 
+AC_ARG_WITH([systemduserunitdir],
+            AS_HELP_STRING([--with-systemduserunitdir=DIR], [systemd user units directory]),
+            [],
+            [with_systemduserunitdir=`${PKG_CONFIG} --variable systemduserunitdir systemd`])
+AC_SUBST([systemduserunitdir], [$with_systemduserunitdir])
+
 AC_CONFIG_FILES([
   Makefile
   po/Makefile.in
@@ -121,4 +127,5 @@ AC_MSG_RESULT([
     ldflags:                ${LDFLAGS}
 
     DBus user services dir: ${dbusservicesdir}
+    systemd user units dir: ${systemduserunitdir}
 ])
