@@ -49,6 +49,14 @@ do_copy (GtkWidget *widget G_GNUC_UNUSED,
 }
 
 static gboolean
+do_copy_html (GtkWidget *widget G_GNUC_UNUSED,
+              gpointer   user_data)
+{
+    vte_terminal_copy_clipboard_format (VTE_TERMINAL (user_data), VTE_FORMAT_HTML);
+    return TRUE;
+}
+
+static gboolean
 do_paste (GtkWidget *widget G_GNUC_UNUSED,
           gpointer   user_data)
 {
@@ -554,6 +562,7 @@ germinal_create_window (GApplication *application,
     MENU_SEPARATOR;
 
     MENU_ACTION (copy,       _("Copy"));
+    MENU_ACTION (copy_html,  _("Copy as HTML"));
     MENU_ACTION (paste,      _("Paste"));
 
     MENU_SEPARATOR;
