@@ -525,7 +525,7 @@ germinal_create_window (GApplication *application,
     /* Url matching stuff */
     g_autoptr (VteRegex) url_regexp = vte_regex_new_for_match (URL_REGEXP,
                                                               strlen (URL_REGEXP),
-                                                              PCRE2_CASELESS | PCRE2_NOTEMPTY,
+                                                              PCRE2_CASELESS | PCRE2_NOTEMPTY | PCRE2_MULTILINE,
                                                               NULL); /* error */
 
     vte_terminal_match_add_regex (term, url_regexp, 0);
