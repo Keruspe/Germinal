@@ -33,7 +33,7 @@ m4_define([gtk_api_required],    [G_ENCODE_VERSION(gtk_major_required, gtk_minor
 m4_define([gtk_required],        [gtk_major_required.gtk_minor_required.0])
 
 # Other dependencies
-m4_define([vte_required],        [0.46.0])
+m4_define([vte_required],        [0.50.0])
 
 AC_PREREQ(autoconf_required)
 AC_INIT([Germinal], [germinal_version], [Marc-Antoine@Perennou.com], [germinal])
