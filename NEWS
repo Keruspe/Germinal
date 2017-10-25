@@ -1,3 +1,10 @@
+NEW in 19 (25/10/2017)
+=============
+
+- port to vte 0.50
+- provide a systemd service
+- support copying as HTML
+
 NEW in 18 (13/10/2016)
 =============
 
