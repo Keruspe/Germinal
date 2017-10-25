@@ -44,7 +44,7 @@ static gboolean
 do_copy (GtkWidget *widget G_GNUC_UNUSED,
          gpointer   user_data)
 {
-    vte_terminal_copy_clipboard (VTE_TERMINAL (user_data));
+    vte_terminal_copy_clipboard_format (VTE_TERMINAL (user_data), VTE_FORMAT_TEXT);
     return TRUE;
 }
 
