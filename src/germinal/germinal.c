@@ -31,6 +31,13 @@ typedef void (*GerminalSettingsFunc) (GSettings   *settings,
                                       gpointer     user_data);
 
 static void
+on_window_title_changed (VteTerminal *vteterminal,
+                         gpointer     user_data)
+{
+    gtk_window_set_title (GTK_WINDOW (user_data), vte_terminal_get_window_title (vteterminal));
+}
+
+static void
 on_child_exited (VteTerminal *vteterminal,
                  gint         status,
                  gpointer     user_data)
@@ -575,12 +582,17 @@ germinal_create_window (GApplication *application,
 
     MENU_ACTION (quit,       _("Quit"));
 
-    gtk_widget_show_all (menu);
-
     /* Bind signals */
-    CONNECT_SIGNAL (terminal, "button-press-event", on_button_press, menu);
-    CONNECT_SIGNAL (terminal, "child-exited",       on_child_exited, win);
-    CONNECT_SIGNAL (window,   "key-press-event",    on_key_press,    terminal);
+    CONNECT_SIGNAL (terminal, "button-press-event",   on_button_press,         menu);
+    CONNECT_SIGNAL (terminal, "window-title-changed", on_window_title_changed, win);
+    CONNECT_SIGNAL (terminal, "child-exited",         on_child_exited,         win);
+    CONNECT_SIGNAL (window,   "key-press-event",      on_key_press,            terminal);
+
+    /* Initialize title */
+    on_window_title_changed (term, win);
+
+    /* Show the window */
+    gtk_widget_show_all (menu);
 
     return EXIT_SUCCESS;
 }
