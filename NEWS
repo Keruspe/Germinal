@@ -1,3 +1,9 @@
+NEW in 20 (26/10/2017)
+=============
+
+- silence runtime vte warning
+- correctly update title as needed
+
 NEW in 19 (25/10/2017)
 =============
 
