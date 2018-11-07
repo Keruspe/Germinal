@@ -322,6 +322,20 @@ on_key_press (GtkWidget   *widget,
         case GDK_KEY_X:
             return launch_cmd ("tmux resize-pane -Z");
         }
+        
+        /* Reset zoom */
+        if (!(event->state & GDK_SHIFT_MASK))
+        {
+            GdkKeymapKey key = {
+                .keycode = event->hardware_keycode,
+                .group = event->group,
+                .level = 1 // Shift level
+            };
+            if(gdk_keymap_lookup_key(gdk_keymap_get_for_display(gdk_window_get_display(event->window)), &key) == GDK_KEY_0)
+            {
+                return do_reset_zoom(widget, user_data);
+            }
+        }
     }
 
     return GTK_WIDGET_GET_CLASS (user_data)->key_press_event (user_data, event);
