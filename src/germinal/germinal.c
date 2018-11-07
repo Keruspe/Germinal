@@ -240,6 +240,33 @@ launch_cmd (const gchar *_cmd)
 }
 
 static gboolean
+on_scroll (GtkWidget *widget,
+           GdkEventScroll  *event,
+           gpointer   user_data)
+{
+    if (event->type != GDK_SCROLL)
+        return FALSE;
+
+    if (event->state & GDK_CONTROL_MASK)
+    {
+        GdkScrollDirection direction;
+        if(gdk_event_get_scroll_direction(event, &direction))
+        {
+            switch (direction)
+            {
+                /* Zoom */
+                case GDK_SCROLL_UP:
+                    return do_zoom(widget, user_data);
+                case GDK_SCROLL_DOWN:
+                    return do_dezoom(widget, user_data);
+            }
+        }
+    }
+
+    return GTK_WIDGET_GET_CLASS (user_data)->scroll_event (user_data, event);;
+}
+
+static gboolean
 on_key_press (GtkWidget   *widget,
               GdkEventKey *event,
               gpointer     user_data)
@@ -587,6 +614,7 @@ germinal_create_window (GApplication *application,
     CONNECT_SIGNAL (terminal, "window-title-changed", on_window_title_changed, win);
     CONNECT_SIGNAL (terminal, "child-exited",         on_child_exited,         win);
     CONNECT_SIGNAL (window,   "key-press-event",      on_key_press,            terminal);
+    CONNECT_SIGNAL (window,   "scroll-event",         on_scroll,               terminal);
 
     /* Initialize title */
     on_window_title_changed (term, win);
