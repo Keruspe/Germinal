@@ -20,7 +20,6 @@
 #include "germinal-cleanup.h"
 
 #include <glib/gi18n-lib.h>
-#include <X11/XKBlib.h>
 
 #define PCRE2_CODE_UNIT_WIDTH 0
 #include <pcre2.h>
