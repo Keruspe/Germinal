@@ -278,6 +278,19 @@ on_key_press (GtkWidget   *widget,
     /* Ctrl + foo */
     if (event->state & GDK_CONTROL_MASK)
     {
+        if (!(event->state & GDK_SHIFT_MASK))
+        {
+            GdkKeymapKey key = {
+                .keycode = event->hardware_keycode,
+                .group = event->group,
+                .level = 1 // Shift level
+            };
+            if(gdk_keymap_lookup_key(gdk_keymap_get_for_display(gdk_window_get_display(event->window)), &key) == GDK_KEY_0)
+            {
+                return do_reset_zoom(widget, user_data);
+            }
+        }
+
         switch (event->keyval)
         {
         /* Clipboard */
@@ -323,15 +336,6 @@ on_key_press (GtkWidget   *widget,
         case GDK_KEY_X:
             return launch_cmd ("tmux resize-pane -Z");
         }
-	    /* Reset zoom */
-        Display *display = XOpenDisplay(NULL);
-        XkbDescPtr KbDesc = XkbGetMap(display, 0, XkbUseCoreKbd);
-        XkbGetNames(display, XkbKeyNamesMask, KbDesc);
-        char Name[XkbKeyNameLength + 1];
-        memcpy(Name, KbDesc->names->keys[event->hardware_keycode].name, XkbKeyNameLength);
-        Name[XkbKeyNameLength] = '\0';
-        if (strcmp(Name, "AE10") == 0)
-            return do_reset_zoom(widget, user_data);
     }
 
     return GTK_WIDGET_GET_CLASS (user_data)->key_press_event (user_data, event);

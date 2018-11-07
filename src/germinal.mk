@@ -40,5 +40,4 @@ bin_germinal_LDADD = \
 	$(GLIB_LIBS) \
 	$(GTK_LIBS)  \
 	$(VTE_LIBS)  \
-	$(X11_LIBS)  \
 	$(NULL)

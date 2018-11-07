@@ -89,7 +89,6 @@ PKG_CHECK_MODULES(VTE,       [vte-2.91 >= vte_required])
 PKG_CHECK_MODULES(PCRE2,     [libpcre2-8])
 PKG_CHECK_MODULES(PANGO,     [pango])
 PKG_CHECK_MODULES(APPSTREAM, [appstream-glib])
-PKG_CHECK_MODULES(X11,       [x11])
 
 GLIB_GSETTINGS
 
