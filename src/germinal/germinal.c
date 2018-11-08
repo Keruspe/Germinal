@@ -250,7 +250,7 @@ on_scroll (GtkWidget      *widget,
     if (event->state & GDK_CONTROL_MASK)
     {
         GdkScrollDirection direction;
-        if(gdk_event_get_scroll_direction(event, &direction))
+        if (gdk_event_get_scroll_direction((GdkEvent *) event, &direction))
         {
             switch (direction)
             {
