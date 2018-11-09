@@ -29,7 +29,7 @@
 G_BEGIN_DECLS
 
 #define GERMINAL_TYPE_TERMINAL germinal_terminal_get_type ()
-G_DECLARE_FINAL_TYPE(GerminalTerminal, germinal_terminal, GERMINAL, TERMINAL, VteTerminal)
+G_DECLARE_FINAL_TYPE (GerminalTerminal, germinal_terminal, GERMINAL, TERMINAL, VteTerminal)
 
 gboolean germinal_terminal_is_zero     (GerminalTerminal *self, guint keycode);
 gchar   *germinal_terminal_get_url     (GerminalTerminal *self, GdkEventButton *button_event);

@@ -17,7 +17,7 @@
  * along with Germinal.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "germinal-terminal.h"
+#include "germinal-window.h"
 
 #define PCRE2_CODE_UNIT_WIDTH 0
 #include <pcre2.h>
@@ -417,7 +417,7 @@ germinal_create_window (GApplication *application,
     g_auto (GStrv) _free_command = command;
 
     /* Create window */
-    GtkWidget *window = gtk_application_window_new (GTK_APPLICATION (application));
+    GtkWidget *window = germinal_window_new (GTK_APPLICATION (application));
     GtkWindow *win = GTK_WINDOW (window);
 
     /* Vte settings */
