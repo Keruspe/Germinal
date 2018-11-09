@@ -22,8 +22,6 @@
 
 #include "germinal-util.h"
 
-#include <vte/vte.h>
-
 G_BEGIN_DECLS
 
 #define GERMINAL_CLEANUP(x) __attribute__((cleanup(x)))

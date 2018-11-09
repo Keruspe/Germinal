@@ -17,9 +17,7 @@
  * along with Germinal.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "germinal-cleanup.h"
-
-#include <glib/gi18n-lib.h>
+#include "germinal-terminal.h"
 
 #define PCRE2_CODE_UNIT_WIDTH 0
 #include <pcre2.h>
@@ -30,11 +28,45 @@ typedef void (*GerminalSettingsFunc) (GSettings   *settings,
                                       const gchar *key,
                                       gpointer     user_data);
 
-static void
-on_window_title_changed (VteTerminal *vteterminal,
-                         gpointer     user_data)
+static gboolean
+on_button_press (GtkWidget      *widget,
+                 GdkEventButton *button_event,
+                 gpointer        user_data)
 {
-    gtk_window_set_title (GTK_WINDOW (user_data), vte_terminal_get_window_title (vteterminal));
+    if (button_event->type != GDK_BUTTON_PRESS)
+        return FALSE;
+
+    GerminalTerminal *self = GERMINAL_TERMINAL (widget);
+
+    /* Shift + Left clic */
+    if ((button_event->button == GDK_BUTTON_PRIMARY) &&
+        (button_event->state & GDK_SHIFT_MASK))
+            return germinal_terminal_open_url (self, button_event);
+    else if (button_event->button == GDK_BUTTON_SECONDARY)
+    {
+        gchar *url = germinal_terminal_get_url (self, button_event);
+
+        if (url) /* show url stuff */
+            gtk_widget_show_all (GTK_WIDGET (user_data));
+        else
+        {
+            /* hide url stuff */
+            GList *children = gtk_container_get_children (GTK_CONTAINER (user_data));
+            gtk_widget_hide (GTK_WIDGET (children->data));
+            gtk_widget_hide (GTK_WIDGET (children->next->data));
+            gtk_widget_hide (GTK_WIDGET (children->next->next->data));
+        }
+        gtk_menu_popup (GTK_MENU (user_data),
+                        NULL, /* parent menu_shell */
+                        NULL, /* parent menu_item */
+                        NULL, /* menu position func */
+                        NULL, /* user_data */
+                        button_event->button,
+                        button_event->time);
+        return TRUE;
+    }
+
+    return FALSE;
 }
 
 static void
@@ -45,6 +77,13 @@ on_child_exited (VteTerminal *vteterminal,
     if (status)
         g_critical ("child exited with code %d", status);
     gtk_window_close (GTK_WINDOW (user_data));
+}
+
+static void
+on_window_title_changed (VteTerminal *vteterminal,
+                         gpointer     user_data)
+{
+    gtk_window_set_title (GTK_WINDOW (user_data), vte_terminal_get_window_title (vteterminal));
 }
 
 static gboolean
@@ -71,63 +110,6 @@ do_paste (GtkWidget *widget G_GNUC_UNUSED,
     return TRUE;
 }
 
-static gchar *
-get_url (VteTerminal    *terminal,
-         GdkEventButton *button_event)
-{
-    static gchar *url = NULL; /* cache the url */
-
-    if (button_event) /* only access to cached url if no button_event available */
-    {
-        g_free (url); /* free previous url */
-        gint tag; /* avoid stupid vte segv (said to be optional) */
-
-        url = vte_terminal_match_check_event (terminal, (GdkEvent *) button_event, &tag);
-    }
-
-    return url;
-}
-
-static gboolean
-germinal_spawn (gchar  **cmd,
-                GError **error)
-{
-    g_auto (GStrv) env = g_get_environ ();
-
-    return g_spawn_async (g_get_home_dir (),
-                          cmd,
-                          env,
-                          G_SPAWN_SEARCH_PATH,
-                          NULL, /* child setup */
-                          NULL, /* child setup data */
-                          NULL, /* child pid */
-                          error);
-}
-
-static gboolean
-open_url (gchar *url)
-{
-    if (!url)
-        return FALSE;
-
-    g_autoptr (GError) error = NULL;
-    /* Always strdup because we free later */
-    g_autofree gchar *browser = g_strdup (g_getenv ("BROWSER"));
-
-    /* If BROWSER is not in env, try xdg-open or fallback to firefox */
-    if (!browser)
-        browser = g_find_program_in_path ("xdg-open");
-    if (!browser)
-        browser = g_strdup ("firefox");
-
-    gchar *cmd[] = {browser, url, NULL};
-
-    if (!germinal_spawn (cmd, &error))
-        g_warning ("%s \"%s %s\": %s", _("Couldn't exec"), browser, url, error->message);
-
-    return TRUE;
-}
-
 static void
 copy_text (GdkAtom      selection,
            const gchar *text)
@@ -141,7 +123,7 @@ static gboolean
 do_copy_url (GtkWidget *widget G_GNUC_UNUSED,
              gpointer   user_data)
 {
-    gchar *url = get_url (VTE_TERMINAL (user_data), NULL);
+    gchar *url = germinal_terminal_get_url (GERMINAL_TERMINAL (user_data), NULL);
 
     if (!url)
         return FALSE;
@@ -156,47 +138,14 @@ static gboolean
 do_open_url (GtkWidget *widget G_GNUC_UNUSED,
              gpointer   user_data)
 {
-    return open_url (get_url (VTE_TERMINAL (user_data), NULL));
-}
-
-typedef enum {
-    FONT_SIZE_DELTA_RESET = 0,
-    FONT_SIZE_DELTA_INC = 1,
-    FONT_SIZE_DELTA_DEC = -1,
-    FONT_SIZE_DELTA_SET_DEFAULT = 42
-} FontSizeDelta;
-
-static void
-update_font_size (VteTerminal  *terminal,
-                  FontSizeDelta delta)
-{
-    static gdouble default_size = 0;
-
-    GERMINAL_FONT_CLEANUP PangoFontDescription *font = pango_font_description_copy (vte_terminal_get_font (terminal));
-    gdouble size = pango_font_description_get_size (font);
-
-    switch (delta)
-    {
-    case FONT_SIZE_DELTA_SET_DEFAULT:
-        default_size = size;
-        return;
-    case FONT_SIZE_DELTA_RESET:
-        size = default_size;
-        break;
-    default:
-        size = CLAMP (size / PANGO_SCALE + delta, 4., 144.) * PANGO_SCALE;
-        break;
-    }
-
-    pango_font_description_set_size (font, size);
-    vte_terminal_set_font (terminal, font);
+    return germinal_terminal_open_url (GERMINAL_TERMINAL (user_data), NULL);
 }
 
 static gboolean
 do_zoom (GtkWidget *widget G_GNUC_UNUSED,
          gpointer   user_data)
 {
-    update_font_size (VTE_TERMINAL (user_data), FONT_SIZE_DELTA_INC);
+    germinal_terminal_zoom (GERMINAL_TERMINAL (user_data));
 
     return TRUE;
 }
@@ -205,7 +154,7 @@ static gboolean
 do_dezoom (GtkWidget *widget G_GNUC_UNUSED,
            gpointer   user_data)
 {
-    update_font_size (VTE_TERMINAL (user_data), FONT_SIZE_DELTA_DEC);
+    germinal_terminal_dezoom (GERMINAL_TERMINAL (user_data));
 
     return TRUE;
 }
@@ -214,7 +163,7 @@ static gboolean
 do_reset_zoom (GtkWidget *widget G_GNUC_UNUSED,
                gpointer   user_data)
 {
-    update_font_size (VTE_TERMINAL (user_data), FONT_SIZE_DELTA_RESET);
+    germinal_terminal_reset_zoom (GERMINAL_TERMINAL (user_data));
 
     return TRUE;
 }
@@ -229,40 +178,15 @@ do_quit (GtkWidget *widget,
 }
 
 static gboolean
-launch_cmd (const gchar *_cmd)
+launch_cmd (GerminalTerminal *terminal,
+            const gchar      *_cmd)
 {
     g_auto (GStrv) cmd = NULL;
 
     if (!g_shell_parse_argv (_cmd, NULL, &cmd, NULL))
         return FALSE;
 
-    return germinal_spawn (cmd, NULL);
-}
-
-static gboolean
-on_scroll (GtkWidget      *widget,
-           GdkEventScroll *event,
-           gpointer        user_data)
-{
-    if (event->type != GDK_SCROLL)
-        return FALSE;
-
-    if (event->state & GDK_CONTROL_MASK)
-    {
-        GdkScrollDirection direction;
-        if (gdk_event_get_scroll_direction((GdkEvent *) event, &direction))
-        {
-            switch (direction)
-            {
-                case GDK_SCROLL_UP:
-                    return do_zoom (widget, user_data);
-                case GDK_SCROLL_DOWN:
-                    return do_dezoom (widget, user_data);
-            }
-        }
-    }
-
-    return GTK_WIDGET_GET_CLASS (user_data)->scroll_event (user_data, event);
+    return germinal_terminal_spawn (terminal, cmd, NULL);
 }
 
 static gboolean
@@ -272,6 +196,8 @@ on_key_press (GtkWidget   *widget,
 {
     if (event->type != GDK_KEY_PRESS)
         return FALSE;
+
+    GerminalTerminal *terminal = GERMINAL_TERMINAL (user_data);
 
     /* Ctrl + foo */
     if (event->state & GDK_CONTROL_MASK)
@@ -298,80 +224,35 @@ on_key_press (GtkWidget   *widget,
             return do_quit (widget, widget);
         /* Window split (inspired by terminator) */
         case GDK_KEY_O:
-            return launch_cmd ("tmux split-window -v");
+            return launch_cmd (terminal, "tmux split-window -v");
         case GDK_KEY_E:
-            return launch_cmd ("tmux split-window -h");
+            return launch_cmd (terminal, "tmux split-window -h");
         /* Next/Previous window (tab) */
         case GDK_KEY_Tab:
-            return launch_cmd ("tmux next-window");
+            return launch_cmd (terminal, "tmux next-window");
         case GDK_KEY_ISO_Left_Tab:
-            return launch_cmd ("tmux previous-window");
+            return launch_cmd (terminal, "tmux previous-window");
         /* New window (tab) */
         case GDK_KEY_T:
-            return launch_cmd ("tmux new-window");
+            return launch_cmd (terminal, "tmux new-window");
         /* Next/Previous pane */
         case GDK_KEY_N:
-            return launch_cmd ("tmux select-pane -t :.+");
+            return launch_cmd (terminal, "tmux select-pane -t :.+");
         case GDK_KEY_P:
-            return launch_cmd ("tmux select-pane -t :.-");
+            return launch_cmd (terminal, "tmux select-pane -t :.-");
         /* Close current pane */
         case GDK_KEY_W:
-            return launch_cmd ("tmux kill-pane");
+            return launch_cmd (terminal, "tmux kill-pane");
         /* Resize current pane */
         case GDK_KEY_X:
-            return launch_cmd ("tmux resize-pane -Z");
+            return launch_cmd (terminal, "tmux resize-pane -Z");
         }
         
-        GdkKeymapKey key = {
-            .keycode = event->hardware_keycode,
-            .group = event->group,
-            .level = 1 // Shift level
-        };
-
-        if (gdk_keymap_lookup_key (gdk_keymap_get_for_display (gdk_window_get_display (event->window)), &key) == GDK_KEY_0)
+        if (germinal_terminal_is_zero (terminal, event->hardware_keycode))
             return do_reset_zoom (widget, user_data);
     }
 
     return GTK_WIDGET_GET_CLASS (user_data)->key_press_event (user_data, event);
-}
-
-static gboolean
-on_button_press (GtkWidget      *widget,
-                 GdkEventButton *button_event,
-                 gpointer        user_data)
-{
-    if (button_event->type != GDK_BUTTON_PRESS)
-        return FALSE;
-
-    gchar *url = get_url (VTE_TERMINAL (widget), button_event);
-
-    /* Shift + Left clic */
-    if ((button_event->button == GDK_BUTTON_PRIMARY) &&
-        (button_event->state & GDK_SHIFT_MASK))
-            return open_url (url);
-    else if (button_event->button == GDK_BUTTON_SECONDARY)
-    {
-        if (url) /* show url stuff */
-            gtk_widget_show_all (GTK_WIDGET (user_data));
-        else
-        {
-            /* hide url stuff */
-            GList *children = gtk_container_get_children (GTK_CONTAINER (user_data));
-            gtk_widget_hide (GTK_WIDGET (children->data));
-            gtk_widget_hide (GTK_WIDGET (children->next->data));
-            gtk_widget_hide (GTK_WIDGET (children->next->next->data));
-        }
-        gtk_menu_popup (GTK_MENU (user_data),
-                        NULL, /* parent menu_shell */
-                        NULL, /* parent menu_item */
-                        NULL, /* menu position func */
-                        NULL, /* user_data */
-                        button_event->button,
-                        button_event->time);
-        return TRUE;
-    }
-
-    return FALSE;
 }
 
 static gchar *
@@ -460,11 +341,8 @@ update_font (GSettings   *settings,
              gpointer     user_data)
 {
     g_autofree gchar *setting = get_setting (settings, key);
-    GERMINAL_FONT_CLEANUP PangoFontDescription *font = pango_font_description_from_string (setting);
-    VteTerminal *term = user_data;
 
-    vte_terminal_set_font (term, font);
-    update_font_size (term, FONT_SIZE_DELTA_SET_DEFAULT);
+    germinal_terminal_update_font (GERMINAL_TERMINAL (user_data), setting);
 }
 
 static GdkRGBA *
@@ -543,7 +421,7 @@ germinal_create_window (GApplication *application,
     GtkWindow *win = GTK_WINDOW (window);
 
     /* Vte settings */
-    GtkWidget *terminal = vte_terminal_new ();
+    GtkWidget *terminal = germinal_terminal_new ();
     VteTerminal *term = VTE_TERMINAL (terminal);
 
     vte_terminal_set_mouse_autohide      (term, TRUE);
@@ -618,11 +496,10 @@ germinal_create_window (GApplication *application,
     MENU_ACTION (quit,       _("Quit"));
 
     /* Bind signals */
-    CONNECT_SIGNAL (terminal, "button-press-event",   on_button_press,         menu);
-    CONNECT_SIGNAL (terminal, "window-title-changed", on_window_title_changed, win);
-    CONNECT_SIGNAL (terminal, "child-exited",         on_child_exited,         win);
     CONNECT_SIGNAL (window,   "key-press-event",      on_key_press,            terminal);
-    CONNECT_SIGNAL (window,   "scroll-event",         on_scroll,               terminal);
+    CONNECT_SIGNAL (terminal, "button-press-event",   on_button_press,         menu);
+    CONNECT_SIGNAL (terminal, "child-exited",         on_child_exited,         win);
+    CONNECT_SIGNAL (terminal, "window-title-changed", on_window_title_changed, win);
 
     /* Initialize title */
     on_window_title_changed (term, win);
@@ -715,7 +592,6 @@ main (gint   argc,
     gint ret = g_application_run (gapp, argc, argv);
 
     /* Free memory */
-    g_free (get_url (NULL, NULL));
     g_free (update_colors (NULL, NULL, NULL));
 
     SETTING_SIGNAL_CLEANUP (AUDIBLE_BELL);

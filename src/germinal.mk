@@ -19,14 +19,16 @@ bin_PROGRAMS +=      \
 	bin/germinal \
 	$(NULL)
 
-germinal_c_files =                     \
-	%D%/germinal/germinal.c        \
+germinal_c_files =                       \
+	%D%/germinal/germinal.c          \
+	%D%/germinal/germinal-terminal.c \
 	$(NULL)
 
-bin_germinal_SOURCES =                  \
-	%D%/germinal/germinal-cleanup.h \
-	%D%/germinal/germinal-util.h    \
-	$(germinal_c_files)             \
+bin_germinal_SOURCES =                   \
+	%D%/germinal/germinal-cleanup.h  \
+	%D%/germinal/germinal-terminal.h \
+	%D%/germinal/germinal-util.h     \
+	$(germinal_c_files)              \
 	$(NULL)
 
 bin_germinal_CFLAGS =   \
