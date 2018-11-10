@@ -177,7 +177,7 @@ on_scroll (GtkWidget      *widget,
 {
     GerminalTerminal *self = GERMINAL_TERMINAL (widget);
 
-    if (event->state & GDK_CONTROL_MASK) // FIXME: Why doesn't this work?
+    if (event->state & GDK_CONTROL_MASK)
     {
         GdkScrollDirection direction;
         gdouble y;
