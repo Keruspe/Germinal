@@ -180,6 +180,7 @@ on_scroll (GtkWidget      *widget,
     if (event->state & GDK_CONTROL_MASK)
     {
         GdkScrollDirection direction;
+        gdouble y;
         if (gdk_event_get_scroll_direction((GdkEvent *) event, &direction))
         {
             switch (direction)
@@ -190,6 +191,19 @@ on_scroll (GtkWidget      *widget,
                 case GDK_SCROLL_DOWN:
                     germinal_terminal_dezoom (self);
                     return GDK_EVENT_STOP;
+            }
+        }
+        else if (gdk_event_get_scroll_deltas ((GdkEvent*) event, NULL, &y))
+        {
+            if (y > 0)
+            {
+                germinal_terminal_zoom (self);
+                return GDK_EVENT_STOP;
+            }
+            else
+            {
+                germinal_terminal_dezoom (self);
+                return GDK_EVENT_STOP;
             }
         }
     }
