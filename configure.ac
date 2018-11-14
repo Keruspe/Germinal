@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Germinal.  If not, see <http://www.gnu.org/licenses/>.
 
-m4_define([germinal_version],    [20])
+m4_define([germinal_version],    [21])
 
 # Build system requirements
 m4_define([autoconf_required],   [2.69])

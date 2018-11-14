@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Germinal\n"
 "Report-Msgid-Bugs-To: Marc-Antoine@Perennou.com\n"
-"POT-Creation-Date: 2017-10-26 10:14+0200\n"
+"POT-Creation-Date: 2018-11-14 23:49+0100\n"
 "PO-Revision-Date: 2011-09-23 16:05+0100\n"
 "Last-Translator: Marc-Antoine Perennou <Marc-Antoine@Perennou.com>\n"
 "Language-Team: French\n"
@@ -17,51 +17,47 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: src/germinal/germinal.c:126
-msgid "Couldn't exec"
-msgstr "Impossible d'exécuter"
-
-#: src/germinal/germinal.c:566
+#: src/germinal/germinal.c:479
 msgid "Copy url"
 msgstr "Copier la cible du lien"
 
-#: src/germinal/germinal.c:567
+#: src/germinal/germinal.c:480
 msgid "Open url"
 msgstr "Suivre le lien"
 
-#: src/germinal/germinal.c:571
+#: src/germinal/germinal.c:484
 msgid "Copy"
 msgstr "Copier"
 
-#: src/germinal/germinal.c:572
+#: src/germinal/germinal.c:485
 msgid "Copy as HTML"
 msgstr "Copier en tant que HTML"
 
-#: src/germinal/germinal.c:573
+#: src/germinal/germinal.c:486
 msgid "Paste"
 msgstr "Coller"
 
-#: src/germinal/germinal.c:577
+#: src/germinal/germinal.c:490
 msgid "Zoom"
 msgstr "Zoomer"
 
-#: src/germinal/germinal.c:578
+#: src/germinal/germinal.c:491
 msgid "Dezoom"
 msgstr "Dézoomzer"
 
-#: src/germinal/germinal.c:579
+#: src/germinal/germinal.c:492
 msgid "Reset zoom"
 msgstr "Restaurer zoom"
 
-#: src/germinal/germinal.c:583
+#: src/germinal/germinal.c:496
 msgid "Quit"
 msgstr "Quitter"
 
-#: src/germinal/germinal.c:658
+#: src/germinal/germinal.c:571
 msgid "display the version"
 msgstr "afficher la version"
 
-#: src/germinal/germinal.c:659
+#: src/germinal/germinal.c:572
 msgid "the command to launch"
 msgstr "la commande à lancer"
 
@@ -167,3 +163,6 @@ msgstr "Afficher la décoration de fenêtre"
 #: data/gsettings/org.gnome.Germinal.gschema.xml.in:96
 msgid "By default, we hide it"
 msgstr "Par défault, on la cache"
+
+#~ msgid "Couldn't exec"
+#~ msgstr "Impossible d'exécuter"
