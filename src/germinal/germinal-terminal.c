@@ -171,6 +171,12 @@ germinal_terminal_update_font (GerminalTerminal *self,
     update_font_size (terminal, FONT_SIZE_DELTA_SET_DEFAULT);
 }
 
+typedef enum {
+    DO_NOTHING,
+    ZOOM,
+    DEZOOM
+} ZoomAction;
+
 static gboolean
 on_scroll (GtkWidget      *widget,
            GdkEventScroll *event)
@@ -179,32 +185,38 @@ on_scroll (GtkWidget      *widget,
 
     if (event->state & GDK_CONTROL_MASK)
     {
+        ZoomAction zoom_action = DO_NOTHING;
         GdkScrollDirection direction;
         gdouble y;
+
         if (gdk_event_get_scroll_direction ((GdkEvent *) event, &direction))
         {
             switch (direction)
             {
                 case GDK_SCROLL_UP:
-                    germinal_terminal_zoom (self);
-                    return GDK_EVENT_STOP;
+                    zoom_action = ZOOM;
+                    break;
                 case GDK_SCROLL_DOWN:
-                    germinal_terminal_dezoom (self);
-                    return GDK_EVENT_STOP;
+                    zoom_action = DEZOOM;
+                    break;
             }
         }
         else if (gdk_event_get_scroll_deltas ((GdkEvent*) event, NULL, &y))
         {
             if (y < 0)
-            {
+                zoom_action = ZOOM;
+            else
+                zoom_action = DEZOOM;
+        }
+
+        switch (zoom_action)
+        {
+            case ZOOM:
                 germinal_terminal_zoom (self);
                 return GDK_EVENT_STOP;
-            }
-            else
-            {
+            case DEZOOM:
                 germinal_terminal_dezoom (self);
                 return GDK_EVENT_STOP;
-            }
         }
     }
 
