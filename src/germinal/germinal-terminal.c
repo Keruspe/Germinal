@@ -195,7 +195,7 @@ on_scroll (GtkWidget      *widget,
         }
         else if (gdk_event_get_scroll_deltas ((GdkEvent*) event, NULL, &y))
         {
-            if (y > 0)
+            if (y < 0)
             {
                 germinal_terminal_zoom (self);
                 return GDK_EVENT_STOP;
