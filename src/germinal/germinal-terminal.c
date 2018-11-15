@@ -26,9 +26,12 @@ struct _GerminalTerminal
 
 typedef struct
 {
-    gchar *url;
-    guint *zero_keycodes;
-    guint n_zero_keycodes;
+    GSettings *mouse_settings;
+    GSettings *touchpad_settings;
+
+    gchar     *url;
+    guint     *zero_keycodes;
+    guint      n_zero_keycodes;
 } GerminalTerminalPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GerminalTerminal, germinal_terminal, VTE_TYPE_TERMINAL)
@@ -224,6 +227,15 @@ on_scroll (GtkWidget      *widget,
 }
 
 static void
+germinal_terminal_dispose (GObject *object)
+{
+    GerminalTerminalPrivate *priv = germinal_terminal_get_instance_private (GERMINAL_TERMINAL (object));
+
+    g_clear_object (&priv->mouse_settings);
+    g_clear_object (&priv->touchpad_settings);
+}
+
+static void
 germinal_terminal_finalize (GObject *object)
 {
     GerminalTerminalPrivate *priv = germinal_terminal_get_instance_private (GERMINAL_TERMINAL (object));
@@ -241,6 +253,9 @@ germinal_terminal_init (GerminalTerminal *self)
     GerminalTerminalPrivate *priv = germinal_terminal_get_instance_private (self);
     GdkKeymap *keymap = gdk_keymap_get_for_display (gdk_display_get_default ());
     g_autofree GdkKeymapKey *zero_keys = NULL;
+
+    priv->mouse_settings = g_settings_new ("org.gnome.desktop.peripherals.mouse");
+    priv->touchpad_settings = g_settings_new ("org.gnome.desktop.peripherals.touchpad");
 
     priv->url = NULL;
 
@@ -261,7 +276,10 @@ germinal_terminal_init (GerminalTerminal *self)
 static void
 germinal_terminal_class_init (GerminalTerminalClass *klass)
 {
-    G_OBJECT_CLASS (klass)->finalize = germinal_terminal_finalize;
+    GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+
+    gobject_class->dispose = germinal_terminal_dispose;
+    gobject_class->finalize = germinal_terminal_finalize;
     GTK_WIDGET_CLASS (klass)->scroll_event = on_scroll;
 }
 
