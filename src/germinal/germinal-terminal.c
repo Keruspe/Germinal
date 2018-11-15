@@ -185,12 +185,24 @@ on_scroll (GtkWidget      *widget,
            GdkEventScroll *event)
 {
     GerminalTerminal *self = GERMINAL_TERMINAL (widget);
+    GerminalTerminalPrivate *priv = germinal_terminal_get_instance_private (self);
 
     if (event->state & GDK_CONTROL_MASK)
     {
         ZoomAction zoom_action = DO_NOTHING;
+        gboolean natural_scroll = FALSE;
         GdkScrollDirection direction;
         gdouble y;
+
+        switch (gdk_device_get_source (gdk_event_get_source_device ((GdkEvent *) event)))
+        {
+            case GDK_SOURCE_MOUSE:
+                natural_scroll = g_settings_get_boolean (priv->mouse_settings, "natural-scroll");
+                break;
+            case GDK_SOURCE_TOUCHPAD:
+                natural_scroll = g_settings_get_boolean (priv->touchpad_settings, "natural-scroll");
+                break;
+        }
 
         if (gdk_event_get_scroll_direction ((GdkEvent *) event, &direction))
         {
@@ -210,6 +222,19 @@ on_scroll (GtkWidget      *widget,
                 zoom_action = ZOOM;
             else
                 zoom_action = DEZOOM;
+        }
+
+        if (natural_scroll)
+        {
+            switch (zoom_action)
+            {
+                case ZOOM:
+                    zoom_action = DEZOOM;
+                    break;
+                case DEZOOM:
+                    zoom_action = ZOOM;
+                    break;
+            }
         }
 
         switch (zoom_action)
