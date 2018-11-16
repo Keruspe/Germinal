@@ -24,16 +24,17 @@ m4_define([pkgconfig_required],  [0.29])
 
 # Glib and Gtk macros and dependencies
 m4_define([glib_major_required], [2])
-m4_define([glib_minor_required], [56])
+m4_define([glib_minor_required], [58])
 m4_define([glib_api_required],   [G_ENCODE_VERSION(glib_major_required, glib_minor_required)])
 m4_define([glib_required],       [glib_major_required.glib_minor_required.0])
 m4_define([gtk_major_required],  [3])
-m4_define([gtk_minor_required],  [10])
+m4_define([gtk_minor_required],  [24])
 m4_define([gtk_api_required],    [G_ENCODE_VERSION(gtk_major_required, gtk_minor_required)])
 m4_define([gtk_required],        [gtk_major_required.gtk_minor_required.0])
 
 # Other dependencies
-m4_define([vte_required],        [0.50.0])
+m4_define([vte_required],        [0.54.2])
+m4_define([gds_required],        [3.28.1])
 
 AC_PREREQ(autoconf_required)
 AC_INIT([Germinal], [germinal_version], [Marc-Antoine@Perennou.com], [germinal])
@@ -86,6 +87,7 @@ PKG_PROG_PKG_CONFIG([pkgconfig_required])
 PKG_CHECK_MODULES(GLIB,      [glib-2.0 >= glib_required gio-2.0 >= glib_required])
 PKG_CHECK_MODULES(GTK,       [gtk+-3.0 >= gtk_required  gdk-3.0 >= gtk_required])
 PKG_CHECK_MODULES(VTE,       [vte-2.91 >= vte_required])
+PKG_CHECK_MODULES(SCHEMAS,   [gsettings-desktop-schemas >= gds_required])
 PKG_CHECK_MODULES(PCRE2,     [libpcre2-8])
 PKG_CHECK_MODULES(PANGO,     [pango])
 PKG_CHECK_MODULES(APPSTREAM, [appstream-glib])
