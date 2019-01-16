@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Germinal\n"
 "Report-Msgid-Bugs-To: Marc-Antoine@Perennou.com\n"
-"POT-Creation-Date: 2018-11-15 14:07+0100\n"
+"POT-Creation-Date: 2019-01-16 10:44+0100\n"
 "PO-Revision-Date: 2011-09-23 16:05+0100\n"
 "Last-Translator: Marc-Antoine Perennou <Marc-Antoine@Perennou.com>\n"
 "Language-Team: French\n"
@@ -17,47 +17,47 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: src/germinal/germinal.c:479
+#: src/germinal/germinal.c:485
 msgid "Copy url"
 msgstr "Copier la cible du lien"
 
-#: src/germinal/germinal.c:480
+#: src/germinal/germinal.c:486
 msgid "Open url"
 msgstr "Suivre le lien"
 
-#: src/germinal/germinal.c:484
+#: src/germinal/germinal.c:490
 msgid "Copy"
 msgstr "Copier"
 
-#: src/germinal/germinal.c:485
+#: src/germinal/germinal.c:491
 msgid "Copy as HTML"
 msgstr "Copier en tant que HTML"
 
-#: src/germinal/germinal.c:486
+#: src/germinal/germinal.c:492
 msgid "Paste"
 msgstr "Coller"
 
-#: src/germinal/germinal.c:490
+#: src/germinal/germinal.c:496
 msgid "Zoom"
 msgstr "Zoomer"
 
-#: src/germinal/germinal.c:491
+#: src/germinal/germinal.c:497
 msgid "Dezoom"
 msgstr "Dézoomzer"
 
-#: src/germinal/germinal.c:492
+#: src/germinal/germinal.c:498
 msgid "Reset zoom"
 msgstr "Restaurer zoom"
 
-#: src/germinal/germinal.c:496
+#: src/germinal/germinal.c:502
 msgid "Quit"
 msgstr "Quitter"
 
-#: src/germinal/germinal.c:571
+#: src/germinal/germinal.c:578
 msgid "display the version"
 msgstr "afficher la version"
 
-#: src/germinal/germinal.c:572
+#: src/germinal/germinal.c:579
 msgid "the command to launch"
 msgstr "la commande à lancer"
 
@@ -157,9 +157,17 @@ msgid "By default, we disable it"
 msgstr "Par défault, on le désactive"
 
 #: data/gsettings/org.gnome.Germinal.gschema.xml.in:95
+msgid "Allow printing in bold"
+msgstr "Accepter d'afficher du gras"
+
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:96
+msgid "By default, we allow it"
+msgstr "Par défault, on l'accepte"
+
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:103
 msgid "Display window decoration"
 msgstr "Afficher la décoration de fenêtre"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:96
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:104
 msgid "By default, we hide it"
 msgstr "Par défault, on la cache"
