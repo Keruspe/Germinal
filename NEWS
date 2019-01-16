@@ -1,3 +1,10 @@
+NEW in 23 (16/01/2018)
+=============
+
+- Update dependencies
+- Don't use deprecated APIs
+- Add setting to disallow printing in bold
+
 NEW in 22 (15/11/2018)
 =============
 
