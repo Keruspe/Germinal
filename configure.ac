@@ -1,6 +1,6 @@
 # This file is part of Germinal.
 #
-# Copyright 2011-2016 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
+# Copyright 2011-2019 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
 #
 # Germinal is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Germinal.  If not, see <http://www.gnu.org/licenses/>.
 
-m4_define([germinal_version],    [23])
+m4_define([germinal_version],    [24])
 
 # Build system requirements
 m4_define([autoconf_required],   [2.69])
