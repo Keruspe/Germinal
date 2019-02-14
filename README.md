@@ -13,6 +13,8 @@ You need to add `new-session` in your `~/.tmux.conf` so that tmux attach creates
 To configure it, open dconf-editor and go into /org/gnome/Germinal.
 By default, germinal launches tmux, but you can specify a custom command by adding extra args to the commandline (no
 need for quoting, example: `germinal /bin/bash -l` will execute `/bin/bash -l` instead of tmux).
+By default, germinal uses dconf to store its configuration, but it will use `~/.config/germinal/settings` instead if it
+exists. Configuration is in standard keyfile `ini` format, in a `[Germinal]` section.
 
 List of available keyboard actions:
 

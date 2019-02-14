@@ -19,6 +19,9 @@
 
 #include "germinal-window.h"
 
+#define G_SETTINGS_ENABLE_BACKEND 1
+#include <gio/gsettingsbackend.h>
+
 #define PCRE2_CODE_UNIT_WIDTH 0
 #include <pcre2.h>
 
@@ -558,6 +561,24 @@ SETTING_UPDATE_FUNC (font);
 SETTING_UPDATE_FUNC (scrollback);
 SETTING_UPDATE_FUNC (word_char_exceptions);
 
+static GSettings *
+germinal_settings_new (void)
+{
+    g_autofree gchar *config_file_path = g_build_filename (g_get_user_config_dir (), "germinal", "settings", NULL);
+    g_autoptr (GFile) config_file = g_file_new_for_path (config_file_path);
+
+    if (g_file_query_exists (config_file, NULL /* cancellable */))
+    {
+        g_autoptr (GSettingsBackend) backend = g_keyfile_settings_backend_new (config_file_path, "/org/gnome/Germinal/", "Germinal");
+
+        return g_settings_new_with_backend ("org.gnome.Germinal", backend);
+    }
+    else
+    {
+        return g_settings_new ("org.gnome.Germinal");
+    }
+}
+
 gint
 main (gint   argc,
       gchar *argv[])
@@ -582,7 +603,7 @@ main (gint   argc,
     klass->activate = germinal_activate;
 
     /* track user settings */
-    g_autoptr (GSettings) settings = g_settings_new ("org.gnome.Germinal");
+    g_autoptr (GSettings) settings = germinal_settings_new ();
 
     SETTING_SIGNAL (AUDIBLE_BELL,         bell);
     SETTING_SIGNAL (ALLOW_BOLD,           allow_bold);
