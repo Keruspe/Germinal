@@ -1,3 +1,9 @@
+NEW in 25 (23/02/2018)
+=============
+
+- Correctly reap children processes
+- Better error reporting
+
 NEW in 24 (14/02/2018)
 =============
 
