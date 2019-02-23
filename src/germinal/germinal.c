@@ -403,7 +403,7 @@ update_colors (GSettings   *settings,
 }
 
 static void
-on_temrinal_command_spawned (VteTerminal *terminal G_GNUC_UNUSED,
+on_terminal_command_spawned (VteTerminal *terminal G_GNUC_UNUSED,
                              GPid         pid      G_GNUC_UNUSED,
                              GError      *error,
                              gpointer     user_data)
@@ -479,7 +479,7 @@ germinal_create_window (GApplication *application,
                               NULL,  /* child_setup_data_destroy */
                               -1,    /* timeout */
                               NULL,  /* cancellable */
-                              on_temrinal_command_spawned,
+                              on_terminal_command_spawned,
                               window);
 
     /* Populate right click menu */
