@@ -258,6 +258,8 @@ germinal_terminal_dispose (GObject *object)
 
     g_clear_object (&priv->mouse_settings);
     g_clear_object (&priv->touchpad_settings);
+
+    G_OBJECT_CLASS (germinal_terminal_parent_class)->dispose (object);
 }
 
 static void
