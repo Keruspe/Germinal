@@ -447,7 +447,13 @@ germinal_create_window (GApplication *application,
     g_autoptr (VteRegex) url_regexp = vte_regex_new_for_match (URL_REGEXP,
                                                               strlen (URL_REGEXP),
                                                               PCRE2_CASELESS | PCRE2_NOTEMPTY | PCRE2_MULTILINE,
-                                                              NULL); /* error */
+                                                              &error);
+
+    if (error)
+    {
+        g_critical ("%s", error->message);
+        exit (EXIT_FAILURE);
+    }
 
     vte_terminal_match_add_regex (term, url_regexp, 0);
 
@@ -466,7 +472,12 @@ germinal_create_window (GApplication *application,
     if (G_LIKELY (!command))
     {
         g_autofree gchar *setting = get_setting (settings, STARTUP_COMMAND_KEY);
-        command = g_strsplit (setting , " ", 0);
+
+        if (!g_shell_parse_argv (setting, NULL, &command, &error))
+        {
+            g_critical ("%s", error->message);
+            exit (EXIT_FAILURE);
+        }
     }
 
     /* Override TERM */
