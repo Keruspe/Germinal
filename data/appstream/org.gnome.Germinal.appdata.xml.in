@@ -8,6 +8,7 @@
   <project_license>GPL-3.0</project_license>
   <metadata_license>CC-BY-SA-3.0</metadata_license>
   <project_group>GNOME</project_group>
+  <content_rating type="oars-1.1" />
   <description>
     <p>
       Germinal is a minimalist terminal emulator aiming for simplicity.
@@ -29,4 +30,14 @@
   <url type="help">https://github.com/Keruspe/Germinal/issues</url>
   <url type="translate">https://github.com/Keruspe/Germinal</url>
   <translation type="gettext">Germinal</translation>
+  <releases>
+      <release version="26" type="stable" date="2019-10-07">
+          <description>
+              <p>This is a maintenance release. Changes:</p>
+              <ul>
+                  <li>Compatibility with recent appstream-glib</li>
+              </ul>
+          </description>
+      </release>
+  </releases>
 </component>

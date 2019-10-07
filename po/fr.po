@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Germinal\n"
 "Report-Msgid-Bugs-To: Marc-Antoine@Perennou.com\n"
-"POT-Creation-Date: 2019-02-23 22:01+0100\n"
+"POT-Creation-Date: 2019-10-07 13:57+0200\n"
 "PO-Revision-Date: 2011-09-23 16:05+0100\n"
 "Last-Translator: Marc-Antoine Perennou <Marc-Antoine@Perennou.com>\n"
 "Language-Team: French\n"
@@ -74,18 +74,26 @@ msgstr "Germinal est un émulateur de terminal minimaliste basé sur vte"
 msgid "Marc-Antoine Perennou"
 msgstr ""
 
-#: data/appstream/org.gnome.Germinal.appdata.xml.in:12
+#: data/appstream/org.gnome.Germinal.appdata.xml.in:13
 msgid "Germinal is a minimalist terminal emulator aiming for simplicity."
 msgstr "Germinal est un émulateur de terminal visant la simplicité"
 
-#: data/appstream/org.gnome.Germinal.appdata.xml.in:15
+#: data/appstream/org.gnome.Germinal.appdata.xml.in:16
 msgid "You can customize Germinal using dconf-editor, in /org/gnome/Germinal."
 msgstr ""
 "Vous pouvez configurer Germinal avec dconf-editor, donc /org/gnome/Germinal."
 
-#: data/appstream/org.gnome.Germinal.appdata.xml.in:22
+#: data/appstream/org.gnome.Germinal.appdata.xml.in:23
 msgid "The main UI"
 msgstr "L'interface principale"
+
+#: data/appstream/org.gnome.Germinal.appdata.xml.in:36
+msgid "This is a maintenance release. Changes:"
+msgstr "Mise à jour de maintenance. Changements :"
+
+#: data/appstream/org.gnome.Germinal.appdata.xml.in:38
+msgid "Compatibility with recent appstream-glib"
+msgstr "Compatibilité avec les versions récentes de appstream-glib"
 
 #: data/desktop/org.gnome.Germinal.desktop.in.in:5
 msgid "Minimalist vte-based terminal emulator"
