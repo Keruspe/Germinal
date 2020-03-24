@@ -321,17 +321,6 @@ update_bell (GSettings   *settings,
 }
 
 static void
-update_allow_bold (GSettings   *settings,
-                   const gchar *key,
-                   gpointer     user_data)
-{
-    gboolean allow_bold = g_settings_get_boolean (settings, key);
-    VteTerminal *term = user_data;
-
-    vte_terminal_set_allow_bold (term, allow_bold);
-}
-
-static void
 update_decorated (GSettings   *settings,
                   const gchar *key,
                   gpointer     user_data)
@@ -461,7 +450,6 @@ germinal_create_window (GApplication *application,
     GSettings *settings = g_object_get_data (G_OBJECT (application), "germinal-settings");
 
     update_bell                 (settings, AUDIBLE_BELL_KEY,         terminal);
-    update_allow_bold           (settings, ALLOW_BOLD_KEY,           terminal);
     update_decorated            (settings, DECORATED_KEY,            terminal);
     update_colors               (settings, NULL,                     terminal);
     update_font                 (settings, FONT_KEY,                 terminal);
@@ -565,7 +553,6 @@ germinal_windows_foreach (GtkApplication      *application,
 }
 
 SETTING_UPDATE_FUNC (bell);
-SETTING_UPDATE_FUNC (allow_bold);
 SETTING_UPDATE_FUNC (colors);
 SETTING_UPDATE_FUNC (decorated);
 SETTING_UPDATE_FUNC (font);
@@ -617,7 +604,6 @@ main (gint   argc,
     g_autoptr (GSettings) settings = germinal_settings_new ();
 
     SETTING_SIGNAL (AUDIBLE_BELL,         bell);
-    SETTING_SIGNAL (ALLOW_BOLD,           allow_bold);
     SETTING_SIGNAL (BACKCOLOR,            colors);
     SETTING_SIGNAL (FORECOLOR,            colors);
     SETTING_SIGNAL (PALETTE,              colors);

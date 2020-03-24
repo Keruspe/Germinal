@@ -90,14 +90,6 @@
       </description>
     </key>
 
-    <key name="allow-bold" type="b">
-      <default>true</default>
-      <summary>Allow printing in bold</summary>
-      <description>
-        By default, we allow it
-      </description>
-    </key>
-
     <key name="decorated" type="b">
       <default>false</default>
       <summary>Display window decoration</summary>
