@@ -391,6 +391,12 @@ update_colors (GSettings   *settings,
     return NULL;
 }
 
+typedef struct {
+    VteTerminal *term;
+    GSettings   *settings;
+    GStrv        command;
+} GerminalCommandData;
+
 static void
 on_terminal_command_spawned (VteTerminal *terminal G_GNUC_UNUSED,
                              GPid         pid      G_GNUC_UNUSED,
@@ -403,7 +409,28 @@ on_terminal_command_spawned (VteTerminal *terminal G_GNUC_UNUSED,
         g_error_free (error);
         exit (EXIT_FAILURE);
     }
-    gtk_widget_show_all (user_data);
+}
+
+static gboolean
+germinal_spawn_command (gpointer user_data)
+{
+    g_autofree GerminalCommandData *data = user_data;
+    g_auto (GStrv) command = data->command;
+
+    /* Override TERM */
+    g_auto (GStrv) envp = g_environ_setenv (g_get_environ (), "TERM", get_setting (data->settings, TERM_KEY), TRUE);
+
+    /* Spawn our command */
+    vte_terminal_spawn_async (data->term, VTE_PTY_DEFAULT, g_get_home_dir (), command, envp, G_SPAWN_SEARCH_PATH,
+                              NULL,  /* child_setup */
+                              NULL,  /* child_setup_data */
+                              NULL,  /* child_setup_data_destroy */
+                              -1,    /* timeout */
+                              NULL,  /* cancellable */
+                              on_terminal_command_spawned,
+                              NULL);
+
+    return G_SOURCE_REMOVE;
 }
 
 static int
@@ -424,9 +451,6 @@ germinal_create_window (GApplication *application,
     vte_terminal_set_mouse_autohide      (term, TRUE);
     vte_terminal_set_scroll_on_output    (term, FALSE);
     vte_terminal_set_scroll_on_keystroke (term, TRUE);
-
-    /* Window settings */
-    gtk_window_maximize (win);
 
     /* Fill window */
     gtk_container_add (GTK_CONTAINER (window), terminal);
@@ -468,19 +492,6 @@ germinal_create_window (GApplication *application,
         }
     }
 
-    /* Override TERM */
-    g_auto (GStrv) envp = g_environ_setenv (g_get_environ (), "TERM", get_setting (settings, TERM_KEY), TRUE);
-
-    /* Spawn our command */
-    vte_terminal_spawn_async (term, VTE_PTY_DEFAULT, g_get_home_dir (), command, envp, G_SPAWN_SEARCH_PATH,
-                              NULL,  /* child_setup */
-                              NULL,  /* child_setup_data */
-                              NULL,  /* child_setup_data_destroy */
-                              -1,    /* timeout */
-                              NULL,  /* cancellable */
-                              on_terminal_command_spawned,
-                              window);
-
     /* Populate right click menu */
     GtkWidget *menu = gtk_menu_new ();
 
@@ -514,6 +525,18 @@ germinal_create_window (GApplication *application,
 
     /* Show the window */
     gtk_widget_show_all (menu);
+    gtk_widget_show_all (window);
+
+    /* Window settings */
+    gtk_window_maximize (win);
+
+    /* Launch the command */
+    GerminalCommandData *data = g_new0 (GerminalCommandData, 1);
+    data->term = term;
+    data->settings = settings;
+    data->command = command;
+    _free_command = NULL;
+    g_idle_add (germinal_spawn_command, data);
 
     return EXIT_SUCCESS;
 }
