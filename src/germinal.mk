@@ -21,12 +21,14 @@ bin_PROGRAMS +=      \
 
 germinal_c_files =                       \
 	%D%/germinal/germinal.c          \
+	%D%/germinal/germinal-settings.c \
 	%D%/germinal/germinal-terminal.c \
 	%D%/germinal/germinal-window.c   \
 	$(NULL)
 
 bin_germinal_SOURCES =                   \
 	%D%/germinal/germinal-cleanup.h  \
+	%D%/germinal/germinal-settings.h \
 	%D%/germinal/germinal-terminal.h \
 	%D%/germinal/germinal-util.h     \
 	%D%/germinal/germinal-window.h   \

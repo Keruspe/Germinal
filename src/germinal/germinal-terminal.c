@@ -19,6 +19,9 @@
 
 #include "germinal-terminal.h"
 
+#define PCRE2_CODE_UNIT_WIDTH 0
+#include <pcre2.h>
+
 struct _GerminalTerminal
 {
     VteTerminal parent_instance;
@@ -280,6 +283,7 @@ germinal_terminal_init (GerminalTerminal *self)
     GerminalTerminalPrivate *priv = germinal_terminal_get_instance_private (self);
     GdkKeymap *keymap = gdk_keymap_get_for_display (gdk_display_get_default ());
     g_autofree GdkKeymapKey *zero_keys = NULL;
+    g_autoptr (GError) error = NULL;
 
     priv->mouse_settings = g_settings_new ("org.gnome.desktop.peripherals.mouse");
     priv->touchpad_settings = g_settings_new ("org.gnome.desktop.peripherals.touchpad");
@@ -298,6 +302,26 @@ germinal_terminal_init (GerminalTerminal *self)
         priv->zero_keycodes = NULL;
         priv->n_zero_keycodes = 0;
     }
+
+    VteTerminal *term = (VteTerminal *) self;
+
+    vte_terminal_set_mouse_autohide      (term, TRUE);
+    vte_terminal_set_scroll_on_output    (term, FALSE);
+    vte_terminal_set_scroll_on_keystroke (term, TRUE);
+
+    /* Url matching stuff */
+    g_autoptr (VteRegex) url_regexp = vte_regex_new_for_match (URL_REGEXP,
+                                                              strlen (URL_REGEXP),
+                                                              PCRE2_CASELESS | PCRE2_NOTEMPTY | PCRE2_MULTILINE,
+                                                              &error);
+
+    if (error)
+    {
+        g_critical ("%s", error->message);
+        exit (EXIT_FAILURE);
+    }
+
+    vte_terminal_match_add_regex (term, url_regexp, 0);
 }
 
 static void

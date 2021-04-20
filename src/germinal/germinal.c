@@ -17,13 +17,8 @@
  * along with Germinal.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "germinal-settings.h"
 #include "germinal-window.h"
-
-#define G_SETTINGS_ENABLE_BACKEND 1
-#include <gio/gsettingsbackend.h>
-
-#define PCRE2_CODE_UNIT_WIDTH 0
-#include <pcre2.h>
 
 #include <stdlib.h>
 
@@ -443,32 +438,12 @@ germinal_create_window (GApplication *application,
     /* Create window */
     GtkWidget *window = germinal_window_new (GTK_APPLICATION (application));
     GtkWindow *win = GTK_WINDOW (window);
-
-    /* Vte settings */
     GtkWidget *terminal = germinal_terminal_new ();
     VteTerminal *term = VTE_TERMINAL (terminal);
-
-    vte_terminal_set_mouse_autohide      (term, TRUE);
-    vte_terminal_set_scroll_on_output    (term, FALSE);
-    vte_terminal_set_scroll_on_keystroke (term, TRUE);
 
     /* Fill window */
     gtk_container_add (GTK_CONTAINER (window), terminal);
     gtk_widget_grab_focus (terminal);
-
-    /* Url matching stuff */
-    g_autoptr (VteRegex) url_regexp = vte_regex_new_for_match (URL_REGEXP,
-                                                              strlen (URL_REGEXP),
-                                                              PCRE2_CASELESS | PCRE2_NOTEMPTY | PCRE2_MULTILINE,
-                                                              &error);
-
-    if (error)
-    {
-        g_critical ("%s", error->message);
-        exit (EXIT_FAILURE);
-    }
-
-    vte_terminal_match_add_regex (term, url_regexp, 0);
 
     /* Apply user settings */
     GSettings *settings = g_object_get_data (G_OBJECT (application), "germinal-settings");
@@ -581,24 +556,6 @@ SETTING_UPDATE_FUNC (decorated);
 SETTING_UPDATE_FUNC (font);
 SETTING_UPDATE_FUNC (scrollback);
 SETTING_UPDATE_FUNC (word_char_exceptions);
-
-static GSettings *
-germinal_settings_new (void)
-{
-    g_autofree gchar *config_file_path = g_build_filename (g_get_user_config_dir (), "germinal", "settings", NULL);
-    g_autoptr (GFile) config_file = g_file_new_for_path (config_file_path);
-
-    if (g_file_query_exists (config_file, NULL /* cancellable */))
-    {
-        g_autoptr (GSettingsBackend) backend = g_keyfile_settings_backend_new (config_file_path, "/org/gnome/Germinal/", "Germinal");
-
-        return g_settings_new_with_backend ("org.gnome.Germinal", backend);
-    }
-    else
-    {
-        return g_settings_new ("org.gnome.Germinal");
-    }
-}
 
 gint
 main (gint   argc,
