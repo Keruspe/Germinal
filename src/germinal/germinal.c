@@ -253,7 +253,7 @@ germinal_spawn_command (gpointer user_data)
 {
     g_autofree GerminalCommandData *data = user_data;
 
-    if (!gtk_widget_get_realized (data->win))
+    if (!gtk_widget_get_realized (data->win) || !gtk_widget_get_realized ((GtkWidget *) data->term))
     {
         data = NULL;
         return G_SOURCE_CONTINUE;
