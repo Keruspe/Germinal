@@ -45,29 +45,6 @@ G_BEGIN_DECLS
 #define TERM_KEY                 "term"
 #define WORD_CHAR_EXCEPTIONS_KEY "word-char-exceptions"
 
-/* Watch a setting's changes */
-#define SETTING_SIGNAL(key, fn)                                        \
-    gulong key##_sig = g_signal_connect (G_OBJECT (settings),          \
-                                         "changed::" key##_KEY,        \
-                                         G_CALLBACK (update_all_##fn), \
-                                         app)
-#define SETTING_SIGNAL_CLEANUP(key) \
-    g_signal_handler_disconnect (settings, key##_sig)
-
-/* Loop over all windows to apply a settings change */
-#define SETTING_UPDATE_FUNC(fn)                                       \
-    static void                                                       \
-    update_all_##fn (GSettings   *settings,                           \
-                     const gchar *key,                                \
-                     gpointer     user_data)                          \
-    {                                                                 \
-        germinal_windows_foreach (GTK_APPLICATION (user_data),        \
-                                  (GerminalSettingsFunc) update_##fn, \
-                                  settings,                           \
-                                  key);                               \
-    }
-
-
 /* Create a menu item, add it to the menu and bind its action */
 #define MENU_ACTION(name, label)                                        \
     GtkWidget *name##_menu_item = gtk_menu_item_new_with_label (label); \

@@ -17,14 +17,9 @@
  * along with Germinal.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "germinal-settings.h"
 #include "germinal-window.h"
 
 #include <stdlib.h>
-
-typedef void (*GerminalSettingsFunc) (GSettings   *settings,
-                                      const gchar *key,
-                                      gpointer     user_data);
 
 static gboolean
 on_button_press (GtkWidget      *widget,
@@ -247,183 +242,24 @@ on_key_press (GtkWidget   *widget,
     return GTK_WIDGET_GET_CLASS (user_data)->key_press_event (user_data, event);
 }
 
-static gchar *
-get_setting (GSettings   *settings,
-             const gchar *name)
-{
-    return (name) ? g_settings_get_string (settings, name) : NULL;
-}
-
-static GdkRGBA *
-get_palette (GSettings   *settings,
-             const gchar *name,
-             gsize       *palette_size)
-{
-    g_auto (GStrv) colors = NULL;
-    guint size, i;
-    GdkRGBA *palette;
-
-    colors = g_settings_get_strv (settings, name);
-    size = g_strv_length (colors);
-
-    if (!((size == 0) ||
-          (size == 8) ||
-          (size == 16) ||
-          (size == 24) ||
-          ((size >= 25) && (size <= 255))))
-    {
-        g_settings_reset (settings, name);
-        return get_palette (settings, name, palette_size);
-    }
-
-    palette = g_new(GdkRGBA, size);
-
-    for (i = 0 ; i < size ; ++i)
-        gdk_rgba_parse (&palette[i], colors[i]);
-
-    *palette_size = size;
-
-    return palette;
-}
-
-static void
-update_scrollback (GSettings   *settings,
-                   const gchar *key,
-                   gpointer     user_data)
-{
-    vte_terminal_set_scrollback_lines (VTE_TERMINAL (user_data), g_settings_get_int (settings, key));
-}
-
-static void
-update_word_char_exceptions (GSettings   *settings,
-                             const gchar *key,
-                             gpointer     user_data)
-{
-    g_autofree gchar *setting = get_setting (settings, key);
-
-    vte_terminal_set_word_char_exceptions (VTE_TERMINAL (user_data), setting);
-}
-
-static void
-update_bell (GSettings   *settings,
-             const gchar *key,
-             gpointer     user_data)
-{
-    gboolean bell = g_settings_get_boolean (settings, key);
-    VteTerminal *term = user_data;
-
-    vte_terminal_set_audible_bell (term, bell);
-}
-
-static void
-update_decorated (GSettings   *settings,
-                  const gchar *key,
-                  gpointer     user_data)
-{
-    gboolean decorated = g_settings_get_boolean (settings, key);
-    GtkWindow *win = GTK_WINDOW (gtk_widget_get_parent (user_data));
-
-    gtk_window_set_decorated (win, decorated);
-    gtk_window_set_hide_titlebar_when_maximized (win, !decorated);
-}
-
-static void
-update_font (GSettings   *settings,
-             const gchar *key,
-             gpointer     user_data)
-{
-    g_autofree gchar *setting = get_setting (settings, key);
-
-    germinal_terminal_update_font (GERMINAL_TERMINAL (user_data), setting);
-}
-
-static GdkRGBA *
-update_colors (GSettings   *settings,
-               const gchar *key,       /* NULL for initialization */
-               gpointer     user_data) /* NULL to get the palette to free it */
-{
-    static GdkRGBA forecolor, backcolor;
-    static GdkRGBA *palette = NULL;
-    static gsize palette_size;
-
-    if (!user_data)
-        return palette;
-
-    if (!key)
-    {
-        g_autofree gchar *backcolor_str = get_setting (settings, BACKCOLOR_KEY);
-        g_autofree gchar *forecolor_str = get_setting (settings, FORECOLOR_KEY);
-
-        gdk_rgba_parse (&backcolor, backcolor_str);
-        gdk_rgba_parse (&forecolor, forecolor_str);
-
-        palette = get_palette(settings, PALETTE_KEY, &palette_size);
-    }
-    else if (strcmp (key, BACKCOLOR_KEY) == 0)
-    {
-        g_autofree gchar *backcolor_str = get_setting (settings, BACKCOLOR_KEY);
-
-        gdk_rgba_parse (&backcolor, backcolor_str);
-    }
-    else if (strcmp (key, FORECOLOR_KEY) == 0)
-    {
-        g_autofree gchar *forecolor_str = get_setting (settings, FORECOLOR_KEY);
-
-        gdk_rgba_parse (&forecolor, forecolor_str);
-    }
-    else if (strcmp (key, PALETTE_KEY) == 0)
-    {
-        g_free(palette);
-        palette = get_palette(settings, PALETTE_KEY, &palette_size);
-    }
-
-    vte_terminal_set_colors (VTE_TERMINAL (user_data),
-                             &forecolor,
-                             &backcolor,
-                             palette,
-                             palette_size);
-
-    return NULL;
-}
-
 typedef struct {
-    VteTerminal *term;
-    GSettings   *settings;
-    GStrv        command;
+    GtkWidget        *win;
+    GerminalTerminal *term;
+    GStrv             command;
 } GerminalCommandData;
-
-static void
-on_terminal_command_spawned (VteTerminal *terminal G_GNUC_UNUSED,
-                             GPid         pid      G_GNUC_UNUSED,
-                             GError      *error,
-                             gpointer     user_data)
-{
-    if (error)
-    {
-        g_critical ("%s", error->message);
-        g_error_free (error);
-        exit (EXIT_FAILURE);
-    }
-}
 
 static gboolean
 germinal_spawn_command (gpointer user_data)
 {
     g_autofree GerminalCommandData *data = user_data;
-    g_auto (GStrv) command = data->command;
 
-    /* Override TERM */
-    g_auto (GStrv) envp = g_environ_setenv (g_get_environ (), "TERM", get_setting (data->settings, TERM_KEY), TRUE);
+    if (!gtk_widget_get_realized (data->win))
+    {
+        data = NULL;
+        return G_SOURCE_CONTINUE;
+    }
 
-    /* Spawn our command */
-    vte_terminal_spawn_async (data->term, VTE_PTY_DEFAULT, g_get_home_dir (), command, envp, G_SPAWN_SEARCH_PATH,
-                              NULL,  /* child_setup */
-                              NULL,  /* child_setup_data */
-                              NULL,  /* child_setup_data_destroy */
-                              -1,    /* timeout */
-                              NULL,  /* cancellable */
-                              on_terminal_command_spawned,
-                              NULL);
+    germinal_terminal_spawn_command (data->term, data->command);
 
     return G_SOURCE_REMOVE;
 }
@@ -432,9 +268,6 @@ static int
 germinal_create_window (GApplication *application,
                         GStrv         command)
 {
-    g_autoptr (GError) error = NULL;
-    g_auto (GStrv) _free_command = command;
-
     /* Create window */
     GtkWidget *window = germinal_window_new (GTK_APPLICATION (application));
     GtkWindow *win = GTK_WINDOW (window);
@@ -444,28 +277,6 @@ germinal_create_window (GApplication *application,
     /* Fill window */
     gtk_container_add (GTK_CONTAINER (window), terminal);
     gtk_widget_grab_focus (terminal);
-
-    /* Apply user settings */
-    GSettings *settings = g_object_get_data (G_OBJECT (application), "germinal-settings");
-
-    update_bell                 (settings, AUDIBLE_BELL_KEY,         terminal);
-    update_decorated            (settings, DECORATED_KEY,            terminal);
-    update_colors               (settings, NULL,                     terminal);
-    update_font                 (settings, FONT_KEY,                 terminal);
-    update_scrollback           (settings, SCROLLBACK_KEY,           terminal);
-    update_word_char_exceptions (settings, WORD_CHAR_EXCEPTIONS_KEY, terminal);
-
-    /* Launch base command */
-    if (G_LIKELY (!command))
-    {
-        g_autofree gchar *setting = get_setting (settings, STARTUP_COMMAND_KEY);
-
-        if (!g_shell_parse_argv (setting, NULL, &command, &error))
-        {
-            g_critical ("%s", error->message);
-            exit (EXIT_FAILURE);
-        }
-    }
 
     /* Populate right click menu */
     GtkWidget *menu = gtk_menu_new ();
@@ -507,10 +318,9 @@ germinal_create_window (GApplication *application,
 
     /* Launch the command */
     GerminalCommandData *data = g_new0 (GerminalCommandData, 1);
-    data->term = term;
-    data->settings = settings;
+    data->win = window;
+    data->term = GERMINAL_TERMINAL (term);
     data->command = command;
-    _free_command = NULL;
     g_idle_add (germinal_spawn_command, data);
 
     return EXIT_SUCCESS;
@@ -540,23 +350,6 @@ germinal_activate (GApplication *application)
     germinal_create_window (application, NULL);
 }
 
-static void
-germinal_windows_foreach (GtkApplication      *application,
-                          GerminalSettingsFunc fn,
-                          GSettings           *settings,
-                          const gchar         *key)
-{
-    for (GList *w = gtk_application_get_windows (application); w; w = w->next)
-        fn (settings, key, gtk_container_get_children (GTK_CONTAINER (w->data))->data);
-}
-
-SETTING_UPDATE_FUNC (bell);
-SETTING_UPDATE_FUNC (colors);
-SETTING_UPDATE_FUNC (decorated);
-SETTING_UPDATE_FUNC (font);
-SETTING_UPDATE_FUNC (scrollback);
-SETTING_UPDATE_FUNC (word_char_exceptions);
-
 gint
 main (gint   argc,
       gchar *argv[])
@@ -580,33 +373,6 @@ main (gint   argc,
     klass->command_line = germinal_command_line;
     klass->activate = germinal_activate;
 
-    /* track user settings */
-    g_autoptr (GSettings) settings = germinal_settings_new ();
-
-    SETTING_SIGNAL (AUDIBLE_BELL,         bell);
-    SETTING_SIGNAL (BACKCOLOR,            colors);
-    SETTING_SIGNAL (FORECOLOR,            colors);
-    SETTING_SIGNAL (PALETTE,              colors);
-    SETTING_SIGNAL (DECORATED,            decorated);
-    SETTING_SIGNAL (FONT,                 font);
-    SETTING_SIGNAL (SCROLLBACK,           scrollback);
-    SETTING_SIGNAL (WORD_CHAR_EXCEPTIONS, word_char_exceptions);
-
-    g_object_set_data (G_OBJECT (app), "germinal-settings", settings);
-
     /* Launch program */
-    gint ret = g_application_run (gapp, argc, argv);
-
-    /* Free memory */
-    g_free (update_colors (NULL, NULL, NULL));
-
-    SETTING_SIGNAL_CLEANUP (AUDIBLE_BELL);
-    SETTING_SIGNAL_CLEANUP (BACKCOLOR);
-    SETTING_SIGNAL_CLEANUP (FORECOLOR);
-    SETTING_SIGNAL_CLEANUP (PALETTE);
-    SETTING_SIGNAL_CLEANUP (FONT);
-    SETTING_SIGNAL_CLEANUP (SCROLLBACK);
-    SETTING_SIGNAL_CLEANUP (WORD_CHAR_EXCEPTIONS);
-
-    return ret;
+    return g_application_run (gapp, argc, argv);
 }

@@ -40,6 +40,8 @@ void     germinal_terminal_dezoom      (GerminalTerminal *self);
 void     germinal_terminal_reset_zoom  (GerminalTerminal *self);
 void     germinal_terminal_update_font (GerminalTerminal *self, const gchar *font_str);
 
+void     germinal_terminal_spawn_command (GerminalTerminal *self, GStrv comman);
+
 GtkWidget *germinal_terminal_new ();
 
 G_END_DECLS
