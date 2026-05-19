@@ -62,7 +62,6 @@ typedef struct
     GdkRGBA    forecolor;
     GdkRGBA    backcolor;
 
-
     gchar     *url;
     guint     *zero_keycodes;
     guint      n_zero_keycodes;
@@ -71,13 +70,6 @@ typedef struct
 } GerminalTerminalPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GerminalTerminal, germinal_terminal, VTE_TYPE_TERMINAL)
-
-static gchar *
-get_setting (GSettings   *settings,
-             const gchar *name)
-{
-    return (name) ? g_settings_get_string (settings, name) : NULL;
-}
 
 static void
 update_scrollback (GSettings   *settings,
@@ -92,7 +84,7 @@ update_word_char_exceptions (GSettings   *settings,
                              const gchar *key,
                              gpointer     user_data)
 {
-    g_autofree gchar *setting = get_setting (settings, key);
+    g_autofree gchar *setting = germinal_settings_get_string (settings, key);
 
     vte_terminal_set_word_char_exceptions (VTE_TERMINAL (user_data), setting);
 }
@@ -110,41 +102,9 @@ update_font (GSettings   *settings,
              const gchar *key,
              gpointer     user_data)
 {
-    g_autofree gchar *setting = get_setting (settings, key);
+    g_autofree gchar *setting = germinal_settings_get_string (settings, key);
 
     germinal_terminal_update_font (GERMINAL_TERMINAL (user_data), setting);
-}
-
-static GdkRGBA *
-get_palette (GSettings   *settings,
-             const gchar *name,
-             gsize       *palette_size)
-{
-    g_auto (GStrv) colors = NULL;
-    guint size, i;
-    GdkRGBA *palette;
-
-    colors = g_settings_get_strv (settings, name);
-    size = g_strv_length (colors);
-
-    if (!((size == 0) ||
-          (size == 8) ||
-          (size == 16) ||
-          (size == 24) ||
-          ((size >= 25) && (size <= 255))))
-    {
-        g_settings_reset (settings, name);
-        return get_palette (settings, name, palette_size);
-    }
-
-    palette = g_new(GdkRGBA, size);
-
-    for (i = 0 ; i < size ; ++i)
-        gdk_rgba_parse (&palette[i], colors[i]);
-
-    *palette_size = size;
-
-    return palette;
 }
 
 static void
@@ -156,20 +116,20 @@ update_colors (GSettings   *settings,
 
     if (strcmp (key, BACKCOLOR_KEY) == 0)
     {
-        g_autofree gchar *backcolor_str = get_setting (priv->settings, BACKCOLOR_KEY);
+        g_autofree gchar *backcolor_str = germinal_settings_get_string (priv->settings, BACKCOLOR_KEY);
 
         gdk_rgba_parse (&priv->backcolor, backcolor_str);
     }
     else if (strcmp (key, FORECOLOR_KEY) == 0)
     {
-        g_autofree gchar *forecolor_str = get_setting (priv->settings, FORECOLOR_KEY);
+        g_autofree gchar *forecolor_str = germinal_settings_get_string (priv->settings, FORECOLOR_KEY);
 
         gdk_rgba_parse (&priv->forecolor, forecolor_str);
     }
     else if (strcmp (key, PALETTE_KEY) == 0)
     {
-        g_free (priv->palette);
-        priv->palette = get_palette(priv->settings, PALETTE_KEY, &priv->palette_size);
+        g_clear_pointer (&priv->palette, g_free);
+        priv->palette = germinal_settings_get_palette (priv->settings, &priv->palette_size);
     }
 
     if (priv->palette)
@@ -329,7 +289,6 @@ on_terminal_command_spawned (VteTerminal *terminal G_GNUC_UNUSED,
     if (error)
     {
         g_critical ("%s", error->message);
-        g_error_free (error);
         exit (EXIT_FAILURE);
     }
 }
@@ -343,7 +302,7 @@ germinal_terminal_spawn_command (GerminalTerminal *self,
 
     if (G_LIKELY (!command))
     {
-        g_autofree gchar *setting = get_setting (priv->settings, STARTUP_COMMAND_KEY);
+        g_autofree gchar *setting = germinal_settings_get_string (priv->settings, STARTUP_COMMAND_KEY);
         g_autoptr (GError) error = NULL;
 
         if (!g_shell_parse_argv (setting, NULL, &command, &error))
@@ -356,7 +315,8 @@ germinal_terminal_spawn_command (GerminalTerminal *self,
     }
 
     /* Override TERM */
-    g_auto (GStrv) envp = g_environ_setenv (g_get_environ (), "TERM", get_setting (priv->settings, TERM_KEY), TRUE);
+    g_autofree gchar *term = germinal_settings_get_string (priv->settings, TERM_KEY);
+    g_auto (GStrv) envp = g_environ_setenv (g_get_environ (), "TERM", term, TRUE);
 
     /* Spawn our command */
     vte_terminal_spawn_async ((VteTerminal *) self, VTE_PTY_DEFAULT, g_get_home_dir (), command, envp, G_SPAWN_SEARCH_PATH,
@@ -548,6 +508,133 @@ germinal_terminal_init (GerminalTerminal *self)
 }
 
 static void
+copy_text (GdkAtom      selection,
+           const gchar *text)
+{
+    GtkClipboard *clip = gtk_clipboard_get (selection);
+
+    gtk_clipboard_set_text (clip, text, -1);
+}
+
+void
+germinal_terminal_copy (GerminalTerminal *self)
+{
+    vte_terminal_copy_clipboard_format (VTE_TERMINAL (self), VTE_FORMAT_TEXT);
+}
+
+void
+germinal_terminal_copy_html (GerminalTerminal *self)
+{
+    vte_terminal_copy_clipboard_format (VTE_TERMINAL (self), VTE_FORMAT_HTML);
+}
+
+void
+germinal_terminal_paste (GerminalTerminal *self)
+{
+    vte_terminal_paste_clipboard (VTE_TERMINAL (self));
+}
+
+gboolean
+germinal_terminal_copy_url (GerminalTerminal *self)
+{
+    gchar *url = germinal_terminal_get_url (self, NULL);
+
+    if (!url)
+        return FALSE;
+
+    copy_text (GDK_SELECTION_CLIPBOARD, url);
+    copy_text (GDK_SELECTION_PRIMARY, url);
+
+    return TRUE;
+}
+
+static gboolean
+launch_cmd (GerminalTerminal *self,
+            const gchar      *_cmd)
+{
+    g_auto (GStrv) cmd = NULL;
+
+    if (!g_shell_parse_argv (_cmd, NULL, &cmd, NULL))
+        return FALSE;
+
+    return germinal_terminal_spawn (self, cmd, NULL);
+}
+
+static gboolean
+germinal_terminal_key_press (GtkWidget   *widget,
+                             GdkEventKey *event)
+{
+    if (event->type != GDK_KEY_PRESS)
+        return FALSE;
+
+    GerminalTerminal *self = GERMINAL_TERMINAL (widget);
+
+    /* Ctrl + foo */
+    if (event->state & GDK_CONTROL_MASK)
+    {
+        switch (event->keyval)
+        {
+        /* Clipboard */
+        case GDK_KEY_C:
+            germinal_terminal_copy (self);
+            return TRUE;
+        case GDK_KEY_V:
+            germinal_terminal_paste (self);
+            return TRUE;
+        /* Zoom */
+        case GDK_KEY_KP_Add:
+        case GDK_KEY_plus:
+            germinal_terminal_zoom (self);
+            return TRUE;
+        case GDK_KEY_KP_Subtract:
+        case GDK_KEY_minus:
+            germinal_terminal_dezoom (self);
+            return TRUE;
+        case GDK_KEY_KP_0:
+        case GDK_KEY_0:
+            germinal_terminal_reset_zoom (self);
+            return TRUE;
+        /* Quit */
+        case GDK_KEY_Q:
+            gtk_window_close (GTK_WINDOW (gtk_widget_get_toplevel (widget)));
+            return TRUE;
+        /* Window split (inspired by terminator) */
+        case GDK_KEY_O:
+            return launch_cmd (self, "tmux split-window -v");
+        case GDK_KEY_E:
+            return launch_cmd (self, "tmux split-window -h");
+        /* Next/Previous window (tab) */
+        case GDK_KEY_Tab:
+            return launch_cmd (self, "tmux next-window");
+        case GDK_KEY_ISO_Left_Tab:
+            return launch_cmd (self, "tmux previous-window");
+        /* New window (tab) */
+        case GDK_KEY_T:
+            return launch_cmd (self, "tmux new-window");
+        /* Next/Previous pane */
+        case GDK_KEY_N:
+            return launch_cmd (self, "tmux select-pane -t :.+");
+        case GDK_KEY_P:
+            return launch_cmd (self, "tmux select-pane -t :.-");
+        /* Close current pane */
+        case GDK_KEY_W:
+            return launch_cmd (self, "tmux kill-pane");
+        /* Resize current pane */
+        case GDK_KEY_X:
+            return launch_cmd (self, "tmux resize-pane -Z");
+        }
+
+        if (germinal_terminal_is_zero (self, event->hardware_keycode))
+        {
+            germinal_terminal_reset_zoom (self);
+            return TRUE;
+        }
+    }
+
+    return GTK_WIDGET_CLASS (germinal_terminal_parent_class)->key_press_event (widget, event);
+}
+
+static void
 germinal_terminal_class_init (GerminalTerminalClass *klass)
 {
     GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
@@ -555,6 +642,7 @@ germinal_terminal_class_init (GerminalTerminalClass *klass)
     gobject_class->dispose = germinal_terminal_dispose;
     gobject_class->finalize = germinal_terminal_finalize;
     GTK_WIDGET_CLASS (klass)->scroll_event = on_scroll;
+    GTK_WIDGET_CLASS (klass)->key_press_event = germinal_terminal_key_press;
 }
 
 GtkWidget *

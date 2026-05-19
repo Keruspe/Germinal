@@ -27,7 +27,8 @@ G_BEGIN_DECLS
 #define GERMINAL_TYPE_WINDOW germinal_window_get_type ()
 G_DECLARE_FINAL_TYPE (GerminalWindow, germinal_window, GERMINAL, WINDOW, GtkApplicationWindow)
 
-GtkWidget *germinal_window_new (GtkApplication *application);
+GtkWidget *germinal_window_new     (GtkApplication *application, GerminalTerminal *terminal);
+void       germinal_window_present (GerminalWindow *self);
 
 G_END_DECLS
 

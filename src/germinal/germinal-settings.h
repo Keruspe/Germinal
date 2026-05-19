@@ -20,11 +20,26 @@
 #ifndef __GERMINAL_SETTINGS_H__
 #define __GERMINAL_SETTINGS_H__
 
+#include <gdk/gdk.h>
 #include <gio/gio.h>
 
 G_BEGIN_DECLS
 
-GSettings *germinal_settings_new (void);
+/* Settings keys */
+#define AUDIBLE_BELL_KEY         "audible-bell"
+#define BACKCOLOR_KEY            "backcolor"
+#define DECORATED_KEY            "decorated"
+#define FONT_KEY                 "font"
+#define FORECOLOR_KEY            "forecolor"
+#define PALETTE_KEY              "palette"
+#define SCROLLBACK_KEY           "scrollback-lines"
+#define STARTUP_COMMAND_KEY      "startup-command"
+#define TERM_KEY                 "term"
+#define WORD_CHAR_EXCEPTIONS_KEY "word-char-exceptions"
+
+GSettings *germinal_settings_new         (void);
+gchar     *germinal_settings_get_string  (GSettings *settings, const gchar *key);
+GdkRGBA   *germinal_settings_get_palette (GSettings *settings, gsize *palette_size);
 
 G_END_DECLS
 

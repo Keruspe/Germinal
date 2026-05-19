@@ -34,6 +34,10 @@ G_DECLARE_FINAL_TYPE (GerminalTerminal, germinal_terminal, GERMINAL, TERMINAL, V
 gboolean germinal_terminal_is_zero     (GerminalTerminal *self, guint keycode);
 gchar   *germinal_terminal_get_url     (GerminalTerminal *self, GdkEventButton *button_event);
 gboolean germinal_terminal_open_url    (GerminalTerminal *self, GdkEventButton *button_event);
+gboolean germinal_terminal_copy_url    (GerminalTerminal *self);
+void     germinal_terminal_copy        (GerminalTerminal *self);
+void     germinal_terminal_copy_html   (GerminalTerminal *self);
+void     germinal_terminal_paste       (GerminalTerminal *self);
 gboolean germinal_terminal_spawn       (GerminalTerminal *self, gchar **cmd, GError **error);
 void     germinal_terminal_zoom        (GerminalTerminal *self);
 void     germinal_terminal_dezoom      (GerminalTerminal *self);

@@ -33,18 +33,6 @@ G_BEGIN_DECLS
 #define DUMB_USERS_TEXT    "<[^\n\r<>]+>"
 #define URL_REGEXP         CHARACTER "+://(" QUOTED_TEXT "|" PAREN_TEXT "|" SQUARE_BRACED_TEXT "|" DUMB_USERS_TEXT "|" STRAIGHT_TEXT_ONLY ")+"
 
-/* Settings keys */
-#define AUDIBLE_BELL_KEY         "audible-bell"
-#define BACKCOLOR_KEY            "backcolor"
-#define DECORATED_KEY            "decorated"
-#define FONT_KEY                 "font"
-#define FORECOLOR_KEY            "forecolor"
-#define PALETTE_KEY              "palette"
-#define SCROLLBACK_KEY           "scrollback-lines"
-#define STARTUP_COMMAND_KEY      "startup-command"
-#define TERM_KEY                 "term"
-#define WORD_CHAR_EXCEPTIONS_KEY "word-char-exceptions"
-
 /* Create a menu item, add it to the menu and bind its action */
 #define MENU_ACTION(name, label)                                        \
     GtkWidget *name##_menu_item = gtk_menu_item_new_with_label (label); \
