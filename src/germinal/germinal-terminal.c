@@ -23,28 +23,6 @@
 #define PCRE2_CODE_UNIT_WIDTH 0
 #include <pcre2.h>
 
-/* Watch a setting's changes */
-#define SETTING_SIGNAL(key, fn)                                            \
-    priv->c_signals[C_##key] = g_signal_connect (G_OBJECT (settings),      \
-                                                 "changed::" key##_KEY,    \
-                                                 G_CALLBACK (update_##fn), \
-                                                 self)
-#define SETTING_SIGNAL_CLEANUP(key)                                         \
-    g_signal_handler_disconnect (priv->settings, priv->c_signals[C_##key]); \
-    priv->c_signals[C_##key] = -1
-
-enum
-{
-    C_AUDIBLE_BELL,
-    C_BACKCOLOR,
-    C_FORECOLOR,
-    C_PALETTE,
-    C_FONT,
-    C_SCROLLBACK,
-    C_WORD_CHAR_EXCEPTIONS,
-
-    C_LAST_SIGNAL,
-};
 
 struct _GerminalTerminal
 {
@@ -66,7 +44,7 @@ typedef struct
     guint     *zero_keycodes;
     guint      n_zero_keycodes;
 
-    guint64    c_signals[C_LAST_SIGNAL];
+    GSignalGroup *settings_signals;
 } GerminalTerminalPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GerminalTerminal, germinal_terminal, VTE_TYPE_TERMINAL)
@@ -165,9 +143,9 @@ germinal_terminal_get_url (GerminalTerminal *self,
 
     if (button_event) /* only access to cached url if no button_event available */
     {
-        g_clear_pointer (&priv->url, g_free); /* free previous url */
         gint tag; /* avoid stupid vte segv (said to be optional) */
 
+        g_clear_pointer (&priv->url, g_free);
         priv->url = vte_terminal_match_check_event (VTE_TERMINAL (self), (GdkEvent *) button_event, &tag);
     }
 
@@ -419,18 +397,8 @@ germinal_terminal_dispose (GObject *object)
 {
     GerminalTerminalPrivate *priv = germinal_terminal_get_instance_private (GERMINAL_TERMINAL (object));
 
-    if (priv->settings)
-    {
-        SETTING_SIGNAL_CLEANUP (AUDIBLE_BELL);
-        SETTING_SIGNAL_CLEANUP (BACKCOLOR);
-        SETTING_SIGNAL_CLEANUP (FORECOLOR);
-        SETTING_SIGNAL_CLEANUP (PALETTE);
-        SETTING_SIGNAL_CLEANUP (FONT);
-        SETTING_SIGNAL_CLEANUP (SCROLLBACK);
-        SETTING_SIGNAL_CLEANUP (WORD_CHAR_EXCEPTIONS);
-        g_clear_object (&priv->settings);
-    }
-
+    g_clear_object (&priv->settings_signals);
+    g_clear_object (&priv->settings);
     g_clear_object (&priv->mouse_settings);
     g_clear_object (&priv->touchpad_settings);
 
@@ -465,13 +433,15 @@ germinal_terminal_init (GerminalTerminal *self)
 
     priv->url = NULL;
 
-    SETTING_SIGNAL (AUDIBLE_BELL,         bell);
-    SETTING_SIGNAL (BACKCOLOR,            colors);
-    SETTING_SIGNAL (FORECOLOR,            colors);
-    SETTING_SIGNAL (PALETTE,              colors);
-    SETTING_SIGNAL (FONT,                 font);
-    SETTING_SIGNAL (SCROLLBACK,           scrollback);
-    SETTING_SIGNAL (WORD_CHAR_EXCEPTIONS, word_char_exceptions);
+    priv->settings_signals = g_signal_group_new (G_TYPE_SETTINGS);
+    g_signal_group_connect (priv->settings_signals, "changed::" AUDIBLE_BELL_KEY,         G_CALLBACK (update_bell),                self);
+    g_signal_group_connect (priv->settings_signals, "changed::" BACKCOLOR_KEY,            G_CALLBACK (update_colors),              self);
+    g_signal_group_connect (priv->settings_signals, "changed::" FORECOLOR_KEY,            G_CALLBACK (update_colors),              self);
+    g_signal_group_connect (priv->settings_signals, "changed::" PALETTE_KEY,              G_CALLBACK (update_colors),              self);
+    g_signal_group_connect (priv->settings_signals, "changed::" FONT_KEY,                 G_CALLBACK (update_font),                self);
+    g_signal_group_connect (priv->settings_signals, "changed::" SCROLLBACK_KEY,           G_CALLBACK (update_scrollback),          self);
+    g_signal_group_connect (priv->settings_signals, "changed::" WORD_CHAR_EXCEPTIONS_KEY, G_CALLBACK (update_word_char_exceptions), self);
+    g_signal_group_set_target (priv->settings_signals, settings);
 
     /* Init settings */
     update_bell                 (settings, AUDIBLE_BELL_KEY,         self);

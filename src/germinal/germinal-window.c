@@ -32,19 +32,12 @@ enum
     N_PROPS
 };
 
-enum
-{
-    C_DECORATED,
-
-    C_LAST_SIGNAL,
-};
-
 typedef struct
 {
     GSettings        *settings;
     GerminalTerminal *terminal;
 
-    guint64           c_signals[C_LAST_SIGNAL];
+    GSignalGroup     *settings_signals;
 } GerminalWindowPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GerminalWindow, germinal_window, GTK_TYPE_APPLICATION_WINDOW)
@@ -252,13 +245,8 @@ germinal_window_dispose (GObject *object)
 {
     GerminalWindowPrivate *priv = germinal_window_get_instance_private (GERMINAL_WINDOW (object));
 
-    if (priv->settings)
-    {
-        g_signal_handler_disconnect (priv->settings, priv->c_signals[C_DECORATED]);
-        priv->c_signals[C_DECORATED] = -1;
-        g_clear_object (&priv->settings);
-    }
-
+    g_clear_object (&priv->settings_signals);
+    g_clear_object (&priv->settings);
     g_clear_object (&priv->terminal);
 
     G_OBJECT_CLASS (germinal_window_parent_class)->dispose (object);
@@ -271,10 +259,9 @@ germinal_window_init (GerminalWindow *self)
 
     GSettings *settings = priv->settings = germinal_settings_new ();
 
-    priv->c_signals[C_DECORATED] = g_signal_connect (G_OBJECT (settings),
-                                                     "changed::" DECORATED_KEY,
-                                                     G_CALLBACK (update_decorated),
-                                                     self);
+    priv->settings_signals = g_signal_group_new (G_TYPE_SETTINGS);
+    g_signal_group_connect (priv->settings_signals, "changed::" DECORATED_KEY, G_CALLBACK (update_decorated), self);
+    g_signal_group_set_target (priv->settings_signals, settings);
 
     update_decorated (settings, DECORATED_KEY, self);
 }

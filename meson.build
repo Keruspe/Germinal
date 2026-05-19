@@ -9,7 +9,7 @@ project(
 i18n  = import('i18n')
 gnome = import('gnome')
 
-glib_req_version    = '2.58'
+glib_req_version    = '2.76'
 gtk_req_version     = '3.24'
 vte_req_version     = '0.54.2'
 gsd_req_version     = '3.28.1'
