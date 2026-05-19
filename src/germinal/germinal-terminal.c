@@ -1,7 +1,7 @@
 /*
  * This file is part of Germinal.
  *
- * Copyright 2018 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
+ * Copyright 2018-2026 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
  *
  * Germinal is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -116,20 +116,20 @@ update_colors (GSettings   *settings,
 
     if (strcmp (key, BACKCOLOR_KEY) == 0)
     {
-        g_autofree gchar *backcolor_str = germinal_settings_get_string (priv->settings, BACKCOLOR_KEY);
+        g_autofree gchar *backcolor_str = germinal_settings_get_string (settings, BACKCOLOR_KEY);
 
         gdk_rgba_parse (&priv->backcolor, backcolor_str);
     }
     else if (strcmp (key, FORECOLOR_KEY) == 0)
     {
-        g_autofree gchar *forecolor_str = germinal_settings_get_string (priv->settings, FORECOLOR_KEY);
+        g_autofree gchar *forecolor_str = germinal_settings_get_string (settings, FORECOLOR_KEY);
 
         gdk_rgba_parse (&priv->forecolor, forecolor_str);
     }
     else if (strcmp (key, PALETTE_KEY) == 0)
     {
         g_clear_pointer (&priv->palette, g_free);
-        priv->palette = germinal_settings_get_palette (priv->settings, &priv->palette_size);
+        priv->palette = germinal_settings_get_palette (settings, &priv->palette_size);
     }
 
     if (priv->palette)
@@ -281,10 +281,10 @@ germinal_terminal_update_font (GerminalTerminal *self,
 }
 
 static void
-on_terminal_command_spawned (VteTerminal *terminal G_GNUC_UNUSED,
-                             GPid         pid      G_GNUC_UNUSED,
+on_terminal_command_spawned (VteTerminal *terminal  G_GNUC_UNUSED,
+                             GPid         pid       G_GNUC_UNUSED,
                              GError      *error,
-                             gpointer     user_data)
+                             gpointer     user_data G_GNUC_UNUSED)
 {
     if (error)
     {
@@ -357,6 +357,8 @@ on_scroll (GtkWidget      *widget,
             case GDK_SOURCE_TOUCHPAD:
                 natural_scroll = g_settings_get_boolean (priv->touchpad_settings, "natural-scroll");
                 break;
+            default:
+                break;
         }
 
         if (gdk_event_get_scroll_direction ((GdkEvent *) event, &direction))
@@ -368,6 +370,8 @@ on_scroll (GtkWidget      *widget,
                     break;
                 case GDK_SCROLL_DOWN:
                     zoom_action = DEZOOM;
+                    break;
+                default:
                     break;
             }
         }
@@ -383,6 +387,8 @@ on_scroll (GtkWidget      *widget,
         {
             switch (zoom_action)
             {
+                case DO_NOTHING:
+                    break;
                 case ZOOM:
                     zoom_action = DEZOOM;
                     break;
@@ -394,6 +400,8 @@ on_scroll (GtkWidget      *widget,
 
         switch (zoom_action)
         {
+            case DO_NOTHING:
+                break;
             case ZOOM:
                 germinal_terminal_zoom (self);
                 return GDK_EVENT_STOP;
@@ -449,6 +457,7 @@ germinal_terminal_init (GerminalTerminal *self)
     GdkKeymap *keymap = gdk_keymap_get_for_display (gdk_display_get_default ());
     g_autofree GdkKeymapKey *zero_keys = NULL;
     g_autoptr (GError) error = NULL;
+    gint n_keys;
 
     GSettings *settings = priv->settings = germinal_settings_new ();
     priv->mouse_settings = g_settings_new ("org.gnome.desktop.peripherals.mouse");
@@ -473,8 +482,9 @@ germinal_terminal_init (GerminalTerminal *self)
     update_scrollback           (settings, SCROLLBACK_KEY,           self);
     update_word_char_exceptions (settings, WORD_CHAR_EXCEPTIONS_KEY, self);
 
-    if (gdk_keymap_get_entries_for_keyval (keymap, GDK_KEY_0, &zero_keys, &priv->n_zero_keycodes))
+    if (gdk_keymap_get_entries_for_keyval (keymap, GDK_KEY_0, &zero_keys, &n_keys))
     {
+        priv->n_zero_keycodes = (guint) n_keys;
         priv->zero_keycodes = g_new (guint, priv->n_zero_keycodes);
 
         for (guint i = 0; i < priv->n_zero_keycodes; ++i)

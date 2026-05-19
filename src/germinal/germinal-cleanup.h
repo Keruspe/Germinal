@@ -1,7 +1,7 @@
 /*
  * This file is part of Germinal.
  *
- * Copyright 2013 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
+ * Copyright 2013-2026 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
  *
  * Germinal is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ G_BEGIN_DECLS
 
 #define GERMINAL_FONT_CLEANUP GERMINAL_CLEANUP (cleanup_font)
 
-static void
+static G_GNUC_UNUSED void
 cleanup_font (PangoFontDescription **font)
 {
     pango_font_description_free (*font);

@@ -1,7 +1,7 @@
 /*
  * This file is part of Germinal.
  *
- * Copyright 2018 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
+ * Copyright 2018-2026 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
  *
  * Germinal is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
