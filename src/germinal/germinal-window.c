@@ -22,7 +22,7 @@
 
 struct _GerminalWindow
 {
-    GtkApplicationWindow parent_instance;
+    AdwApplicationWindow parent_instance;
 };
 
 enum
@@ -38,55 +38,56 @@ typedef struct
     GerminalTerminal *terminal;
 
     GSignalGroup     *settings_signals;
+    GSignalGroup     *terminal_signals;
+
+    GtkWidget        *popover;
+    GMenu            *url_section;
 } GerminalWindowPrivate;
 
-G_DEFINE_TYPE_WITH_PRIVATE (GerminalWindow, germinal_window, GTK_TYPE_APPLICATION_WINDOW)
+G_DEFINE_TYPE_WITH_PRIVATE (GerminalWindow, germinal_window, ADW_TYPE_APPLICATION_WINDOW)
 
 static void
 update_decorated (GSettings   *settings,
                   const gchar *key,
                   gpointer     user_data)
 {
-    gboolean decorated = g_settings_get_boolean (settings, key);
-    GtkWindow *win = GTK_WINDOW (user_data);
-
-    gtk_window_set_decorated (win, decorated);
-    gtk_window_set_hide_titlebar_when_maximized (win, !decorated);
+    gtk_window_set_decorated (GTK_WINDOW (user_data), g_settings_get_boolean (settings, key));
 }
 
-static gboolean
-on_button_press (GtkWidget      *widget,
-                 GdkEventButton *button_event,
-                 gpointer        user_data)
+static void
+on_click_pressed (GtkGestureClick *gesture,
+                  gint             n_press G_GNUC_UNUSED,
+                  gdouble          x,
+                  gdouble          y,
+                  gpointer         user_data)
 {
-    if (button_event->type != GDK_BUTTON_PRESS)
-        return FALSE;
+    GerminalWindow *self = GERMINAL_WINDOW (user_data);
+    GerminalWindowPrivate *priv = germinal_window_get_instance_private (self);
+    guint button = gtk_gesture_single_get_current_button (GTK_GESTURE_SINGLE (gesture));
+    GdkModifierType state = gtk_event_controller_get_current_event_state (GTK_EVENT_CONTROLLER (gesture));
 
-    GerminalTerminal *self = GERMINAL_TERMINAL (widget);
-
-    /* Shift + Left clic */
-    if ((button_event->button == GDK_BUTTON_PRIMARY) &&
-        (button_event->state & GDK_SHIFT_MASK))
-            return germinal_terminal_open_url (self, button_event);
-    else if (button_event->button == GDK_BUTTON_SECONDARY)
+    /* Shift + Left click */
+    if (button == GDK_BUTTON_PRIMARY && (state & GDK_SHIFT_MASK))
     {
-        gchar *url = germinal_terminal_get_url (self, button_event);
-
-        if (url) /* show url stuff */
-            gtk_widget_show_all (GTK_WIDGET (user_data));
-        else
-        {
-            /* hide url stuff */
-            g_autoptr (GList) children = gtk_container_get_children (GTK_CONTAINER (user_data));
-            gtk_widget_hide (GTK_WIDGET (children->data));
-            gtk_widget_hide (GTK_WIDGET (children->next->data));
-            gtk_widget_hide (GTK_WIDGET (children->next->next->data));
-        }
-        gtk_menu_popup_at_pointer (GTK_MENU (user_data), (GdkEvent *) button_event);
-        return TRUE;
+        germinal_terminal_update_url (priv->terminal, x, y);
+        germinal_terminal_open_url (priv->terminal);
     }
+    else if (button == GDK_BUTTON_SECONDARY)
+    {
+        germinal_terminal_update_url (priv->terminal, x, y);
+        gboolean has_url = germinal_terminal_get_url (priv->terminal) != NULL;
 
-    return FALSE;
+        g_menu_remove_all (priv->url_section);
+        if (has_url)
+        {
+            g_menu_append (priv->url_section, _("Copy url"), "ctx.copy-url");
+            g_menu_append (priv->url_section, _("Open url"), "ctx.open-url");
+        }
+
+        GdkRectangle rect = { (gint) x, (gint) y, 1, 1 };
+        gtk_popover_set_pointing_to (GTK_POPOVER (priv->popover), &rect);
+        gtk_popover_popup (GTK_POPOVER (priv->popover));
+    }
 }
 
 static void
@@ -101,79 +102,91 @@ on_child_exited (VteTerminal *vteterminal G_GNUC_UNUSED,
 
 static void
 on_window_title_changed (VteTerminal *vteterminal,
+                         const gchar *prop G_GNUC_UNUSED,
                          gpointer     user_data)
 {
-    gtk_window_set_title (GTK_WINDOW (user_data), vte_terminal_get_window_title (vteterminal));
+    g_autofree gchar *title = vte_terminal_dup_termprop_string_by_id (vteterminal, VTE_PROPERTY_ID_XTERM_TITLE, NULL);
+    gtk_window_set_title (GTK_WINDOW (user_data), title);
 }
 
-static gboolean
-do_copy (GtkWidget *widget G_GNUC_UNUSED,
-         gpointer   user_data)
+static void
+action_copy (GSimpleAction *action G_GNUC_UNUSED,
+             GVariant      *param G_GNUC_UNUSED,
+             gpointer       user_data)
 {
-    germinal_terminal_copy (GERMINAL_TERMINAL (user_data));
-    return TRUE;
+    GerminalWindowPrivate *priv = germinal_window_get_instance_private (GERMINAL_WINDOW (user_data));
+    germinal_terminal_copy (priv->terminal);
 }
 
-static gboolean
-do_copy_html (GtkWidget *widget G_GNUC_UNUSED,
-              gpointer   user_data)
+static void
+action_copy_html (GSimpleAction *action G_GNUC_UNUSED,
+                  GVariant      *param G_GNUC_UNUSED,
+                  gpointer       user_data)
 {
-    germinal_terminal_copy_html (GERMINAL_TERMINAL (user_data));
-    return TRUE;
+    GerminalWindowPrivate *priv = germinal_window_get_instance_private (GERMINAL_WINDOW (user_data));
+    germinal_terminal_copy_html (priv->terminal);
 }
 
-static gboolean
-do_paste (GtkWidget *widget G_GNUC_UNUSED,
-          gpointer   user_data)
+static void
+action_paste (GSimpleAction *action G_GNUC_UNUSED,
+              GVariant      *param G_GNUC_UNUSED,
+              gpointer       user_data)
 {
-    germinal_terminal_paste (GERMINAL_TERMINAL (user_data));
-    return TRUE;
+    GerminalWindowPrivate *priv = germinal_window_get_instance_private (GERMINAL_WINDOW (user_data));
+    germinal_terminal_paste (priv->terminal);
 }
 
-static gboolean
-do_copy_url (GtkWidget *widget G_GNUC_UNUSED,
-             gpointer   user_data)
+static void
+action_copy_url (GSimpleAction *action G_GNUC_UNUSED,
+                 GVariant      *param G_GNUC_UNUSED,
+                 gpointer       user_data)
 {
-    return germinal_terminal_copy_url (GERMINAL_TERMINAL (user_data));
+    GerminalWindowPrivate *priv = germinal_window_get_instance_private (GERMINAL_WINDOW (user_data));
+    germinal_terminal_copy_url (priv->terminal);
 }
 
-static gboolean
-do_open_url (GtkWidget *widget G_GNUC_UNUSED,
-             gpointer   user_data)
+static void
+action_open_url (GSimpleAction *action G_GNUC_UNUSED,
+                 GVariant      *param G_GNUC_UNUSED,
+                 gpointer       user_data)
 {
-    return germinal_terminal_open_url (GERMINAL_TERMINAL (user_data), NULL);
+    GerminalWindowPrivate *priv = germinal_window_get_instance_private (GERMINAL_WINDOW (user_data));
+    germinal_terminal_open_url (priv->terminal);
 }
 
-static gboolean
-do_zoom (GtkWidget *widget G_GNUC_UNUSED,
-         gpointer   user_data)
+static void
+action_zoom (GSimpleAction *action G_GNUC_UNUSED,
+             GVariant      *param G_GNUC_UNUSED,
+             gpointer       user_data)
 {
-    germinal_terminal_zoom (GERMINAL_TERMINAL (user_data));
-    return TRUE;
+    GerminalWindowPrivate *priv = germinal_window_get_instance_private (GERMINAL_WINDOW (user_data));
+    germinal_terminal_zoom (priv->terminal);
 }
 
-static gboolean
-do_dezoom (GtkWidget *widget G_GNUC_UNUSED,
-           gpointer   user_data)
+static void
+action_dezoom (GSimpleAction *action G_GNUC_UNUSED,
+               GVariant      *param G_GNUC_UNUSED,
+               gpointer       user_data)
 {
-    germinal_terminal_dezoom (GERMINAL_TERMINAL (user_data));
-    return TRUE;
+    GerminalWindowPrivate *priv = germinal_window_get_instance_private (GERMINAL_WINDOW (user_data));
+    germinal_terminal_dezoom (priv->terminal);
 }
 
-static gboolean
-do_reset_zoom (GtkWidget *widget G_GNUC_UNUSED,
-               gpointer   user_data)
+static void
+action_reset_zoom (GSimpleAction *action G_GNUC_UNUSED,
+                   GVariant      *param G_GNUC_UNUSED,
+                   gpointer       user_data)
 {
-    germinal_terminal_reset_zoom (GERMINAL_TERMINAL (user_data));
-    return TRUE;
+    GerminalWindowPrivate *priv = germinal_window_get_instance_private (GERMINAL_WINDOW (user_data));
+    germinal_terminal_reset_zoom (priv->terminal);
 }
 
-static gboolean
-do_quit (GtkWidget *widget G_GNUC_UNUSED,
-         gpointer   user_data)
+static void
+action_quit (GSimpleAction *action G_GNUC_UNUSED,
+             GVariant      *param G_GNUC_UNUSED,
+             gpointer       user_data)
 {
-    gtk_window_close (GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (user_data))));
-    return TRUE;
+    gtk_window_close (GTK_WINDOW (user_data));
 }
 
 static void
@@ -204,40 +217,72 @@ germinal_window_constructed (GObject *object)
     G_OBJECT_CLASS (germinal_window_parent_class)->constructed (object);
 
     /* Fill window */
-    gtk_container_add (GTK_CONTAINER (self), terminal);
+    adw_application_window_set_content (ADW_APPLICATION_WINDOW (self), terminal);
     gtk_widget_grab_focus (terminal);
 
-    /* Populate right click menu */
-    GtkWidget *menu = gtk_menu_new ();
+    /* Action group for right-click menu */
+    g_autoptr (GSimpleActionGroup) ag = g_simple_action_group_new ();
 
-    MENU_ACTION (copy_url,   _("Copy url"));
-    MENU_ACTION (open_url,   _("Open url"));
+#define ADD_ACTION(name_str, cb) G_STMT_START {                                 \
+        g_autoptr (GSimpleAction) _a = g_simple_action_new (name_str, NULL);    \
+        g_signal_connect (_a, "activate", G_CALLBACK (cb), self);               \
+        g_action_map_add_action (G_ACTION_MAP (ag), G_ACTION (_a));             \
+    } G_STMT_END
 
-    MENU_SEPARATOR;
+    ADD_ACTION ("copy-url",   action_copy_url);
+    ADD_ACTION ("open-url",   action_open_url);
+    ADD_ACTION ("copy",       action_copy);
+    ADD_ACTION ("copy-html",  action_copy_html);
+    ADD_ACTION ("paste",      action_paste);
+    ADD_ACTION ("zoom",       action_zoom);
+    ADD_ACTION ("dezoom",     action_dezoom);
+    ADD_ACTION ("reset-zoom", action_reset_zoom);
+    ADD_ACTION ("quit",       action_quit);
 
-    MENU_ACTION (copy,       _("Copy"));
-    MENU_ACTION (copy_html,  _("Copy as HTML"));
-    MENU_ACTION (paste,      _("Paste"));
+#undef ADD_ACTION
 
-    MENU_SEPARATOR;
+    gtk_widget_insert_action_group (GTK_WIDGET (self), "ctx", G_ACTION_GROUP (ag));
 
-    MENU_ACTION (zoom,       _("Zoom"));
-    MENU_ACTION (dezoom,     _("Dezoom"));
-    MENU_ACTION (reset_zoom, _("Reset zoom"));
+    /* Build right-click menu model */
+    priv->url_section = g_menu_new ();
 
-    MENU_SEPARATOR;
+    g_autoptr (GMenu) menu = g_menu_new ();
+    g_menu_append_section (menu, NULL, G_MENU_MODEL (priv->url_section));
 
-    MENU_ACTION (quit,       _("Quit"));
+    g_autoptr (GMenu) clipboard_section = g_menu_new ();
+    g_menu_append (clipboard_section, _("Copy"),         "ctx.copy");
+    g_menu_append (clipboard_section, _("Copy as HTML"), "ctx.copy-html");
+    g_menu_append (clipboard_section, _("Paste"),        "ctx.paste");
+    g_menu_append_section (menu, NULL, G_MENU_MODEL (clipboard_section));
 
-    /* Bind signals */
-    CONNECT_SIGNAL (terminal, "button-press-event",   on_button_press,         menu);
-    CONNECT_SIGNAL (terminal, "child-exited",         on_child_exited,         self);
-    CONNECT_SIGNAL (terminal, "window-title-changed", on_window_title_changed, self);
+    g_autoptr (GMenu) zoom_section = g_menu_new ();
+    g_menu_append (zoom_section, _("Zoom"),       "ctx.zoom");
+    g_menu_append (zoom_section, _("Dezoom"),     "ctx.dezoom");
+    g_menu_append (zoom_section, _("Reset zoom"), "ctx.reset-zoom");
+    g_menu_append_section (menu, NULL, G_MENU_MODEL (zoom_section));
+
+    g_autoptr (GMenu) quit_section = g_menu_new ();
+    g_menu_append (quit_section, _("Quit"), "ctx.quit");
+    g_menu_append_section (menu, NULL, G_MENU_MODEL (quit_section));
+
+    priv->popover = gtk_popover_menu_new_from_model (G_MENU_MODEL (menu));
+    gtk_popover_set_has_arrow (GTK_POPOVER (priv->popover), FALSE);
+    gtk_widget_set_parent (priv->popover, terminal);
+
+    /* Click gesture for right-click menu and shift+click URL */
+    GtkGesture *gesture = gtk_gesture_click_new ();
+    gtk_gesture_single_set_button (GTK_GESTURE_SINGLE (gesture), 0);
+    g_signal_connect (gesture, "pressed", G_CALLBACK (on_click_pressed), self);
+    gtk_widget_add_controller (terminal, GTK_EVENT_CONTROLLER (gesture));
+
+    /* VTE signals */
+    priv->terminal_signals = g_signal_group_new (VTE_TYPE_TERMINAL);
+    g_signal_group_connect (priv->terminal_signals, "child-exited",                                G_CALLBACK (on_child_exited),         self);
+    g_signal_group_connect (priv->terminal_signals, "termprop-changed::" VTE_TERMPROP_XTERM_TITLE, G_CALLBACK (on_window_title_changed), self);
+    g_signal_group_set_target (priv->terminal_signals, priv->terminal);
 
     /* Initialize title */
-    on_window_title_changed (VTE_TERMINAL (terminal), self);
-
-    gtk_widget_show_all (menu);
+    on_window_title_changed (VTE_TERMINAL (terminal), NULL, self);
 }
 
 static void
@@ -245,8 +290,11 @@ germinal_window_dispose (GObject *object)
 {
     GerminalWindowPrivate *priv = germinal_window_get_instance_private (GERMINAL_WINDOW (object));
 
+    g_clear_pointer (&priv->popover, gtk_widget_unparent);
+    g_clear_object (&priv->url_section);
     g_clear_object (&priv->settings_signals);
     g_clear_object (&priv->settings);
+    g_clear_object (&priv->terminal_signals);
     g_clear_object (&priv->terminal);
 
     G_OBJECT_CLASS (germinal_window_parent_class)->dispose (object);
@@ -284,10 +332,8 @@ germinal_window_class_init (GerminalWindowClass *klass)
 void
 germinal_window_present (GerminalWindow *self)
 {
-    GtkWidget *window = GTK_WIDGET (self);
-
-    gtk_widget_show_all (window);
-    gtk_window_maximize (GTK_WINDOW (window));
+    gtk_window_maximize (GTK_WINDOW (self));
+    gtk_window_present (GTK_WINDOW (self));
 }
 
 GtkWidget *
@@ -297,6 +343,5 @@ germinal_window_new (GtkApplication   *application,
     return g_object_new (GERMINAL_TYPE_WINDOW,
                          "application", application,
                          "terminal",    terminal,
-                         "type",        GTK_WINDOW_TOPLEVEL,
                          NULL);
 }

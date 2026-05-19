@@ -19,10 +19,10 @@
 
 #include "germinal-terminal.h"
 #include "germinal-settings.h"
+#include "germinal-util.h"
 
 #define PCRE2_CODE_UNIT_WIDTH 0
 #include <pcre2.h>
-
 
 struct _GerminalTerminal
 {
@@ -135,28 +135,30 @@ germinal_terminal_is_zero (GerminalTerminal *self,
     return FALSE;
 }
 
-gchar *
-germinal_terminal_get_url (GerminalTerminal *self,
-                           GdkEventButton   *button_event)
+const gchar *
+germinal_terminal_get_url (GerminalTerminal *self)
 {
     GerminalTerminalPrivate *priv = germinal_terminal_get_instance_private (self);
-
-    if (button_event) /* only access to cached url if no button_event available */
-    {
-        gint tag; /* avoid stupid vte segv (said to be optional) */
-
-        g_clear_pointer (&priv->url, g_free);
-        priv->url = vte_terminal_match_check_event (VTE_TERMINAL (self), (GdkEvent *) button_event, &tag);
-    }
 
     return priv->url;
 }
 
-gboolean
-germinal_terminal_open_url (GerminalTerminal *self,
-                            GdkEventButton   *button_event)
+void
+germinal_terminal_update_url (GerminalTerminal *self,
+                               gdouble           x,
+                               gdouble           y)
 {
-    gchar *url = germinal_terminal_get_url (self, button_event);
+    GerminalTerminalPrivate *priv = germinal_terminal_get_instance_private (self);
+    gint tag; /* avoid stupid vte segv (said to be optional) */
+
+    g_clear_pointer (&priv->url, g_free);
+    priv->url = vte_terminal_check_match_at (VTE_TERMINAL (self), x, y, &tag);
+}
+
+gboolean
+germinal_terminal_open_url (GerminalTerminal *self)
+{
+    const gchar *url = germinal_terminal_get_url (self);
 
     if (!url)
         return FALSE;
@@ -171,7 +173,7 @@ germinal_terminal_open_url (GerminalTerminal *self,
     if (!browser)
         browser = g_strdup ("firefox");
 
-    gchar *cmd[] = {browser, url, NULL};
+    gchar *cmd[] = {browser, (gchar *) url, NULL};
 
     if (!germinal_terminal_spawn (self, cmd, &error))
         g_warning ("%s \"%s %s\": %s", _("Couldn't exec"), browser, url, error->message);
@@ -196,66 +198,37 @@ germinal_terminal_spawn (GerminalTerminal *self G_GNUC_UNUSED,
                           error);
 }
 
-typedef enum {
-    FONT_SIZE_DELTA_RESET = 0,
-    FONT_SIZE_DELTA_INC = 1,
-    FONT_SIZE_DELTA_DEC = -1,
-    FONT_SIZE_DELTA_SET_DEFAULT = 42
-} FontSizeDelta;
-
-static void
-update_font_size (VteTerminal  *terminal,
-                  FontSizeDelta delta)
-{
-    static gdouble default_size = 0;
-
-    GERMINAL_FONT_CLEANUP PangoFontDescription *font = pango_font_description_copy (vte_terminal_get_font (terminal));
-    gdouble size = pango_font_description_get_size (font);
-
-    switch (delta)
-    {
-    case FONT_SIZE_DELTA_SET_DEFAULT:
-        default_size = size;
-        return;
-    case FONT_SIZE_DELTA_RESET:
-        size = default_size;
-        break;
-    default:
-        size = CLAMP (size / PANGO_SCALE + delta, 4., 144.) * PANGO_SCALE;
-        break;
-    }
-
-    pango_font_description_set_size (font, size);
-    vte_terminal_set_font (terminal, font);
-}
+#define ZOOM_FACTOR 1.2
 
 void
 germinal_terminal_zoom (GerminalTerminal *self)
 {
-    update_font_size (VTE_TERMINAL (self), FONT_SIZE_DELTA_INC);
+    VteTerminal *terminal = VTE_TERMINAL (self);
+
+    vte_terminal_set_font_scale (terminal, CLAMP (vte_terminal_get_font_scale (terminal) * ZOOM_FACTOR, 0.25, 4.0));
 }
 
 void
 germinal_terminal_dezoom (GerminalTerminal *self)
 {
-    update_font_size (VTE_TERMINAL (self), FONT_SIZE_DELTA_DEC);
+    VteTerminal *terminal = VTE_TERMINAL (self);
+
+    vte_terminal_set_font_scale (terminal, CLAMP (vte_terminal_get_font_scale (terminal) / ZOOM_FACTOR, 0.25, 4.0));
 }
 
 void
 germinal_terminal_reset_zoom (GerminalTerminal *self)
 {
-    update_font_size (VTE_TERMINAL (self), FONT_SIZE_DELTA_RESET);
+    vte_terminal_set_font_scale (VTE_TERMINAL (self), 1.0);
 }
 
 void
 germinal_terminal_update_font (GerminalTerminal *self,
                                const gchar      *font_str)
 {
-    GERMINAL_FONT_CLEANUP PangoFontDescription *font = pango_font_description_from_string (font_str);
-    VteTerminal *terminal = VTE_TERMINAL (self);
+    g_autoptr (PangoFontDescription) font = pango_font_description_from_string (font_str);
 
-    vte_terminal_set_font (terminal, font);
-    update_font_size (terminal, FONT_SIZE_DELTA_SET_DEFAULT);
+    vte_terminal_set_font (VTE_TERMINAL (self), font);
 }
 
 static void
@@ -314,82 +287,71 @@ typedef enum {
 } ZoomAction;
 
 static gboolean
-on_scroll (GtkWidget      *widget,
-           GdkEventScroll *event)
+on_scroll (GtkEventControllerScroll *controller,
+           gdouble                   dx G_GNUC_UNUSED,
+           gdouble                   dy,
+           gpointer                  user_data)
 {
-    GerminalTerminal *self = GERMINAL_TERMINAL (widget);
+    GerminalTerminal *self = GERMINAL_TERMINAL (user_data);
     GerminalTerminalPrivate *priv = germinal_terminal_get_instance_private (self);
 
-    if (event->state & GDK_CONTROL_MASK)
+    if (!(gtk_event_controller_get_current_event_state (GTK_EVENT_CONTROLLER (controller)) & GDK_CONTROL_MASK))
+        return GDK_EVENT_PROPAGATE;
+
+    if (gtk_event_controller_scroll_get_unit (controller) != GDK_SCROLL_UNIT_WHEEL)
+        return GDK_EVENT_PROPAGATE;
+
+    ZoomAction zoom_action = DO_NOTHING;
+    gboolean natural_scroll = FALSE;
+
+    GdkEvent *event = gtk_event_controller_get_current_event (GTK_EVENT_CONTROLLER (controller));
+    GdkDevice *device = gdk_event_get_device (event);
+
+    switch (gdk_device_get_source (device))
     {
-        ZoomAction zoom_action = DO_NOTHING;
-        gboolean natural_scroll = FALSE;
-        GdkScrollDirection direction;
-        gdouble y;
+        case GDK_SOURCE_MOUSE:
+            natural_scroll = g_settings_get_boolean (priv->mouse_settings, "natural-scroll");
+            break;
+        case GDK_SOURCE_TOUCHPAD:
+            natural_scroll = g_settings_get_boolean (priv->touchpad_settings, "natural-scroll");
+            break;
+        default:
+            break;
+    }
 
-        switch (gdk_device_get_source (gdk_event_get_source_device ((GdkEvent *) event)))
-        {
-            case GDK_SOURCE_MOUSE:
-                natural_scroll = g_settings_get_boolean (priv->mouse_settings, "natural-scroll");
-                break;
-            case GDK_SOURCE_TOUCHPAD:
-                natural_scroll = g_settings_get_boolean (priv->touchpad_settings, "natural-scroll");
-                break;
-            default:
-                break;
-        }
+    if (dy < 0)
+        zoom_action = ZOOM;
+    else if (dy > 0)
+        zoom_action = DEZOOM;
 
-        if (gdk_event_get_scroll_direction ((GdkEvent *) event, &direction))
-        {
-            switch (direction)
-            {
-                case GDK_SCROLL_UP:
-                    zoom_action = ZOOM;
-                    break;
-                case GDK_SCROLL_DOWN:
-                    zoom_action = DEZOOM;
-                    break;
-                default:
-                    break;
-            }
-        }
-        else if (gdk_event_get_scroll_deltas ((GdkEvent*) event, NULL, &y))
-        {
-            if (y < 0)
-                zoom_action = ZOOM;
-            else
-                zoom_action = DEZOOM;
-        }
-
-        if (natural_scroll)
-        {
-            switch (zoom_action)
-            {
-                case DO_NOTHING:
-                    break;
-                case ZOOM:
-                    zoom_action = DEZOOM;
-                    break;
-                case DEZOOM:
-                    zoom_action = ZOOM;
-                    break;
-            }
-        }
-
+    if (natural_scroll)
+    {
         switch (zoom_action)
         {
             case DO_NOTHING:
                 break;
             case ZOOM:
-                germinal_terminal_zoom (self);
-                return GDK_EVENT_STOP;
+                zoom_action = DEZOOM;
+                break;
             case DEZOOM:
-                germinal_terminal_dezoom (self);
-                return GDK_EVENT_STOP;
+                zoom_action = ZOOM;
+                break;
         }
     }
 
-    return GTK_WIDGET_CLASS (germinal_terminal_parent_class)->scroll_event (widget, event);
+    switch (zoom_action)
+    {
+        case DO_NOTHING:
+            break;
+        case ZOOM:
+            germinal_terminal_zoom (self);
+            return GDK_EVENT_STOP;
+        case DEZOOM:
+            germinal_terminal_dezoom (self);
+            return GDK_EVENT_STOP;
+    }
+
+    return GDK_EVENT_PROPAGATE;
 }
 
 static void
@@ -418,11 +380,12 @@ germinal_terminal_finalize (GObject *object)
     G_OBJECT_CLASS (germinal_terminal_parent_class)->finalize (object);
 }
 
+static gboolean on_key_pressed (GtkEventControllerKey *controller, guint keyval, guint keycode, GdkModifierType state, gpointer user_data);
+
 static void
 germinal_terminal_init (GerminalTerminal *self)
 {
     GerminalTerminalPrivate *priv = germinal_terminal_get_instance_private (self);
-    GdkKeymap *keymap = gdk_keymap_get_for_display (gdk_display_get_default ());
     g_autofree GdkKeymapKey *zero_keys = NULL;
     g_autoptr (GError) error = NULL;
     gint n_keys;
@@ -452,7 +415,7 @@ germinal_terminal_init (GerminalTerminal *self)
     update_scrollback           (settings, SCROLLBACK_KEY,           self);
     update_word_char_exceptions (settings, WORD_CHAR_EXCEPTIONS_KEY, self);
 
-    if (gdk_keymap_get_entries_for_keyval (keymap, GDK_KEY_0, &zero_keys, &n_keys))
+    if (gdk_display_map_keyval (gdk_display_get_default (), GDK_KEY_0, &zero_keys, &n_keys))
     {
         priv->n_zero_keycodes = (guint) n_keys;
         priv->zero_keycodes = g_new (guint, priv->n_zero_keycodes);
@@ -465,6 +428,14 @@ germinal_terminal_init (GerminalTerminal *self)
         priv->zero_keycodes = NULL;
         priv->n_zero_keycodes = 0;
     }
+
+    GtkEventController *key_ctrl = gtk_event_controller_key_new ();
+    g_signal_connect (key_ctrl, "key-pressed", G_CALLBACK (on_key_pressed), self);
+    gtk_widget_add_controller (GTK_WIDGET (self), key_ctrl);
+
+    GtkEventController *scroll_ctrl = gtk_event_controller_scroll_new (GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES);
+    g_signal_connect (scroll_ctrl, "scroll", G_CALLBACK (on_scroll), self);
+    gtk_widget_add_controller (GTK_WIDGET (self), scroll_ctrl);
 
     VteTerminal *term = (VteTerminal *) self;
 
@@ -488,12 +459,12 @@ germinal_terminal_init (GerminalTerminal *self)
 }
 
 static void
-copy_text (GdkAtom      selection,
-           const gchar *text)
+copy_text (const gchar *text)
 {
-    GtkClipboard *clip = gtk_clipboard_get (selection);
+    GdkDisplay *display = gdk_display_get_default ();
 
-    gtk_clipboard_set_text (clip, text, -1);
+    gdk_clipboard_set_text (gdk_display_get_clipboard (display), text);
+    gdk_clipboard_set_text (gdk_display_get_primary_clipboard (display), text);
 }
 
 void
@@ -517,13 +488,12 @@ germinal_terminal_paste (GerminalTerminal *self)
 gboolean
 germinal_terminal_copy_url (GerminalTerminal *self)
 {
-    gchar *url = germinal_terminal_get_url (self, NULL);
+    const gchar *url = germinal_terminal_get_url (self);
 
     if (!url)
         return FALSE;
 
-    copy_text (GDK_SELECTION_CLIPBOARD, url);
-    copy_text (GDK_SELECTION_PRIMARY, url);
+    copy_text (url);
 
     return TRUE;
 }
@@ -541,77 +511,76 @@ launch_cmd (GerminalTerminal *self,
 }
 
 static gboolean
-germinal_terminal_key_press (GtkWidget   *widget,
-                             GdkEventKey *event)
+on_key_pressed (GtkEventControllerKey *controller G_GNUC_UNUSED,
+                guint                  keyval,
+                guint                  keycode,
+                GdkModifierType        state,
+                gpointer               user_data)
 {
-    if (event->type != GDK_KEY_PRESS)
-        return FALSE;
+    GerminalTerminal *self = GERMINAL_TERMINAL (user_data);
 
-    GerminalTerminal *self = GERMINAL_TERMINAL (widget);
+    if (!(state & GDK_CONTROL_MASK))
+        return GDK_EVENT_PROPAGATE;
 
-    /* Ctrl + foo */
-    if (event->state & GDK_CONTROL_MASK)
+    switch (keyval)
     {
-        switch (event->keyval)
-        {
-        /* Clipboard */
-        case GDK_KEY_C:
-            germinal_terminal_copy (self);
-            return TRUE;
-        case GDK_KEY_V:
-            germinal_terminal_paste (self);
-            return TRUE;
-        /* Zoom */
-        case GDK_KEY_KP_Add:
-        case GDK_KEY_plus:
-            germinal_terminal_zoom (self);
-            return TRUE;
-        case GDK_KEY_KP_Subtract:
-        case GDK_KEY_minus:
-            germinal_terminal_dezoom (self);
-            return TRUE;
-        case GDK_KEY_KP_0:
-        case GDK_KEY_0:
-            germinal_terminal_reset_zoom (self);
-            return TRUE;
-        /* Quit */
-        case GDK_KEY_Q:
-            gtk_window_close (GTK_WINDOW (gtk_widget_get_toplevel (widget)));
-            return TRUE;
-        /* Window split (inspired by terminator) */
-        case GDK_KEY_O:
-            return launch_cmd (self, "tmux split-window -v");
-        case GDK_KEY_E:
-            return launch_cmd (self, "tmux split-window -h");
-        /* Next/Previous window (tab) */
-        case GDK_KEY_Tab:
-            return launch_cmd (self, "tmux next-window");
-        case GDK_KEY_ISO_Left_Tab:
-            return launch_cmd (self, "tmux previous-window");
-        /* New window (tab) */
-        case GDK_KEY_T:
-            return launch_cmd (self, "tmux new-window");
-        /* Next/Previous pane */
-        case GDK_KEY_N:
-            return launch_cmd (self, "tmux select-pane -t :.+");
-        case GDK_KEY_P:
-            return launch_cmd (self, "tmux select-pane -t :.-");
-        /* Close current pane */
-        case GDK_KEY_W:
-            return launch_cmd (self, "tmux kill-pane");
-        /* Resize current pane */
-        case GDK_KEY_X:
-            return launch_cmd (self, "tmux resize-pane -Z");
-        }
-
-        if (germinal_terminal_is_zero (self, event->hardware_keycode))
-        {
-            germinal_terminal_reset_zoom (self);
-            return TRUE;
-        }
+    /* Clipboard */
+    case GDK_KEY_C:
+        germinal_terminal_copy (self);
+        return GDK_EVENT_STOP;
+    case GDK_KEY_V:
+        germinal_terminal_paste (self);
+        return GDK_EVENT_STOP;
+    /* Zoom */
+    case GDK_KEY_KP_Add:
+    case GDK_KEY_plus:
+        germinal_terminal_zoom (self);
+        return GDK_EVENT_STOP;
+    case GDK_KEY_KP_Subtract:
+    case GDK_KEY_minus:
+        germinal_terminal_dezoom (self);
+        return GDK_EVENT_STOP;
+    case GDK_KEY_KP_0:
+    case GDK_KEY_0:
+        germinal_terminal_reset_zoom (self);
+        return GDK_EVENT_STOP;
+    /* Quit */
+    case GDK_KEY_Q:
+        gtk_window_close (GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (self))));
+        return GDK_EVENT_STOP;
+    /* Window split (inspired by terminator) */
+    case GDK_KEY_O:
+        return launch_cmd (self, "tmux split-window -v");
+    case GDK_KEY_E:
+        return launch_cmd (self, "tmux split-window -h");
+    /* Next/Previous window (tab) */
+    case GDK_KEY_Tab:
+        return launch_cmd (self, "tmux next-window");
+    case GDK_KEY_ISO_Left_Tab:
+        return launch_cmd (self, "tmux previous-window");
+    /* New window (tab) */
+    case GDK_KEY_T:
+        return launch_cmd (self, "tmux new-window");
+    /* Next/Previous pane */
+    case GDK_KEY_N:
+        return launch_cmd (self, "tmux select-pane -t :.+");
+    case GDK_KEY_P:
+        return launch_cmd (self, "tmux select-pane -t :.-");
+    /* Close current pane */
+    case GDK_KEY_W:
+        return launch_cmd (self, "tmux kill-pane");
+    /* Resize current pane */
+    case GDK_KEY_X:
+        return launch_cmd (self, "tmux resize-pane -Z");
     }
 
-    return GTK_WIDGET_CLASS (germinal_terminal_parent_class)->key_press_event (widget, event);
+    if (germinal_terminal_is_zero (self, keycode))
+    {
+        germinal_terminal_reset_zoom (self);
+        return GDK_EVENT_STOP;
+    }
+
+    return GDK_EVENT_PROPAGATE;
 }
 
 static void
@@ -621,8 +590,6 @@ germinal_terminal_class_init (GerminalTerminalClass *klass)
 
     gobject_class->dispose = germinal_terminal_dispose;
     gobject_class->finalize = germinal_terminal_finalize;
-    GTK_WIDGET_CLASS (klass)->scroll_event = on_scroll;
-    GTK_WIDGET_CLASS (klass)->key_press_event = germinal_terminal_key_press;
 }
 
 GtkWidget *

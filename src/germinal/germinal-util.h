@@ -17,8 +17,7 @@
  * along with Germinal.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __GERMINAL_UTIL_H__
-#define __GERMINAL_UTIL_H__
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -32,27 +31,5 @@ G_BEGIN_DECLS
 #define SQUARE_BRACED_TEXT "\\[[^\n\r\\[\\]]+\\]"
 #define DUMB_USERS_TEXT    "<[^\n\r<>]+>"
 #define URL_REGEXP         CHARACTER "+://(" QUOTED_TEXT "|" PAREN_TEXT "|" SQUARE_BRACED_TEXT "|" DUMB_USERS_TEXT "|" STRAIGHT_TEXT_ONLY ")+"
-
-/* Create a menu item, add it to the menu and bind its action */
-#define MENU_ACTION(name, label)                                        \
-    GtkWidget *name##_menu_item = gtk_menu_item_new_with_label (label); \
-    g_signal_connect (G_OBJECT (name##_menu_item),                      \
-                      "activate",                                       \
-                      G_CALLBACK (do_##name),                           \
-                      terminal);                                        \
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), name##_menu_item)
-
-/* Add a separator to the menu */
-#define MENU_SEPARATOR \
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), gtk_separator_menu_item_new ())
-
-/* Bind a singal to a callback */
-#define CONNECT_SIGNAL(obj, signal, fn, data) \
-    g_signal_connect (G_OBJECT (obj),         \
-                      signal,                 \
-                      G_CALLBACK (fn),        \
-                      data)
-
-#endif /* __GERMINAL_UTIL_H__ */
 
 G_END_DECLS

@@ -17,8 +17,7 @@
  * along with Germinal.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __GERMINAL_SETTINGS_H__
-#define __GERMINAL_SETTINGS_H__
+#pragma once
 
 #include <gdk/gdk.h>
 #include <gio/gio.h>
@@ -42,5 +41,3 @@ gchar     *germinal_settings_get_string  (GSettings *settings, const gchar *key)
 GdkRGBA   *germinal_settings_get_palette (GSettings *settings, gsize *palette_size);
 
 G_END_DECLS
-
-#endif /* __GERMINAL_SETTINGS_H__ */

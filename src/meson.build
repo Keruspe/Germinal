@@ -3,7 +3,7 @@ executable('germinal',
   'germinal/germinal-settings.c',
   'germinal/germinal-terminal.c',
   'germinal/germinal-window.c',
-  dependencies:        [glib_dep, gio_dep, gtk_dep, vte_dep, pango_dep, pcre2_dep],
+  dependencies:        [glib_dep, gio_dep, gtk_dep, vte_dep, adwaita_dep, pango_dep, pcre2_dep],
   include_directories: include_directories('germinal'),
   install:             true,
 )

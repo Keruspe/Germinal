@@ -47,6 +47,8 @@ static int
 germinal_create_window (GApplication *application,
                         GStrv         command)
 {
+    adw_style_manager_set_color_scheme (adw_style_manager_get_default (), ADW_COLOR_SCHEME_PREFER_DARK);
+
     GerminalTerminal *terminal = GERMINAL_TERMINAL (germinal_terminal_new ());
     GerminalWindow *window = GERMINAL_WINDOW (germinal_window_new (GTK_APPLICATION (application), terminal));
 
@@ -94,11 +96,8 @@ main (gint   argc,
     bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
     bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 
-    gtk_init (&argc, &argv);
-    g_object_set (gtk_settings_get_default (), "gtk-application-prefer-dark-theme", TRUE, NULL);
-
-    /* GtkApplication initialization */
-    GtkApplication *app = gtk_application_new ("org.gnome.Germinal", G_APPLICATION_HANDLES_COMMAND_LINE|G_APPLICATION_SEND_ENVIRONMENT);
+    /* AdwApplication initialization */
+    AdwApplication *app = adw_application_new ("org.gnome.Germinal", G_APPLICATION_HANDLES_COMMAND_LINE|G_APPLICATION_SEND_ENVIRONMENT);
     GApplication *gapp = G_APPLICATION (app);
     GApplicationClass *klass = G_APPLICATION_GET_CLASS (gapp);
 
