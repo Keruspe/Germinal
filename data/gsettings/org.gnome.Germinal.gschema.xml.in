@@ -5,7 +5,8 @@
       <default>65536</default>
       <summary>Number of lines to keep in the buffer</summary>
       <description>
-        Number of lines to keep in the buffer
+        Maximum number of lines retained in the terminal scrollback buffer.
+        Higher values use more memory.
       </description>
     </key>
 
@@ -13,7 +14,9 @@
       <default>'-#%&amp;+,./;=?@\\_~\302\267'</default>
       <summary>List of ASCII punctuation characters that should be considered as part of a word when doing word-wise selection</summary>
       <description>
-        List of ASCII punctuation characters that should be considered as part of a word when doing word-wise selection
+        Characters listed here are treated as word constituents when
+        double-clicking to select a word. Useful for selecting URLs or
+        paths without surrounding punctuation being excluded.
       </description>
     </key>
 
@@ -21,7 +24,8 @@
       <default>'DejaVu Sans Mono 8.5'</default>
       <summary>The font to use</summary>
       <description>
-        The font to use
+        Pango font description string for the terminal font, e.g.
+        "Monospace 12" or "DejaVu Sans Mono 8.5".
       </description>
     </key>
 
@@ -29,7 +33,7 @@
       <default>'#C64B9A'</default>
       <summary>The foreground color</summary>
       <description>
-        The foreground color
+        Hex color string for the default text color in the terminal.
       </description>
     </key>
 
@@ -37,7 +41,7 @@
       <default>'#212121'</default>
       <summary>The background color</summary>
       <description>
-        The background color
+        Hex color string for the terminal background.
       </description>
     </key>
 
@@ -70,7 +74,9 @@
       <default>'tmux -u2 new -As0'</default>
       <summary>Command to launch at startup</summary>
       <description>
-        If none is specified, tmux will be used
+        Shell command to run when the terminal opens. Defaults to
+        tmux, which provides session persistence, splits, and windows.
+        Set to an empty string to launch the user's default shell instead.
       </description>
     </key>
 
@@ -78,7 +84,9 @@
       <default>'xterm-256color'</default>
       <summary>The value of the TERM env variable</summary>
       <description>
-        By default, vte uses xterm, we use xterm-256color
+        Value exported as the TERM environment variable inside the terminal.
+        Determines which terminfo entry programs use for cursor movement,
+        color, and other capabilities.
       </description>
     </key>
 
@@ -86,7 +94,8 @@
       <default>false</default>
       <summary>Activate the audible bell</summary>
       <description>
-        By default, we disable it
+        When enabled, the terminal emits an audible beep in response to
+        the BEL control character. Disabled by default.
       </description>
     </key>
 
@@ -94,7 +103,8 @@
       <default>false</default>
       <summary>Display window decoration</summary>
       <description>
-        By default, we hide it
+        When enabled, the window manager draws a title bar and border
+        around the terminal window. Disabled by default for a minimal look.
       </description>
     </key>
   </schema>

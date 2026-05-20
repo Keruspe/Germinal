@@ -1,43 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright 2015-2026 Marc-Antoine Perennou <Marc-Antoine@Perennou.com> -->
-<component type="desktop">
-  <id>org.gnome.Germinal.desktop</id>
+<component type="desktop-application">
+  <id>org.gnome.Germinal</id>
+  <launchable type="desktop-id">org.gnome.Germinal.desktop</launchable>
   <name>Germinal</name>
-  <summary>Germinal is a minimalist vte-based terminal emulator</summary>
-  <developer_name>Marc-Antoine Perennou</developer_name>
-  <project_license>GPL-3.0</project_license>
+  <summary>Minimalist VTE-based terminal emulator</summary>
+  <developer>
+    <name>Marc-Antoine Perennou</name>
+  </developer>
+  <project_license>GPL-3.0-or-later</project_license>
   <metadata_license>CC-BY-SA-3.0</metadata_license>
   <project_group>GNOME</project_group>
   <content_rating type="oars-1.1" />
   <description>
     <p>
       Germinal is a minimalist terminal emulator aiming for simplicity.
+      It starts maximized and integrates tmux for session management,
+      giving you splits and windows without extra chrome.
     </p>
     <p>
-      You can customize Germinal using dconf-editor, in /org/gnome/Germinal.
+      Settings are available via dconf-editor under /org/gnome/Germinal,
+      including font, colors, scrollback length, and startup command.
     </p>
   </description>
-  <url type="homepage">http://www.imagination-land.org/tags/Germinal.html</url>
-  <screenshots>
-    <screenshot type="default">
-      <caption>The main UI</caption>
-      <image height="768" width="1024">http://www.imagination-land.org/images/Germinal/Germinal-1.png</image>
-    </screenshot>
-  </screenshots>
-  <update_contact>Marc-Antoine@Perennou.com</update_contact>
+  <url type="homepage">https://github.com/Keruspe/Germinal</url>
   <url type="bugtracker">https://github.com/Keruspe/Germinal/issues</url>
   <url type="donation">https://paypal.me/keruspe/</url>
-  <url type="help">https://github.com/Keruspe/Germinal/issues</url>
   <url type="translate">https://github.com/Keruspe/Germinal</url>
+  <update_contact>Marc-Antoine@Perennou.com</update_contact>
   <translation type="gettext">Germinal</translation>
   <releases>
-      <release version="26" type="stable" date="2019-10-07">
-          <description>
-              <p>This is a maintenance release. Changes:</p>
-              <ul>
-                  <li>Compatibility with recent appstream-glib</li>
-              </ul>
-          </description>
-      </release>
+    <release version="27" type="stable" date="2026-05-21">
+      <description>
+        <p>Major update. Changes:</p>
+        <ul>
+          <li>Ported to GTK4 and libadwaita</li>
+          <li>Right-click menu ported to GMenuModel and GSimpleActionGroup</li>
+          <li>Window title now uses VTE termprop API</li>
+          <li>Scroll zoom gated to discrete wheel events only</li>
+          <li>Minimum GLib 2.76, GTK 4.8, VTE 0.78, libadwaita 1.0</li>
+        </ul>
+      </description>
+    </release>
   </releases>
 </component>

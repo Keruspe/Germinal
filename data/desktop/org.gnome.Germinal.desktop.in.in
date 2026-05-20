@@ -1,6 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=Germinal
+GenericName=Terminal Emulator
 Comment=Minimalist vte-based terminal emulator
 Keywords=Terminal;
 Icon=utilities-terminal
