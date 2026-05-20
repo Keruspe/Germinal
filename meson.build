@@ -1,6 +1,6 @@
 project(
   'germinal', 'c',
-  version:         '26',
+  version:         '27',
   license:         'GPL-3.0-or-later',
   meson_version:   '>= 1.1',
   default_options: ['c_std=gnu99', 'warning_level=2'],

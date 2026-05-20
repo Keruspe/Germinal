@@ -1,7 +1,11 @@
-NEW in 27 (???)
+NEW in 27 (21/05/2026)
 =============
 
-- Don't use depreated vte allow-bold api
+- Ported to GTK4 and libadwaita
+- Right-click menu ported to GMenuModel and GSimpleActionGroup
+- Window title now uses VTE termprop API
+- Scroll zoom gated to discrete wheel events only
+- Minimum GLib 2.76, GTK 4.8, VTE 0.78, libadwaita 1.0
 
 NEW in 26 (07/10/2019)
 =============

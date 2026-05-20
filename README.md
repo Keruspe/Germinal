@@ -1,51 +1,82 @@
-<a href="https://scan.coverity.com/projects/germinal">
-  <img alt="Coverity Scan Build Status"
-       src="https://scan.coverity.com/projects/6315/badge.svg"/>
-</a>
+# Germinal
 
-Germinal is a minimalist vte-based terminal emulator.
+Germinal is a minimalist terminal emulator based on [VTE](https://gitlab.gnome.org/GNOME/vte) and [libadwaita](https://gitlab.gnome.org/GNOME/libadwaita).
 
-Screenshot available here: <http://www.imagination-land.org/images/Germinal/Germinal-1.png>
+## Requirements
 
-You will need tmux for Germinal to work out of the box.
-You need to add `new-session` in your `~/.tmux.conf` so that tmux attach creates a new one if none exist.
-
-To configure it, open dconf-editor and go into /org/gnome/Germinal.
-By default, germinal launches tmux, but you can specify a custom command by adding extra args to the commandline (no
-need for quoting, example: `germinal /bin/bash -l` will execute `/bin/bash -l` instead of tmux).
-By default, germinal uses dconf to store its configuration, but it will use `~/.config/germinal/settings` instead if it
-exists. Configuration is in standard keyfile `ini` format, in a `[Germinal]` section.
-
-List of available keyboard actions:
-
-    - `<Ctrl><+>`          -> Zoom
-    - `<Ctrl><->`          -> De-Zoom
-    - `<Ctrl><0>`          -> Reset Zoom
-    - `<Ctrl><Shift><C>`   -> Copy
-    - `<Ctrl><Shift><V>`   -> Paste
-    - `<Ctrl><Shift><Q>`   -> Quit
-    - `<Ctrl><Shift><O>`   -> Split window (like terminator)
-    - `<Ctrl><Shift><E>`   -> Split window (like terminator)
-    - `<Ctrl><Tab>`        -> Next tab
-    - `<Ctrl><Shift><Tab>` -> Previous tab
-    - `<Ctrl><Shift><T>`   -> New tab
-    - `<Ctrl><Shift><N>`   -> Next pane
-    - `<Ctrl><Shift><P>`   -> Previous pane
-    - `<Ctrl><Shift><W>`   -> Close current pane
-    - `<Ctrl><Shift><X>`   -> Resize current pane
-
-To build it, go into the Germinal directory
+Germinal relies on [tmux](https://github.com/tmux/tmux) for tab and pane management. Add the following to `~/.tmux.conf` so that attaching creates a new session when none exists:
 
 ```
-./autogen.sh
-./configure --sysconfdir=/etc
-make
-sudo make install
-sudo glib-compile-schemas /usr/share/glib-2.0/schemas/
+new-session
 ```
 
-You can see more information [here](http://www.imagination-land.org/posts/2015-01-31-germinal-7-released.html).
+## Configuration
 
-Latest release is [Germinal 26](http://www.imagination-land.org/posts/2019-10-07-germinal-26-released.html).
+Germinal reads its configuration from GSettings under `/org/gnome/Germinal/`. You can edit settings with `dconf-editor` or the `gsettings` command-line tool.
 
-Direct link to download: <http://www.imagination-land.org/files/germinal/germinal-26.tar.xz>
+If the file `~/.config/germinal/settings` exists, Germinal uses it as a keyfile backend instead of dconf. The format is standard `ini` with a `[Germinal]` section:
+
+```ini
+[Germinal]
+font=Monospace 12
+backcolor=#1c1c1c
+forecolor=#c8c8c8
+```
+
+A custom startup command can be passed directly on the command line — no quoting needed:
+
+```sh
+germinal /bin/bash -l
+```
+
+## Keyboard shortcuts
+
+| Shortcut | Action |
+|---|---|
+| `Ctrl` `+` | Zoom in |
+| `Ctrl` `-` | Zoom out |
+| `Ctrl` `0` | Reset zoom |
+| `Ctrl` `Shift` `C` | Copy |
+| `Ctrl` `Shift` `V` | Paste |
+| `Ctrl` `Shift` `Q` | Quit |
+| `Ctrl` `Shift` `O` | Split pane vertically |
+| `Ctrl` `Shift` `E` | Split pane horizontally |
+| `Ctrl` `Tab` | Next tab |
+| `Ctrl` `Shift` `Tab` | Previous tab |
+| `Ctrl` `Shift` `T` | New tab |
+| `Ctrl` `Shift` `N` | Next pane |
+| `Ctrl` `Shift` `P` | Previous pane |
+| `Ctrl` `Shift` `W` | Close current pane |
+| `Ctrl` `Shift` `X` | Zoom current pane (tmux) |
+
+## Mouse
+
+- **Right-click** — opens the context menu (copy, paste, zoom, URL actions)
+- **Shift + left-click** — opens the URL under the cursor
+
+## Building
+
+Germinal uses [Meson](https://mesonbuild.com):
+
+```sh
+meson setup _build
+ninja -C _build
+sudo ninja -C _build install
+```
+
+## Latest release
+
+[Germinal 27](http://www.imagination-land.org/posts/2026-05-21-germinal-27-released.html) — [download tarball](http://www.imagination-land.org/files/germinal/germinal-27.tar.xz)
+
+More background on the project: [Germinal 7 release post](http://www.imagination-land.org/posts/2015-01-31-germinal-7-released.html).
+
+## RPM packaging
+
+To build an RPM using [mock](https://github.com/rpm-software-management/mock):
+
+```sh
+./mock-build.sh                   # defaults to fedora-rawhide-x86_64
+./mock-build.sh fedora-41-x86_64  # specific chroot
+```
+
+The script builds the Meson dist tarball, creates an SRPM, and rebuilds it inside the mock chroot. Results land in `_build/mock-result/`.

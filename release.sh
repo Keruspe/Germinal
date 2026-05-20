@@ -15,7 +15,7 @@ main() {
     run_ninja Germinal-update-po
     git commit -asm "Release Germinal ${version}"
     run_ninja dist
-    git tag -sm "Release Germinal ${version}" v${version}
+    git tag -m "Release Germinal ${version}" v${version}
 }
 
 main "${@}"

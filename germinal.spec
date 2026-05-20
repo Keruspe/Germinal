@@ -1,11 +1,11 @@
 Name:           germinal
-Version:        26
+Version:        27
 Release:        1%{?dist}
 Summary:        Minimalist VTE-based terminal emulator
 
 License:        GPL-3.0-or-later
 URL:            https://github.com/Keruspe/Germinal
-Source0:        %{url}/releases/download/v%{version}/%{name}-%{version}.tar.xz
+Source0:        http://www.imagination-land.org/files/%{name}/%{name}-%{version}.tar.xz
 
 BuildRequires:  meson >= 1.1
 BuildRequires:  gcc

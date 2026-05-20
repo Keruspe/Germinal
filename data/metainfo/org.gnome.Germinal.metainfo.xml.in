@@ -6,7 +6,7 @@
   <name>Germinal</name>
   <summary>Minimalist VTE-based terminal emulator</summary>
   <developer>
-    <name>Marc-Antoine Perennou</name>
+    <name translatable="no">Marc-Antoine Perennou</name>
   </developer>
   <project_license>GPL-3.0-or-later</project_license>
   <metadata_license>CC-BY-SA-3.0</metadata_license>

@@ -1,14 +1,14 @@
 # French translations for Germinal package.
-# Copyright (C) 2011 Listed translators
+# Copyright (C) 2011-2026 Listed translators
 # This file is distributed under the same license as the Germinal package.
-# Marc-Antoine Perennou <Marc-Antoine@Perennou.com>, 2011.
+# Marc-Antoine Perennou <Marc-Antoine@Perennou.com>, 2011-2026.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Germinal\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-19 23:33+0200\n"
-"PO-Revision-Date: 2011-09-23 16:05+0100\n"
+"POT-Creation-Date: 2026-05-20 23:15+0200\n"
+"PO-Revision-Date: 2026-05-20 00:00+0200\n"
 "Last-Translator: Marc-Antoine Perennou <Marc-Antoine@Perennou.com>\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -17,157 +17,236 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: src/germinal/germinal.c:105
+#: src/germinal/germinal.c:104
 msgid "display the version"
 msgstr "afficher la version"
 
-#: src/germinal/germinal.c:106
+#: src/germinal/germinal.c:105
 msgid "the command to launch"
 msgstr "la commande à lancer"
 
-#: src/germinal/germinal-terminal.c:199
+#: src/germinal/germinal-terminal.c:179
 msgid "Couldn't exec"
-msgstr "Impossible d'executer"
+msgstr "Impossible d'exécuter"
 
-#: src/germinal/germinal-window.c:220
+#: src/germinal/germinal-window.c:83
 msgid "Copy url"
 msgstr "Copier la cible du lien"
 
-#: src/germinal/germinal-window.c:221
+#: src/germinal/germinal-window.c:84
 msgid "Open url"
 msgstr "Suivre le lien"
 
-#: src/germinal/germinal-window.c:225
+#: src/germinal/germinal-window.c:253
 msgid "Copy"
 msgstr "Copier"
 
-#: src/germinal/germinal-window.c:226
+#: src/germinal/germinal-window.c:254
 msgid "Copy as HTML"
 msgstr "Copier en tant que HTML"
 
-#: src/germinal/germinal-window.c:227
+#: src/germinal/germinal-window.c:255
 msgid "Paste"
 msgstr "Coller"
 
-#: src/germinal/germinal-window.c:231
+#: src/germinal/germinal-window.c:259
 msgid "Zoom"
 msgstr "Zoomer"
 
-#: src/germinal/germinal-window.c:232
+#: src/germinal/germinal-window.c:260
 msgid "Dezoom"
-msgstr "Dézoomzer"
+msgstr "Dézoomer"
 
-#: src/germinal/germinal-window.c:233
+#: src/germinal/germinal-window.c:261
 msgid "Reset zoom"
-msgstr "Restaurer zoom"
+msgstr "Réinitialiser le zoom"
 
-#: src/germinal/germinal-window.c:237
+#: src/germinal/germinal-window.c:265
 msgid "Quit"
 msgstr "Quitter"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:5
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:6
 #: data/desktop/org.gnome.Germinal.desktop.in.in:3
 msgid "Germinal"
 msgstr "Germinal"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:6
-msgid "Germinal is a minimalist vte-based terminal emulator"
-msgstr "Germinal est un émulateur de terminal minimaliste basé sur vte"
-
 #: data/metainfo/org.gnome.Germinal.metainfo.xml.in:7
+msgid "Minimalist VTE-based terminal emulator"
+msgstr "Émulateur de terminal minimaliste basé sur VTE"
+
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:9
 msgid "Marc-Antoine Perennou"
 msgstr ""
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:13
-msgid "Germinal is a minimalist terminal emulator aiming for simplicity."
-msgstr "Germinal est un émulateur de terminal visant la simplicité"
-
 #: data/metainfo/org.gnome.Germinal.metainfo.xml.in:16
-msgid "You can customize Germinal using dconf-editor, in /org/gnome/Germinal."
+msgid ""
+"Germinal is a minimalist terminal emulator aiming for simplicity. It starts "
+"maximized and integrates tmux for session management, giving you splits and "
+"windows without extra chrome."
 msgstr ""
-"Vous pouvez configurer Germinal avec dconf-editor, donc /org/gnome/Germinal."
+"Germinal est un émulateur de terminal minimaliste visant la simplicité. Il "
+"démarre agrandi et intègre tmux pour la gestion de sessions, offrant des "
+"panneaux et des fenêtres sans superflu."
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:23
-msgid "The main UI"
-msgstr "L'interface principale"
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:21
+msgid ""
+"Settings are available via dconf-editor under /org/gnome/Germinal, including "
+"font, colors, scrollback length, and startup command."
+msgstr ""
+"Les paramètres sont accessibles via dconf-editor sous /org/gnome/Germinal, "
+"notamment la police, les couleurs, la longueur du défilement et la commande "
+"de démarrage."
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:36
-msgid "This is a maintenance release. Changes:"
-msgstr "Mise à jour de maintenance. Changements :"
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:35
+msgid "Major update. Changes:"
+msgstr "Mise à jour majeure. Changements :"
+
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:37
+msgid "Ported to GTK4 and libadwaita"
+msgstr "Porté vers GTK4 et libadwaita"
 
 #: data/metainfo/org.gnome.Germinal.metainfo.xml.in:38
-msgid "Compatibility with recent appstream-glib"
-msgstr "Compatibilité avec les versions récentes de appstream-glib"
+msgid "Right-click menu ported to GMenuModel and GSimpleActionGroup"
+msgstr "Menu contextuel porté vers GMenuModel et GSimpleActionGroup"
+
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:39
+msgid "Window title now uses VTE termprop API"
+msgstr "Le titre de fenêtre utilise désormais l'API termprop de VTE"
+
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:40
+msgid "Scroll zoom gated to discrete wheel events only"
+msgstr ""
+"Le zoom à la molette est désormais limité aux événements de molette discrets"
+
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:41
+msgid "Minimum GLib 2.76, GTK 4.8, VTE 0.78, libadwaita 1.0"
+msgstr "Minimum GLib 2.76, GTK 4.8, VTE 0.78, libadwaita 1.0"
 
 #: data/desktop/org.gnome.Germinal.desktop.in.in:4
+msgid "Terminal Emulator"
+msgstr "Émulateur de terminal"
+
+#: data/desktop/org.gnome.Germinal.desktop.in.in:5
 msgid "Minimalist vte-based terminal emulator"
 msgstr "Émulateur de terminal minimaliste basé sur vte"
 
-#: data/desktop/org.gnome.Germinal.desktop.in.in:5
+#: data/desktop/org.gnome.Germinal.desktop.in.in:6
 msgid "Terminal;"
 msgstr "Terminal;"
 
 #: data/gsettings/org.gnome.Germinal.gschema.xml.in:6
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:7
 msgid "Number of lines to keep in the buffer"
 msgstr "Nombre de lignes à garder dans le tampon"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:14
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:7
+msgid ""
+"Maximum number of lines retained in the terminal scrollback buffer. Higher "
+"values use more memory."
+msgstr ""
+"Nombre maximum de lignes conservées dans le tampon de défilement du "
+"terminal. Des valeurs plus élevées consomment plus de mémoire."
+
 #: data/gsettings/org.gnome.Germinal.gschema.xml.in:15
 msgid ""
 "List of ASCII punctuation characters that should be considered as part of a "
 "word when doing word-wise selection"
 msgstr ""
-"Liste des caractères de ponctuation ASCII qui doivent être considérés comme "
-"faisant partie d'un mot quand on le selectionne"
+"Liste des caractères de ponctuation ASCII à considérer comme faisant partie "
+"d'un mot lors de la sélection par mot"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:22
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:23
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:16
+msgid ""
+"Characters listed here are treated as word constituents when double-clicking "
+"to select a word. Useful for selecting URLs or paths without surrounding "
+"punctuation being excluded."
+msgstr ""
+"Les caractères listés ici sont traités comme des constituants de mot lors "
+"d'un double-clic pour sélectionner un mot. Utile pour sélectionner des URL "
+"ou des chemins sans que la ponctuation environnante ne soit exclue."
+
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:25
 msgid "The font to use"
 msgstr "La police à utiliser"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:30
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:31
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:26
+msgid ""
+"Pango font description string for the terminal font, e.g. \"Monospace 12\" "
+"or \"DejaVu Sans Mono 8.5\"."
+msgstr ""
+"Chaîne de description de police Pango pour la police du terminal, p. ex. "
+"« Monospace 12 » ou « DejaVu Sans Mono 8.5 »."
+
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:34
 msgid "The foreground color"
 msgstr "La couleur de premier plan"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:38
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:39
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:35
+msgid "Hex color string for the default text color in the terminal."
+msgstr ""
+"Chaîne de couleur hexadécimale pour la couleur du texte par défaut dans le "
+"terminal."
+
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:42
 msgid "The background color"
 msgstr "La couleur de fond"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:66
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:43
+msgid "Hex color string for the terminal background."
+msgstr "Chaîne de couleur hexadécimale pour l'arrière-plan du terminal."
+
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:70
 msgid "The color palette"
 msgstr "La palette de couleurs"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:71
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:75
 msgid "Command to launch at startup"
 msgstr "Commande à lancer au démarrage"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:72
-msgid "If none is specified, tmux will be used"
-msgstr "Si aucune n'est spécifiée, tmux sera utilisé"
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:76
+msgid ""
+"Shell command to run when the terminal opens. Defaults to tmux, which "
+"provides session persistence, splits, and windows. Set to an empty string to "
+"launch the user's default shell instead."
+msgstr ""
+"Commande shell à exécuter à l'ouverture du terminal. Par défaut tmux, qui "
+"assure la persistance de session, les panneaux et les fenêtres. Mettre une "
+"chaîne vide pour lancer le shell par défaut de l'utilisateur."
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:79
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:85
 msgid "The value of the TERM env variable"
 msgstr "La valeur de la variable d'environnement TERM"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:80
-msgid "By default, vte uses xterm, we use xterm-256color"
-msgstr "Par défaut, vte utilise xterm et nous utilisons xterm-256color"
-
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:87
-msgid "Activate the audible bell"
-msgstr "Activer le beep visuel"
-
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:88
-msgid "By default, we disable it"
-msgstr "Par défault, on le désactive"
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:86
+msgid ""
+"Value exported as the TERM environment variable inside the terminal. "
+"Determines which terminfo entry programs use for cursor movement, color, and "
+"other capabilities."
+msgstr ""
+"Valeur exportée comme variable d'environnement TERM dans le terminal. "
+"Détermine l'entrée terminfo utilisée par les programmes pour le déplacement "
+"du curseur, les couleurs et autres capacités."
 
 #: data/gsettings/org.gnome.Germinal.gschema.xml.in:95
+msgid "Activate the audible bell"
+msgstr "Activer le beep sonore"
+
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:96
+msgid ""
+"When enabled, the terminal emits an audible beep in response to the BEL "
+"control character. Disabled by default."
+msgstr ""
+"Quand activé, le terminal émet un beep sonore en réponse au caractère de "
+"contrôle BEL. Désactivé par défaut."
+
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:104
 msgid "Display window decoration"
 msgstr "Afficher la décoration de fenêtre"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:96
-msgid "By default, we hide it"
-msgstr "Par défault, on la cache"
+#: data/gsettings/org.gnome.Germinal.gschema.xml.in:105
+msgid ""
+"When enabled, the window manager draws a title bar and border around the "
+"terminal window. Disabled by default for a minimal look."
+msgstr ""
+"Quand activé, le gestionnaire de fenêtres affiche une barre de titre et une "
+"bordure autour de la fenêtre du terminal. Désactivé par défaut pour un "
+"aspect minimaliste."
