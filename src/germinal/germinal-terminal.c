@@ -441,6 +441,7 @@ germinal_terminal_init (GerminalTerminal *self)
     vte_terminal_set_mouse_autohide      (term, TRUE);
     vte_terminal_set_scroll_on_output    (term, FALSE);
     vte_terminal_set_scroll_on_keystroke (term, TRUE);
+    vte_terminal_search_set_wrap_around  (term, TRUE);
 
     /* Url matching stuff */
     g_autoptr (VteRegex) url_regexp = vte_regex_new_for_match (URL_REGEXP,
@@ -580,6 +581,41 @@ on_key_pressed (GtkEventControllerKey *controller G_GNUC_UNUSED,
     }
 
     return GDK_EVENT_PROPAGATE;
+}
+
+gboolean
+germinal_terminal_search (GerminalTerminal *self,
+                          const gchar      *text)
+{
+    g_autoptr (GError) error = NULL;
+    g_autoptr (VteRegex) regex = vte_regex_new_for_search (text, -1, PCRE2_CASELESS | PCRE2_MULTILINE, &error);
+
+    if (error)
+    {
+        vte_terminal_search_set_regex (VTE_TERMINAL (self), NULL, 0);
+        return FALSE;
+    }
+
+    vte_terminal_search_set_regex (VTE_TERMINAL (self), regex, 0);
+    return vte_terminal_search_find_next (VTE_TERMINAL (self));
+}
+
+gboolean
+germinal_terminal_search_next (GerminalTerminal *self)
+{
+    return vte_terminal_search_find_next (VTE_TERMINAL (self));
+}
+
+gboolean
+germinal_terminal_search_prev (GerminalTerminal *self)
+{
+    return vte_terminal_search_find_previous (VTE_TERMINAL (self));
+}
+
+void
+germinal_terminal_search_stop (GerminalTerminal *self)
+{
+    vte_terminal_search_set_regex (VTE_TERMINAL (self), NULL, 0);
 }
 
 static void

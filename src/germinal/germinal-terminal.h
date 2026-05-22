@@ -44,6 +44,11 @@ void     germinal_terminal_update_font (GerminalTerminal *self, const gchar *fon
 
 void     germinal_terminal_spawn_command (GerminalTerminal *self, GStrv command);
 
+gboolean germinal_terminal_search      (GerminalTerminal *self, const gchar *text);
+gboolean germinal_terminal_search_next (GerminalTerminal *self);
+gboolean germinal_terminal_search_prev (GerminalTerminal *self);
+void     germinal_terminal_search_stop (GerminalTerminal *self);
+
 GtkWidget *germinal_terminal_new ();
 
 G_END_DECLS
