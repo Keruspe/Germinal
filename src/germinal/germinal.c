@@ -21,28 +21,6 @@
 
 #include <stdlib.h>
 
-typedef struct {
-    GerminalWindow   *win;
-    GerminalTerminal *term;
-    GStrv             command;
-} GerminalCommandData;
-
-static gboolean
-germinal_spawn_command (gpointer user_data)
-{
-    g_autofree GerminalCommandData *data = user_data;
-
-    if (!gtk_widget_get_realized (GTK_WIDGET (data->win)) || !gtk_widget_get_realized (GTK_WIDGET (data->term)))
-    {
-        data = NULL;
-        return G_SOURCE_CONTINUE;
-    }
-
-    germinal_terminal_spawn_command (data->term, data->command);
-
-    return G_SOURCE_REMOVE;
-}
-
 static int
 germinal_create_window (GApplication *application,
                         GStrv         command)
@@ -53,12 +31,7 @@ germinal_create_window (GApplication *application,
     GerminalWindow *window = GERMINAL_WINDOW (germinal_window_new (GTK_APPLICATION (application), terminal));
 
     germinal_window_present (window);
-
-    GerminalCommandData *data = g_new0 (GerminalCommandData, 1);
-    data->win = window;
-    data->term = terminal;
-    data->command = command;
-    g_idle_add (germinal_spawn_command, data);
+    germinal_window_spawn_command (window, command);
 
     return EXIT_SUCCESS;
 }

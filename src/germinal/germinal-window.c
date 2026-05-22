@@ -42,9 +42,54 @@ typedef struct
 
     GtkWidget        *popover;
     GMenu            *url_section;
+
+    guint             spawn_source_id;
 } GerminalWindowPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GerminalWindow, germinal_window, ADW_TYPE_APPLICATION_WINDOW)
+
+typedef struct {
+    GerminalWindow   *win;
+    GerminalTerminal *term;
+    GStrv             command;
+} GerminalCommandData;
+
+static void
+germinal_command_data_free (gpointer user_data)
+{
+    g_autofree GerminalCommandData *data = user_data;
+    g_strfreev (data->command);
+}
+
+static gboolean
+germinal_spawn_command (gpointer user_data)
+{
+    GerminalCommandData *data = user_data;
+    GerminalWindowPrivate *priv = germinal_window_get_instance_private (data->win);
+
+    if (!gtk_widget_get_realized (GTK_WIDGET (data->win)) || !gtk_widget_get_realized (GTK_WIDGET (data->term)))
+        return G_SOURCE_CONTINUE;
+
+    priv->spawn_source_id = 0;
+    germinal_terminal_spawn_command (data->term, g_steal_pointer (&data->command));
+
+    return G_SOURCE_REMOVE;
+}
+
+void
+germinal_window_spawn_command (GerminalWindow *self,
+                               GStrv           command)
+{
+    GerminalWindowPrivate *priv = germinal_window_get_instance_private (self);
+
+    GerminalCommandData *data = g_new0 (GerminalCommandData, 1);
+    data->win = self;
+    data->term = priv->terminal;
+    data->command = command;
+
+    priv->spawn_source_id = g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, germinal_spawn_command, data, germinal_command_data_free);
+    g_source_set_name_by_id (priv->spawn_source_id, "[germinal] spawn-command");
+}
 
 static void
 update_decorated (GSettings   *settings,
@@ -290,6 +335,7 @@ germinal_window_dispose (GObject *object)
 {
     GerminalWindowPrivate *priv = germinal_window_get_instance_private (GERMINAL_WINDOW (object));
 
+    g_clear_handle_id (&priv->spawn_source_id, g_source_remove);
     g_clear_pointer (&priv->popover, gtk_widget_unparent);
     g_clear_object (&priv->url_section);
     g_clear_object (&priv->settings_signals);
