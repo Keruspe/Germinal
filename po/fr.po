@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Germinal\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-22 23:58+0200\n"
+"POT-Creation-Date: 2026-05-23 00:37+0200\n"
 "PO-Revision-Date: 2026-05-23 00:00+0200\n"
 "Last-Translator: Marc-Antoine Perennou <Marc-Antoine@Perennou.com>\n"
 "Language-Team: French\n"
@@ -17,124 +17,128 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: src/germinal/germinal.c:77
+#: src/germinal/germinal.c:61
 msgid "display the version"
 msgstr "afficher la version"
 
-#: src/germinal/germinal.c:78
+#: src/germinal/germinal.c:62
 msgid "the command to launch"
 msgstr "la commande à lancer"
 
-#: src/germinal/germinal-preferences.c:117
+#: src/germinal/germinal-preferences.c:101
 msgid "Reset to default"
 msgstr "Remettre par défaut"
 
-#: src/germinal/germinal-preferences.c:148
+#: src/germinal/germinal-preferences.c:132
 msgid "Appearance"
 msgstr "Apparence"
 
-#: src/germinal/germinal-preferences.c:153
-#: src/germinal/germinal-preferences.c:158
+#: src/germinal/germinal-preferences.c:137
+#: src/germinal/germinal-preferences.c:142
 msgid "Font"
 msgstr "Police"
 
-#: src/germinal/germinal-preferences.c:170
+#: src/germinal/germinal-preferences.c:154
 msgid "Colors"
 msgstr "Couleurs"
 
-#: src/germinal/germinal-preferences.c:176
+#: src/germinal/germinal-preferences.c:158
 msgid "Foreground color"
 msgstr "Couleur de premier plan"
 
-#: src/germinal/germinal-preferences.c:187
+#: src/germinal/germinal-preferences.c:169
 msgid "Background color"
 msgstr "Couleur de fond"
 
-#: src/germinal/germinal-preferences.c:201
+#: src/germinal/germinal-preferences.c:183
 msgid "Terminal"
 msgstr "Terminal"
 
-#: src/germinal/germinal-preferences.c:206
+#: src/germinal/germinal-preferences.c:188
 msgid "Behavior"
 msgstr "Comportement"
 
-#: src/germinal/germinal-preferences.c:209
+#: src/germinal/germinal-preferences.c:191
 msgid "Audible bell"
 msgstr "Bip sonore"
 
-#: src/germinal/germinal-preferences.c:215
+#: src/germinal/germinal-preferences.c:197
 msgid "Scrollback lines"
 msgstr "Lignes d'historique"
 
-#: src/germinal/germinal-preferences.c:223
+#: src/germinal/germinal-preferences.c:205
 msgid "Word char exceptions"
 msgstr "Exceptions de caractères composant un mot"
 
-#: src/germinal/germinal-preferences.c:232
+#: src/germinal/germinal-preferences.c:214
 msgid "Window"
 msgstr "Fenêtre"
 
-#: src/germinal/germinal-preferences.c:235
+#: src/germinal/germinal-preferences.c:217
 msgid "Window decorations"
 msgstr "Décorations de fenêtre"
 
-#: src/germinal/germinal-preferences.c:245
+#: src/germinal/germinal-preferences.c:227
 msgid "Shell"
 msgstr "Shell"
 
-#: src/germinal/germinal-preferences.c:250
+#: src/germinal/germinal-preferences.c:232
 msgid "Command"
 msgstr "Commande"
 
-#: src/germinal/germinal-preferences.c:253
+#: src/germinal/germinal-preferences.c:235
 msgid "Startup command"
 msgstr "Commande de démarrage"
 
-#: src/germinal/germinal-preferences.c:259
+#: src/germinal/germinal-preferences.c:241
 msgid "TERM variable"
 msgstr "Variable TERM"
 
-#: src/germinal/germinal-terminal.c:179
+#: src/germinal/germinal-terminal.c:163
 msgid "Couldn't exec"
 msgstr "Impossible d'exécuter"
 
-#: src/germinal/germinal-window.c:133
+#: src/germinal/germinal-window.c:122
 msgid "Copy url"
 msgstr "Copier la cible du lien"
 
-#: src/germinal/germinal-window.c:134
+#: src/germinal/germinal-window.c:123
 msgid "Open url"
 msgstr "Suivre le lien"
 
-#: src/germinal/germinal-window.c:400
-msgid "Copy"
-msgstr "Copier"
+#: src/germinal/germinal-window.c:388
+msgid "Search"
+msgstr "Rechercher"
 
-#: src/germinal/germinal-window.c:401
-msgid "Copy as HTML"
-msgstr "Copier en tant que HTML"
-
-#: src/germinal/germinal-window.c:402
-msgid "Paste"
-msgstr "Coller"
-
-#: src/germinal/germinal-window.c:406
-msgid "Zoom"
-msgstr "Zoomer"
-
-#: src/germinal/germinal-window.c:407
-msgid "Dezoom"
-msgstr "Dézoomer"
-
-#: src/germinal/germinal-window.c:408
-msgid "Reset zoom"
-msgstr "Réinitialiser le zoom"
-
-#: src/germinal/germinal-window.c:412
+#: src/germinal/germinal-window.c:394 src/germinal/germinal-window.c:447
 msgid "Preferences"
 msgstr "Préférences"
 
-#: src/germinal/germinal-window.c:416
+#: src/germinal/germinal-window.c:435
+msgid "Copy"
+msgstr "Copier"
+
+#: src/germinal/germinal-window.c:436
+msgid "Copy as HTML"
+msgstr "Copier en tant que HTML"
+
+#: src/germinal/germinal-window.c:437
+msgid "Paste"
+msgstr "Coller"
+
+#: src/germinal/germinal-window.c:441
+msgid "Zoom"
+msgstr "Zoomer"
+
+#: src/germinal/germinal-window.c:442
+msgid "Dezoom"
+msgstr "Dézoomer"
+
+#: src/germinal/germinal-window.c:443
+msgid "Reset zoom"
+msgstr "Réinitialiser le zoom"
+
+#: src/germinal/germinal-window.c:451
 msgid "Quit"
 msgstr "Quitter"
 
@@ -149,7 +153,7 @@ msgstr "Émulateur de terminal minimaliste basé sur VTE"
 
 #: data/metainfo/org.gnome.Germinal.metainfo.xml.in:9
 msgid "Marc-Antoine Perennou"
-msgstr ""
+msgstr "Marc-Antoine Perennou"
 
 #: data/metainfo/org.gnome.Germinal.metainfo.xml.in:16
 msgid ""
@@ -172,21 +176,23 @@ msgstr ""
 
 #: data/metainfo/org.gnome.Germinal.metainfo.xml.in:35
 msgid "Changes:"
-msgstr ""
+msgstr "Changements :"
 
 #: data/metainfo/org.gnome.Germinal.metainfo.xml.in:37
 msgid ""
 "In-buffer text search (Ctrl+F to open, Escape to close, Ctrl+G/Enter for "
 "next match, Ctrl+Shift+G for previous match)"
 msgstr ""
+"Recherche dans le tampon (Ctrl+F pour ouvrir, Échap pour fermer, Ctrl+G/"
+"Entrée pour l'occurrence suivante, Ctrl+Maj+G pour la précédente)"
 
 #: data/metainfo/org.gnome.Germinal.metainfo.xml.in:38
 msgid "Trackpad zoom support (Ctrl+scroll)"
-msgstr ""
+msgstr "Prise en charge du zoom au pavé tactile (Ctrl+défilement)"
 
 #: data/metainfo/org.gnome.Germinal.metainfo.xml.in:39
 msgid "Fix keyboard shortcut controller precedence"
-msgstr ""
+msgstr "Correction de la priorité du contrôleur de raccourcis clavier"
 
 #: data/metainfo/org.gnome.Germinal.metainfo.xml.in:45
 msgid "Major update. Changes:"

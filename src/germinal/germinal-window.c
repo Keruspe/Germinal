@@ -26,6 +26,8 @@ typedef struct
     GSignalGroup     *terminal_signals;
     GSignalGroup     *search_entry_signals;
 
+    GtkWidget        *header_bar;
+    GtkWidget        *search_button;
     GtkWidget        *popover;
     GMenu            *url_section;
 
@@ -85,7 +87,10 @@ update_decorated (GSettings   *settings,
                   const gchar *key,
                   gpointer     user_data)
 {
-    gtk_window_set_decorated (GTK_WINDOW (user_data), g_settings_get_boolean (settings, key));
+    GerminalWindowPrivate *priv = germinal_window_get_instance_private (GERMINAL_WINDOW (user_data));
+
+    if (priv->header_bar)
+        gtk_widget_set_visible (priv->header_bar, g_settings_get_boolean (settings, key));
 }
 
 static void
@@ -244,6 +249,36 @@ update_search_state (GerminalWindow *self)
 }
 
 static void
+show_search (GerminalWindow *self)
+{
+    GerminalWindowPrivate *priv = germinal_window_get_instance_private (self);
+
+    gtk_revealer_set_reveal_child (GTK_REVEALER (priv->search_bar), TRUE);
+    gtk_widget_grab_focus (priv->search_entry);
+    update_search_state (self);
+}
+
+static void
+hide_search (GerminalWindow *self)
+{
+    GerminalWindowPrivate *priv = germinal_window_get_instance_private (self);
+
+    gtk_revealer_set_reveal_child (GTK_REVEALER (priv->search_bar), FALSE);
+    germinal_terminal_search_stop (priv->terminal);
+    gtk_widget_grab_focus (GTK_WIDGET (priv->terminal));
+}
+
+static void
+on_search_toggled (GtkToggleButton *button,
+                   gpointer         user_data)
+{
+    if (gtk_toggle_button_get_active (button))
+        show_search (GERMINAL_WINDOW (user_data));
+    else
+        hide_search (GERMINAL_WINDOW (user_data));
+}
+
+static void
 on_search_changed (GtkSearchEntry *entry G_GNUC_UNUSED,
                    gpointer        user_data)
 {
@@ -270,12 +305,9 @@ static void
 on_stop_search (GtkSearchEntry *entry G_GNUC_UNUSED,
                 gpointer        user_data)
 {
-    GerminalWindow *self = GERMINAL_WINDOW (user_data);
-    GerminalWindowPrivate *priv = germinal_window_get_instance_private (self);
+    GerminalWindowPrivate *priv = germinal_window_get_instance_private (GERMINAL_WINDOW (user_data));
 
-    gtk_revealer_set_reveal_child (GTK_REVEALER (priv->search_bar), FALSE);
-    germinal_terminal_search_stop (priv->terminal);
-    gtk_widget_grab_focus (GTK_WIDGET (priv->terminal));
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->search_button), FALSE);
 }
 
 static gboolean
@@ -290,9 +322,10 @@ on_window_key_pressed (GtkEventControllerKey *controller G_GNUC_UNUSED,
 
     if ((state & GDK_CONTROL_MASK) && keyval == GDK_KEY_f)
     {
-        gtk_revealer_set_reveal_child (GTK_REVEALER (priv->search_bar), TRUE);
-        gtk_widget_grab_focus (priv->search_entry);
-        update_search_state (self);
+        if (!gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (priv->search_button)))
+            gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->search_button), TRUE);
+        else
+            gtk_widget_grab_focus (priv->search_entry);
         return GDK_EVENT_STOP;
     }
 
@@ -348,13 +381,31 @@ germinal_window_constructed (GObject *object)
     gtk_widget_add_controller (GTK_WIDGET (self), window_key_ctrl);
 
     /* Fill window */
+    GtkWidget *header_bar = priv->header_bar = adw_header_bar_new ();
+
+    GtkWidget *search_button = priv->search_button = gtk_toggle_button_new ();
+    gtk_button_set_icon_name (GTK_BUTTON (search_button), "system-search-symbolic");
+    gtk_widget_set_tooltip_text (search_button, _("Search"));
+    gtk_widget_add_css_class (search_button, "flat");
+    g_signal_connect (search_button, "toggled", G_CALLBACK (on_search_toggled), self);
+    adw_header_bar_pack_start (ADW_HEADER_BAR (header_bar), search_button);
+
+    GtkWidget *prefs_button = gtk_button_new_from_icon_name ("preferences-system-symbolic");
+    gtk_widget_set_tooltip_text (prefs_button, _("Preferences"));
+    gtk_widget_add_css_class (prefs_button, "flat");
+    gtk_actionable_set_action_name (GTK_ACTIONABLE (prefs_button), "ctx.preferences");
+    adw_header_bar_pack_end (ADW_HEADER_BAR (header_bar), prefs_button);
+
     GtkWidget *box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+    gtk_box_append (GTK_BOX (box), header_bar);
     gtk_box_append (GTK_BOX (box), search_bar);
     gtk_box_append (GTK_BOX (box), terminal);
     gtk_widget_set_vexpand (terminal, TRUE);
 
     adw_application_window_set_content (ADW_APPLICATION_WINDOW (self), box);
     gtk_widget_grab_focus (terminal);
+
+    update_decorated (priv->settings, DECORATED_KEY, self);
 
     /* Action group for right-click menu */
     static const GActionEntry ctx_actions[] = {
@@ -447,8 +498,6 @@ germinal_window_init (GerminalWindow *self)
     priv->settings_signals = g_signal_group_new (G_TYPE_SETTINGS);
     g_signal_group_connect (priv->settings_signals, "changed::" DECORATED_KEY, G_CALLBACK (update_decorated), self);
     g_signal_group_set_target (priv->settings_signals, settings);
-
-    update_decorated (settings, DECORATED_KEY, self);
 }
 
 static void
