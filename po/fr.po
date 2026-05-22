@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Germinal\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-20 23:15+0200\n"
+"POT-Creation-Date: 2026-05-22 23:09+0200\n"
 "PO-Revision-Date: 2026-05-20 00:00+0200\n"
 "Last-Translator: Marc-Antoine Perennou <Marc-Antoine@Perennou.com>\n"
 "Language-Team: French\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: src/germinal/germinal.c:104
+#: src/germinal/germinal.c:77
 msgid "display the version"
 msgstr "afficher la version"
 
-#: src/germinal/germinal.c:105
+#: src/germinal/germinal.c:78
 msgid "the command to launch"
 msgstr "la commande à lancer"
 
@@ -29,39 +29,39 @@ msgstr "la commande à lancer"
 msgid "Couldn't exec"
 msgstr "Impossible d'exécuter"
 
-#: src/germinal/germinal-window.c:83
+#: src/germinal/germinal-window.c:132
 msgid "Copy url"
 msgstr "Copier la cible du lien"
 
-#: src/germinal/germinal-window.c:84
+#: src/germinal/germinal-window.c:133
 msgid "Open url"
 msgstr "Suivre le lien"
 
-#: src/germinal/germinal-window.c:253
+#: src/germinal/germinal-window.c:390
 msgid "Copy"
 msgstr "Copier"
 
-#: src/germinal/germinal-window.c:254
+#: src/germinal/germinal-window.c:391
 msgid "Copy as HTML"
 msgstr "Copier en tant que HTML"
 
-#: src/germinal/germinal-window.c:255
+#: src/germinal/germinal-window.c:392
 msgid "Paste"
 msgstr "Coller"
 
-#: src/germinal/germinal-window.c:259
+#: src/germinal/germinal-window.c:396
 msgid "Zoom"
 msgstr "Zoomer"
 
-#: src/germinal/germinal-window.c:260
+#: src/germinal/germinal-window.c:397
 msgid "Dezoom"
 msgstr "Dézoomer"
 
-#: src/germinal/germinal-window.c:261
+#: src/germinal/germinal-window.c:398
 msgid "Reset zoom"
 msgstr "Réinitialiser le zoom"
 
-#: src/germinal/germinal-window.c:265
+#: src/germinal/germinal-window.c:402
 msgid "Quit"
 msgstr "Quitter"
 
@@ -98,27 +98,45 @@ msgstr ""
 "de démarrage."
 
 #: data/metainfo/org.gnome.Germinal.metainfo.xml.in:35
+msgid "Changes:"
+msgstr ""
+
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:37
+msgid ""
+"In-buffer text search (Ctrl+F to open, Escape to close, Ctrl+G/Enter for "
+"next match, Ctrl+Shift+G for previous match)"
+msgstr ""
+
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:38
+msgid "Trackpad zoom support (Ctrl+scroll)"
+msgstr ""
+
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:39
+msgid "Fix keyboard shortcut controller precedence"
+msgstr ""
+
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:45
 msgid "Major update. Changes:"
 msgstr "Mise à jour majeure. Changements :"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:37
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:47
 msgid "Ported to GTK4 and libadwaita"
 msgstr "Porté vers GTK4 et libadwaita"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:38
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:48
 msgid "Right-click menu ported to GMenuModel and GSimpleActionGroup"
 msgstr "Menu contextuel porté vers GMenuModel et GSimpleActionGroup"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:39
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:49
 msgid "Window title now uses VTE termprop API"
 msgstr "Le titre de fenêtre utilise désormais l'API termprop de VTE"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:40
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:50
 msgid "Scroll zoom gated to discrete wheel events only"
 msgstr ""
 "Le zoom à la molette est désormais limité aux événements de molette discrets"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:41
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:51
 msgid "Minimum GLib 2.76, GTK 4.8, VTE 0.78, libadwaita 1.0"
 msgstr "Minimum GLib 2.76, GTK 4.8, VTE 0.78, libadwaita 1.0"
 

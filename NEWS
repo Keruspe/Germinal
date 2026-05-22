@@ -1,3 +1,10 @@
+NEW in 28 (22/05/2026)
+=============
+
+- In-buffer text search (Ctrl+F to open, Escape to close, Ctrl+G/Enter for next match, Ctrl+Shift+G for previous match)
+- Trackpad zoom support (Ctrl+scroll)
+- Fix keyboard shortcut controller precedence
+
 NEW in 27 (21/05/2026)
 =============
 

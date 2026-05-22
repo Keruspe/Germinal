@@ -53,6 +53,25 @@ Key rules:
 - In `finalize`: use `g_free` for plain heap allocations (`gchar *`, `guint *`, plain structs). Do **not** call `g_object_unref` or other ref-counting unrefs here — those belong in `dispose`.
 - Do **not** use auto-cleanup on a variable whose ownership is intentionally transferred — use `g_steal_pointer` to make the handoff explicit.
 
+## Preparing a release
+
+To cut a new release (version N), update all five files in one pass:
+
+1. **`meson.build`** — bump `version: 'N-1'` → `'N'`
+2. **`NEWS`** — prepend a new `NEW in N (DD/MM/YYYY)` block with user-facing changes
+3. **`data/metainfo/org.gnome.Germinal.metainfo.xml.in`** — prepend a new `<release version="N" type="stable" date="YYYY-MM-DD">` element inside `<releases>`
+4. **`germinal.spec`** — bump `Version:` and prepend a new `%changelog` entry (`* Www Mon DD YYYY Name <email> - N-1`)
+5. **`README.md`** — update the "Latest release" link and tarball URL, and keep the keyboard shortcuts table in sync with any new shortcuts
+
+Build (`ninja -C _build`) to confirm the version string compiles correctly. Then run `./release.sh N`, which validates the metainfo, rebuilds, updates translations, commits, builds the dist tarball, and creates the git tag.
+
+On Fedora, also build and install the RPM:
+
+```sh
+./mock-build.sh fedora-$(rpm -E '%{fedora}')-$(uname -m)
+sudo dnf install --nogpgcheck _build/mock-result/germinal-N-1.*.rpm
+```
+
 ## Code conventions
 
 - Standard GLib/GObject C patterns throughout: `G_DEFINE_TYPE_WITH_PRIVATE`, `G_GNUC_UNUSED` on unused parameters.

@@ -48,11 +48,16 @@ germinal /bin/bash -l
 | `Ctrl` `Shift` `P` | Previous pane |
 | `Ctrl` `Shift` `W` | Close current pane |
 | `Ctrl` `Shift` `X` | Zoom current pane (tmux) |
+| `Ctrl` `F` | Open search bar |
+| `Ctrl` `G` / `Enter` | Next search match |
+| `Ctrl` `Shift` `G` | Previous search match |
+| `Escape` | Close search bar |
 
 ## Mouse
 
 - **Right-click** — opens the context menu (copy, paste, zoom, URL actions)
 - **Shift + left-click** — opens the URL under the cursor
+- **Ctrl + scroll** — zoom in/out
 
 ## Building
 
@@ -66,9 +71,9 @@ sudo ninja -C _build install
 
 ## Latest release
 
-[Germinal 27](http://www.imagination-land.org/posts/2026-05-21-germinal-27-released.html) — [download tarball](http://www.imagination-land.org/files/germinal/germinal-27.tar.xz)
+[Germinal 28](https://www.imagination-land.org/posts/2026-05-22-germinal-28-released.html) — [download tarball](https://www.imagination-land.org/files/germinal/germinal-28.tar.xz)
 
-More background on the project: [Germinal 7 release post](http://www.imagination-land.org/posts/2015-01-31-germinal-7-released.html).
+More background on the project: [Germinal 7 release post](https://www.imagination-land.org/posts/2015-01-31-germinal-7-released.html).
 
 ## RPM packaging
 

@@ -19,6 +19,7 @@ main() {
     mkdir -p ~/rpmbuild/SOURCES
     cp _build/meson-dist/germinal-*.tar.xz ~/rpmbuild/SOURCES/
 
+    rm -rf "${RESULT_DIR}"
     mkdir -p "${RESULT_DIR}"
 
     mock -r "${MOCK_CONFIG}" \

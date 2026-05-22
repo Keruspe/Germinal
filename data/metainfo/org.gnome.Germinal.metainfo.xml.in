@@ -5,7 +5,7 @@
   <launchable type="desktop-id">org.gnome.Germinal.desktop</launchable>
   <name>Germinal</name>
   <summary>Minimalist VTE-based terminal emulator</summary>
-  <developer>
+  <developer id="org.imagination-land">
     <name translatable="no">Marc-Antoine Perennou</name>
   </developer>
   <project_license>GPL-3.0-or-later</project_license>
@@ -30,6 +30,16 @@
   <update_contact>Marc-Antoine@Perennou.com</update_contact>
   <translation type="gettext">Germinal</translation>
   <releases>
+    <release version="28" type="stable" date="2026-05-22">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>In-buffer text search (Ctrl+F to open, Escape to close, Ctrl+G/Enter for next match, Ctrl+Shift+G for previous match)</li>
+          <li>Trackpad zoom support (Ctrl+scroll)</li>
+          <li>Fix keyboard shortcut controller precedence</li>
+        </ul>
+      </description>
+    </release>
     <release version="27" type="stable" date="2026-05-21">
       <description>
         <p>Major update. Changes:</p>

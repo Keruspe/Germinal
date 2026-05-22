@@ -1,11 +1,11 @@
 Name:           germinal
-Version:        27
+Version:        28
 Release:        1%{?dist}
 Summary:        Minimalist VTE-based terminal emulator
 
 License:        GPL-3.0-or-later
 URL:            https://github.com/Keruspe/Germinal
-Source0:        http://www.imagination-land.org/files/%{name}/%{name}-%{version}.tar.xz
+Source0:        https://www.imagination-land.org/files/%{name}/%{name}-%{version}.tar.xz
 
 BuildRequires:  meson >= 1.1
 BuildRequires:  gcc
@@ -54,5 +54,10 @@ tmux for tabs and pane management, and uses GSettings for configuration.
 %{_userunitdir}/org.gnome.Germinal.service
 
 %changelog
+* Fri May 22 2026 Marc-Antoine Perennou <Marc-Antoine@Perennou.com> - 28-1
+- In-buffer text search (Ctrl+F)
+- Trackpad zoom support (Ctrl+scroll)
+- Fix keyboard shortcut controller precedence
+
 * Wed May 21 2026 Marc-Antoine Perennou <Marc-Antoine@Perennou.com> - 27-1
 - Port to GTK4 and libadwaita
