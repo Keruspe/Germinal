@@ -364,26 +364,20 @@ germinal_window_constructed (GObject *object)
     gtk_widget_grab_focus (terminal);
 
     /* Action group for right-click menu */
+    static const GActionEntry ctx_actions[] = {
+        { .name = "copy-url",   .activate = action_copy_url   },
+        { .name = "open-url",   .activate = action_open_url   },
+        { .name = "copy",       .activate = action_copy       },
+        { .name = "copy-html",  .activate = action_copy_html  },
+        { .name = "paste",      .activate = action_paste      },
+        { .name = "zoom",       .activate = action_zoom       },
+        { .name = "dezoom",     .activate = action_dezoom     },
+        { .name = "reset-zoom", .activate = action_reset_zoom },
+        { .name = "quit",       .activate = action_quit       },
+    };
+
     g_autoptr (GSimpleActionGroup) ag = g_simple_action_group_new ();
-
-#define ADD_ACTION(name_str, cb) G_STMT_START {                                 \
-        g_autoptr (GSimpleAction) _a = g_simple_action_new (name_str, NULL);    \
-        g_signal_connect (_a, "activate", G_CALLBACK (cb), self);               \
-        g_action_map_add_action (G_ACTION_MAP (ag), G_ACTION (_a));             \
-    } G_STMT_END
-
-    ADD_ACTION ("copy-url",   action_copy_url);
-    ADD_ACTION ("open-url",   action_open_url);
-    ADD_ACTION ("copy",       action_copy);
-    ADD_ACTION ("copy-html",  action_copy_html);
-    ADD_ACTION ("paste",      action_paste);
-    ADD_ACTION ("zoom",       action_zoom);
-    ADD_ACTION ("dezoom",     action_dezoom);
-    ADD_ACTION ("reset-zoom", action_reset_zoom);
-    ADD_ACTION ("quit",       action_quit);
-
-#undef ADD_ACTION
-
+    g_action_map_add_action_entries (G_ACTION_MAP (ag), ctx_actions, G_N_ELEMENTS (ctx_actions), self);
     gtk_widget_insert_action_group (GTK_WIDGET (self), "ctx", G_ACTION_GROUP (ag));
 
     /* Build right-click menu model */
