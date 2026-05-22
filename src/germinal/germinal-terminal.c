@@ -430,10 +430,12 @@ germinal_terminal_init (GerminalTerminal *self)
     }
 
     GtkEventController *key_ctrl = gtk_event_controller_key_new ();
+    gtk_event_controller_set_propagation_phase (key_ctrl, GTK_PHASE_CAPTURE);
     g_signal_connect (key_ctrl, "key-pressed", G_CALLBACK (on_key_pressed), self);
     gtk_widget_add_controller (GTK_WIDGET (self), key_ctrl);
 
-    GtkEventController *scroll_ctrl = gtk_event_controller_scroll_new (GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES);
+    GtkEventController *scroll_ctrl = gtk_event_controller_scroll_new (GTK_EVENT_CONTROLLER_SCROLL_VERTICAL);
+    gtk_event_controller_set_propagation_phase (scroll_ctrl, GTK_PHASE_CAPTURE);
     g_signal_connect (scroll_ctrl, "scroll", G_CALLBACK (on_scroll), self);
     gtk_widget_add_controller (GTK_WIDGET (self), scroll_ctrl);
 
