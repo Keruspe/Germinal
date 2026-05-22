@@ -298,9 +298,6 @@ on_scroll (GtkEventControllerScroll *controller,
     if (!(gtk_event_controller_get_current_event_state (GTK_EVENT_CONTROLLER (controller)) & GDK_CONTROL_MASK))
         return GDK_EVENT_PROPAGATE;
 
-    if (gtk_event_controller_scroll_get_unit (controller) != GDK_SCROLL_UNIT_WHEEL)
-        return GDK_EVENT_PROPAGATE;
-
     ZoomAction zoom_action = DO_NOTHING;
     gboolean natural_scroll = FALSE;
 
