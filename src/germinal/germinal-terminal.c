@@ -92,19 +92,19 @@ update_colors (GSettings   *settings,
 {
     GerminalTerminalPrivate *priv = germinal_terminal_get_instance_private (user_data);
 
-    if (strcmp (key, BACKCOLOR_KEY) == 0)
+    if (g_strcmp0 (key, BACKCOLOR_KEY) == 0)
     {
         g_autofree gchar *backcolor_str = germinal_settings_get_string (settings, BACKCOLOR_KEY);
 
         gdk_rgba_parse (&priv->backcolor, backcolor_str);
     }
-    else if (strcmp (key, FORECOLOR_KEY) == 0)
+    else if (g_strcmp0 (key, FORECOLOR_KEY) == 0)
     {
         g_autofree gchar *forecolor_str = germinal_settings_get_string (settings, FORECOLOR_KEY);
 
         gdk_rgba_parse (&priv->forecolor, forecolor_str);
     }
-    else if (strcmp (key, PALETTE_KEY) == 0)
+    else if (g_strcmp0 (key, PALETTE_KEY) == 0)
     {
         g_clear_pointer (&priv->palette, g_free);
         priv->palette = germinal_settings_get_palette (settings, &priv->palette_size);

@@ -21,7 +21,7 @@
 
 #include <stdlib.h>
 
-static int
+static gint
 germinal_create_window (GApplication *application,
                         GStrv         command)
 {
