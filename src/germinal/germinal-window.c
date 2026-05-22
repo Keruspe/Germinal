@@ -17,6 +17,7 @@
  * along with Germinal.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "germinal-preferences.h"
 #include "germinal-settings.h"
 #include "germinal-window.h"
 
@@ -231,6 +232,14 @@ action_reset_zoom (GSimpleAction *action G_GNUC_UNUSED,
 }
 
 static void
+action_preferences (GSimpleAction *action G_GNUC_UNUSED,
+                    GVariant      *param G_GNUC_UNUSED,
+                    gpointer       user_data)
+{
+    adw_dialog_present (germinal_preferences_new (), GTK_WIDGET (user_data));
+}
+
+static void
 action_quit (GSimpleAction *action G_GNUC_UNUSED,
              GVariant      *param G_GNUC_UNUSED,
              gpointer       user_data)
@@ -365,15 +374,16 @@ germinal_window_constructed (GObject *object)
 
     /* Action group for right-click menu */
     static const GActionEntry ctx_actions[] = {
-        { .name = "copy-url",   .activate = action_copy_url   },
-        { .name = "open-url",   .activate = action_open_url   },
-        { .name = "copy",       .activate = action_copy       },
-        { .name = "copy-html",  .activate = action_copy_html  },
-        { .name = "paste",      .activate = action_paste      },
-        { .name = "zoom",       .activate = action_zoom       },
-        { .name = "dezoom",     .activate = action_dezoom     },
-        { .name = "reset-zoom", .activate = action_reset_zoom },
-        { .name = "quit",       .activate = action_quit       },
+        { .name = "copy-url",    .activate = action_copy_url    },
+        { .name = "open-url",    .activate = action_open_url    },
+        { .name = "copy",        .activate = action_copy        },
+        { .name = "copy-html",   .activate = action_copy_html   },
+        { .name = "paste",       .activate = action_paste       },
+        { .name = "zoom",        .activate = action_zoom        },
+        { .name = "dezoom",      .activate = action_dezoom      },
+        { .name = "reset-zoom",  .activate = action_reset_zoom  },
+        { .name = "preferences", .activate = action_preferences },
+        { .name = "quit",        .activate = action_quit        },
     };
 
     g_autoptr (GSimpleActionGroup) ag = g_simple_action_group_new ();
@@ -397,6 +407,10 @@ germinal_window_constructed (GObject *object)
     g_menu_append (zoom_section, _("Dezoom"),     "ctx.dezoom");
     g_menu_append (zoom_section, _("Reset zoom"), "ctx.reset-zoom");
     g_menu_append_section (menu, NULL, G_MENU_MODEL (zoom_section));
+
+    g_autoptr (GMenu) prefs_section = g_menu_new ();
+    g_menu_append (prefs_section, _("Preferences"), "ctx.preferences");
+    g_menu_append_section (menu, NULL, G_MENU_MODEL (prefs_section));
 
     g_autoptr (GMenu) quit_section = g_menu_new ();
     g_menu_append (quit_section, _("Quit"), "ctx.quit");

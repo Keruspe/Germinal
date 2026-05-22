@@ -1,4 +1,5 @@
 src/germinal/germinal.c
+src/germinal/germinal-preferences.c
 src/germinal/germinal-terminal.c
 src/germinal/germinal-window.c
 data/metainfo/org.gnome.Germinal.metainfo.xml.in

@@ -10,9 +10,9 @@ i18n  = import('i18n')
 gnome = import('gnome')
 
 glib_req_version    = '2.76'
-gtk_req_version     = '4.8'
+gtk_req_version     = '4.10'
 vte_req_version     = '0.78.0'
-adw_req_version     = '1.0'
+adw_req_version     = '1.6'
 gsd_req_version     = '3.28.1'
 
 glib_major = glib_req_version.split('.')[0].to_int()

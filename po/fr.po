@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Germinal\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-22 23:09+0200\n"
-"PO-Revision-Date: 2026-05-20 00:00+0200\n"
+"POT-Creation-Date: 2026-05-22 23:58+0200\n"
+"PO-Revision-Date: 2026-05-23 00:00+0200\n"
 "Last-Translator: Marc-Antoine Perennou <Marc-Antoine@Perennou.com>\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -25,43 +25,116 @@ msgstr "afficher la version"
 msgid "the command to launch"
 msgstr "la commande à lancer"
 
+#: src/germinal/germinal-preferences.c:117
+msgid "Reset to default"
+msgstr "Remettre par défaut"
+
+#: src/germinal/germinal-preferences.c:148
+msgid "Appearance"
+msgstr "Apparence"
+
+#: src/germinal/germinal-preferences.c:153
+#: src/germinal/germinal-preferences.c:158
+msgid "Font"
+msgstr "Police"
+
+#: src/germinal/germinal-preferences.c:170
+msgid "Colors"
+msgstr "Couleurs"
+
+#: src/germinal/germinal-preferences.c:176
+msgid "Foreground color"
+msgstr "Couleur de premier plan"
+
+#: src/germinal/germinal-preferences.c:187
+msgid "Background color"
+msgstr "Couleur de fond"
+
+#: src/germinal/germinal-preferences.c:201
+msgid "Terminal"
+msgstr "Terminal"
+
+#: src/germinal/germinal-preferences.c:206
+msgid "Behavior"
+msgstr "Comportement"
+
+#: src/germinal/germinal-preferences.c:209
+msgid "Audible bell"
+msgstr "Bip sonore"
+
+#: src/germinal/germinal-preferences.c:215
+msgid "Scrollback lines"
+msgstr "Lignes d'historique"
+
+#: src/germinal/germinal-preferences.c:223
+msgid "Word char exceptions"
+msgstr "Exceptions de caractères composant un mot"
+
+#: src/germinal/germinal-preferences.c:232
+msgid "Window"
+msgstr "Fenêtre"
+
+#: src/germinal/germinal-preferences.c:235
+msgid "Window decorations"
+msgstr "Décorations de fenêtre"
+
+#: src/germinal/germinal-preferences.c:245
+msgid "Shell"
+msgstr "Shell"
+
+#: src/germinal/germinal-preferences.c:250
+msgid "Command"
+msgstr "Commande"
+
+#: src/germinal/germinal-preferences.c:253
+msgid "Startup command"
+msgstr "Commande de démarrage"
+
+#: src/germinal/germinal-preferences.c:259
+msgid "TERM variable"
+msgstr "Variable TERM"
+
 #: src/germinal/germinal-terminal.c:179
 msgid "Couldn't exec"
 msgstr "Impossible d'exécuter"
 
-#: src/germinal/germinal-window.c:132
+#: src/germinal/germinal-window.c:133
 msgid "Copy url"
 msgstr "Copier la cible du lien"
 
-#: src/germinal/germinal-window.c:133
+#: src/germinal/germinal-window.c:134
 msgid "Open url"
 msgstr "Suivre le lien"
 
-#: src/germinal/germinal-window.c:390
+#: src/germinal/germinal-window.c:400
 msgid "Copy"
 msgstr "Copier"
 
-#: src/germinal/germinal-window.c:391
+#: src/germinal/germinal-window.c:401
 msgid "Copy as HTML"
 msgstr "Copier en tant que HTML"
 
-#: src/germinal/germinal-window.c:392
+#: src/germinal/germinal-window.c:402
 msgid "Paste"
 msgstr "Coller"
 
-#: src/germinal/germinal-window.c:396
+#: src/germinal/germinal-window.c:406
 msgid "Zoom"
 msgstr "Zoomer"
 
-#: src/germinal/germinal-window.c:397
+#: src/germinal/germinal-window.c:407
 msgid "Dezoom"
 msgstr "Dézoomer"
 
-#: src/germinal/germinal-window.c:398
+#: src/germinal/germinal-window.c:408
 msgid "Reset zoom"
 msgstr "Réinitialiser le zoom"
 
-#: src/germinal/germinal-window.c:402
+#: src/germinal/germinal-window.c:412
+msgid "Preferences"
+msgstr "Préférences"
+
+#: src/germinal/germinal-window.c:416
 msgid "Quit"
 msgstr "Quitter"
 
