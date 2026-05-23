@@ -9,7 +9,12 @@ gschema = configure_file(
   install:       true,
   install_dir:   get_option('datadir') / 'glib-2.0' / 'schemas',
 )
-gnome.compile_schemas(depend_files: gschema)
+compiled_schemas = custom_target('gschemas-compiled',
+  input:            gschema,
+  output:           'gschemas.compiled',
+  command:          [find_program('glib-compile-schemas'), '--targetdir=@OUTDIR@', '@OUTDIR@'],
+  build_by_default: true,
+)
 
 # Desktop file (two-pass: substitute @bindir@, then merge translations)
 desktop_in = configure_file(
