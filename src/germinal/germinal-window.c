@@ -194,21 +194,21 @@ action_open_url (GSimpleAction *action G_GNUC_UNUSED,
 }
 
 static void
-action_zoom (GSimpleAction *action G_GNUC_UNUSED,
-             GVariant      *param G_GNUC_UNUSED,
-             gpointer       user_data)
+action_zoom_in (GSimpleAction *action G_GNUC_UNUSED,
+                GVariant      *param G_GNUC_UNUSED,
+                gpointer       user_data)
 {
     GerminalWindowPrivate *priv = germinal_window_get_instance_private (GERMINAL_WINDOW (user_data));
-    germinal_terminal_zoom (priv->terminal);
+    germinal_terminal_zoom_in (priv->terminal);
 }
 
 static void
-action_dezoom (GSimpleAction *action G_GNUC_UNUSED,
-               GVariant      *param G_GNUC_UNUSED,
-               gpointer       user_data)
+action_zoom_out (GSimpleAction *action G_GNUC_UNUSED,
+                 GVariant      *param G_GNUC_UNUSED,
+                 gpointer       user_data)
 {
     GerminalWindowPrivate *priv = germinal_window_get_instance_private (GERMINAL_WINDOW (user_data));
-    germinal_terminal_dezoom (priv->terminal);
+    germinal_terminal_zoom_out (priv->terminal);
 }
 
 static void
@@ -387,7 +387,7 @@ germinal_window_constructed (GObject *object)
     gtk_button_set_icon_name (GTK_BUTTON (search_button), "system-search-symbolic");
     gtk_widget_set_tooltip_text (search_button, _("Search"));
     gtk_widget_add_css_class (search_button, "flat");
-    g_signal_connect (search_button, "toggled", G_CALLBACK (on_search_toggled), self);
+    g_signal_connect_object (search_button, "toggled", G_CALLBACK (on_search_toggled), self, 0);
     adw_header_bar_pack_start (ADW_HEADER_BAR (header_bar), search_button);
 
     GtkWidget *prefs_button = gtk_button_new_from_icon_name ("preferences-system-symbolic");
@@ -414,8 +414,8 @@ germinal_window_constructed (GObject *object)
         { .name = "copy",        .activate = action_copy        },
         { .name = "copy-html",   .activate = action_copy_html   },
         { .name = "paste",       .activate = action_paste       },
-        { .name = "zoom",        .activate = action_zoom        },
-        { .name = "dezoom",      .activate = action_dezoom      },
+        { .name = "zoom-in",     .activate = action_zoom_in     },
+        { .name = "zoom-out",    .activate = action_zoom_out    },
         { .name = "reset-zoom",  .activate = action_reset_zoom  },
         { .name = "preferences", .activate = action_preferences },
         { .name = "quit",        .activate = action_quit        },
@@ -438,8 +438,8 @@ germinal_window_constructed (GObject *object)
     g_menu_append_section (menu, NULL, G_MENU_MODEL (clipboard_section));
 
     g_autoptr (GMenu) zoom_section = g_menu_new ();
-    g_menu_append (zoom_section, _("Zoom"),       "ctx.zoom");
-    g_menu_append (zoom_section, _("Dezoom"),     "ctx.dezoom");
+    g_menu_append (zoom_section, _("Zoom in"),    "ctx.zoom-in");
+    g_menu_append (zoom_section, _("Zoom out"),   "ctx.zoom-out");
     g_menu_append (zoom_section, _("Reset zoom"), "ctx.reset-zoom");
     g_menu_append_section (menu, NULL, G_MENU_MODEL (zoom_section));
 
