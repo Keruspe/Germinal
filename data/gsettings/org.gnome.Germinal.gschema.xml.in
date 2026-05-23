@@ -30,7 +30,7 @@
     </key>
 
     <key name="forecolor" type="s">
-      <default>'#C64B9A'</default>
+      <default>'#f8f8f2'</default>
       <summary>The foreground color</summary>
       <description>
         Hex color string for the default text color in the terminal.
@@ -38,7 +38,7 @@
     </key>
 
     <key name="backcolor" type="s">
-      <default>'#212121'</default>
+      <default>'#282a36'</default>
       <summary>The background color</summary>
       <description>
         Hex color string for the terminal background.
@@ -46,25 +46,13 @@
     </key>
 
     <key name="palette" type="as">
-      <!-- Stolen from sakura which stole it from gnome-terminal -->
+      <!-- Dracula color palette (https://draculatheme.com) -->
       <default>
         [
-          '#000000000000',
-          '#cdcb00000000',
-          '#0000cdcb0000',
-          '#cdcbcdcb0000',
-          '#1e1a908fffff',
-          '#cdcb0000cdcb',
-          '#0000cdcbcdcb',
-          '#e5e2e5e2e5e2',
-          '#4ccc4ccc4ccc',
-          '#ffff00000000',
-          '#0000ffff0000',
-          '#ffffffff0000',
-          '#46458281b4ae',
-          '#ffff0000ffff',
-          '#0000ffffffff',
-          '#ffffffffffff'
+          '#21222c', '#ff5555', '#50fa7b', '#f1fa8c',
+          '#bd93f9', '#ff79c6', '#8be9fd', '#f8f8f2',
+          '#6272a4', '#ff6e6e', '#69ff94', '#ffffa5',
+          '#d6acff', '#ff92df', '#a4ffff', '#ffffff'
         ]
       </default>
       <summary>The color palette</summary>
