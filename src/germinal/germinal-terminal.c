@@ -19,11 +19,6 @@ typedef struct
     GSettings *mouse_settings;
     GSettings *touchpad_settings;
 
-    GdkRGBA   *palette;
-    gsize      palette_size;
-    GdkRGBA    forecolor;
-    GdkRGBA    backcolor;
-
     gchar     *url;
     guint     *zero_keycodes;
     guint      n_zero_keycodes;
@@ -72,37 +67,20 @@ update_font (GSettings   *settings,
 
 static void
 update_colors (GSettings   *settings,
-               const gchar *key,
+               const gchar *key G_GNUC_UNUSED,
                gpointer     user_data)
 {
-    GerminalTerminalPrivate *priv = germinal_terminal_get_instance_private (user_data);
+    g_autofree gchar *fore_str = g_settings_get_string (settings, FORECOLOR_KEY);
+    g_autofree gchar *back_str = g_settings_get_string (settings, BACKCOLOR_KEY);
+    GdkRGBA forecolor = { 0 }, backcolor = { 0 };
+    gdk_rgba_parse (&forecolor, fore_str);
+    gdk_rgba_parse (&backcolor, back_str);
 
-    if (g_strcmp0 (key, BACKCOLOR_KEY) == 0)
-    {
-        g_autofree gchar *backcolor_str = g_settings_get_string (settings, BACKCOLOR_KEY);
+    gsize palette_size = 0;
+    g_autofree GdkRGBA *palette = germinal_settings_get_palette (settings, &palette_size);
 
-        gdk_rgba_parse (&priv->backcolor, backcolor_str);
-    }
-    else if (g_strcmp0 (key, FORECOLOR_KEY) == 0)
-    {
-        g_autofree gchar *forecolor_str = g_settings_get_string (settings, FORECOLOR_KEY);
-
-        gdk_rgba_parse (&priv->forecolor, forecolor_str);
-    }
-    else if (g_strcmp0 (key, PALETTE_KEY) == 0)
-    {
-        g_clear_pointer (&priv->palette, g_free);
-        priv->palette = germinal_settings_get_palette (settings, &priv->palette_size);
-    }
-
-    if (priv->palette)
-    {
-        vte_terminal_set_colors (VTE_TERMINAL (user_data),
-                                 &priv->forecolor,
-                                 &priv->backcolor,
-                                 priv->palette,
-                                 priv->palette_size);
-    }
+    if (palette)
+        vte_terminal_set_colors (VTE_TERMINAL (user_data), &forecolor, &backcolor, palette, palette_size);
 }
 
 static gboolean
@@ -236,12 +214,12 @@ on_terminal_command_spawned (VteTerminal *terminal  G_GNUC_UNUSED,
 
 void
 germinal_terminal_spawn_command (GerminalTerminal *self,
-                                 GStrv             command)
+                                 GStrv             command_override)
 {
     g_return_if_fail (GERMINAL_IS_TERMINAL (self));
 
-    g_auto (GStrv) _free_command = command;
     GerminalTerminalPrivate *priv = germinal_terminal_get_instance_private (self);
+    g_auto (GStrv) command = command_override;
 
     if (G_LIKELY (!command))
     {
@@ -253,8 +231,6 @@ germinal_terminal_spawn_command (GerminalTerminal *self,
             g_critical ("%s", error->message);
             exit (EXIT_FAILURE);
         }
-
-        _free_command = command;
     }
 
     g_autofree gchar *term = g_settings_get_string (priv->settings, TERM_KEY);
@@ -328,7 +304,6 @@ germinal_terminal_finalize (GObject *object)
 {
     GerminalTerminalPrivate *priv = germinal_terminal_get_instance_private (GERMINAL_TERMINAL (object));
 
-    g_clear_pointer (&priv->palette, g_free);
     g_clear_pointer (&priv->url, g_free);
     g_clear_pointer (&priv->zero_keycodes, g_free);
 
@@ -360,9 +335,7 @@ germinal_terminal_init (GerminalTerminal *self)
     g_signal_group_set_target (priv->settings_signals, settings);
 
     update_bell                 (settings, AUDIBLE_BELL_KEY,         self);
-    update_colors               (settings, BACKCOLOR_KEY,            self);
-    update_colors               (settings, FORECOLOR_KEY,            self);
-    update_colors               (settings, PALETTE_KEY,              self);
+    update_colors               (settings, NULL,                     self);
     update_font                 (settings, FONT_KEY,                 self);
     update_scrollback           (settings, SCROLLBACK_KEY,           self);
     update_word_char_exceptions (settings, WORD_CHAR_EXCEPTIONS_KEY, self);
