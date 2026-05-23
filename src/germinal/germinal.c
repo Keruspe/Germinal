@@ -54,12 +54,10 @@ gint
 main (gint   argc,
       gchar *argv[])
 {
-    /* Gettext and gtk initialization */
     textdomain (GETTEXT_PACKAGE);
     bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
     bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 
-    /* AdwApplication initialization */
     g_autoptr (AdwApplication) app = adw_application_new ("org.gnome.Germinal", G_APPLICATION_HANDLES_COMMAND_LINE | G_APPLICATION_SEND_ENVIRONMENT);
     GApplication *gapp = G_APPLICATION (app);
 
@@ -70,7 +68,6 @@ main (gint   argc,
     gulong activate_id  = g_signal_connect (gapp, "activate",     G_CALLBACK (germinal_activate),     NULL);
     gulong cmd_line_id  = g_signal_connect (gapp, "command-line", G_CALLBACK (germinal_command_line), NULL);
 
-    /* Launch program */
     gint ret = g_application_run (gapp, argc, argv);
 
     g_signal_handler_disconnect (gapp, startup_id);
