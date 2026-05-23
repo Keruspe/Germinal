@@ -65,8 +65,9 @@ update_font (GSettings   *settings,
              gpointer     user_data)
 {
     g_autofree gchar *setting = g_settings_get_string (settings, key);
+    g_autoptr (PangoFontDescription) font = pango_font_description_from_string (setting);
 
-    germinal_terminal_update_font (GERMINAL_TERMINAL (user_data), setting);
+    vte_terminal_set_font (VTE_TERMINAL (user_data), font);
 }
 
 static void
@@ -104,7 +105,7 @@ update_colors (GSettings   *settings,
     }
 }
 
-gboolean
+static gboolean
 germinal_terminal_is_zero (GerminalTerminal *self,
                            guint             keycode)
 {
@@ -122,6 +123,8 @@ germinal_terminal_is_zero (GerminalTerminal *self,
 const gchar *
 germinal_terminal_get_url (GerminalTerminal *self)
 {
+    g_return_val_if_fail (GERMINAL_IS_TERMINAL (self), NULL);
+
     GerminalTerminalPrivate *priv = germinal_terminal_get_instance_private (self);
 
     return priv->url;
@@ -129,11 +132,13 @@ germinal_terminal_get_url (GerminalTerminal *self)
 
 void
 germinal_terminal_update_url (GerminalTerminal *self,
-                               gdouble           x,
-                               gdouble           y)
+                              gdouble           x,
+                              gdouble           y)
 {
+    g_return_if_fail (GERMINAL_IS_TERMINAL (self));
+
     GerminalTerminalPrivate *priv = germinal_terminal_get_instance_private (self);
-    gint tag; /* avoid stupid vte segv (said to be optional) */
+    gint tag;
 
     g_clear_pointer (&priv->url, g_free);
     priv->url = vte_terminal_check_match_at (VTE_TERMINAL (self), x, y, &tag);
@@ -142,13 +147,14 @@ germinal_terminal_update_url (GerminalTerminal *self,
 gboolean
 germinal_terminal_open_url (GerminalTerminal *self)
 {
+    g_return_val_if_fail (GERMINAL_IS_TERMINAL (self), FALSE);
+
     const gchar *url = germinal_terminal_get_url (self);
 
     if (!url)
         return FALSE;
 
     g_autoptr (GError) error = NULL;
-    /* Always strdup because we free later */
     g_autofree gchar *browser = g_strdup (g_getenv ("BROWSER"));
 
     /* If BROWSER is not in env, try xdg-open or fallback to firefox */
@@ -166,10 +172,13 @@ germinal_terminal_open_url (GerminalTerminal *self)
 }
 
 gboolean
-germinal_terminal_spawn (GerminalTerminal *self G_GNUC_UNUSED,
+germinal_terminal_spawn (GerminalTerminal *self,
                          gchar           **cmd,
                          GError          **error)
 {
+    g_return_val_if_fail (GERMINAL_IS_TERMINAL (self), FALSE);
+    g_return_val_if_fail (cmd != NULL, FALSE);
+
     g_auto (GStrv) env = g_get_environ ();
 
     return g_spawn_async (g_get_home_dir (),
@@ -187,6 +196,8 @@ germinal_terminal_spawn (GerminalTerminal *self G_GNUC_UNUSED,
 void
 germinal_terminal_zoom_in (GerminalTerminal *self)
 {
+    g_return_if_fail (GERMINAL_IS_TERMINAL (self));
+
     VteTerminal *terminal = VTE_TERMINAL (self);
 
     vte_terminal_set_font_scale (terminal, CLAMP (vte_terminal_get_font_scale (terminal) * ZOOM_FACTOR, 0.25, 4.0));
@@ -195,6 +206,8 @@ germinal_terminal_zoom_in (GerminalTerminal *self)
 void
 germinal_terminal_zoom_out (GerminalTerminal *self)
 {
+    g_return_if_fail (GERMINAL_IS_TERMINAL (self));
+
     VteTerminal *terminal = VTE_TERMINAL (self);
 
     vte_terminal_set_font_scale (terminal, CLAMP (vte_terminal_get_font_scale (terminal) / ZOOM_FACTOR, 0.25, 4.0));
@@ -203,16 +216,9 @@ germinal_terminal_zoom_out (GerminalTerminal *self)
 void
 germinal_terminal_reset_zoom (GerminalTerminal *self)
 {
+    g_return_if_fail (GERMINAL_IS_TERMINAL (self));
+
     vte_terminal_set_font_scale (VTE_TERMINAL (self), 1.0);
-}
-
-void
-germinal_terminal_update_font (GerminalTerminal *self,
-                               const gchar      *font_str)
-{
-    g_autoptr (PangoFontDescription) font = pango_font_description_from_string (font_str);
-
-    vte_terminal_set_font (VTE_TERMINAL (self), font);
 }
 
 static void
@@ -232,6 +238,8 @@ void
 germinal_terminal_spawn_command (GerminalTerminal *self,
                                  GStrv             command)
 {
+    g_return_if_fail (GERMINAL_IS_TERMINAL (self));
+
     g_auto (GStrv) _free_command = command;
     GerminalTerminalPrivate *priv = germinal_terminal_get_instance_private (self);
 
@@ -249,12 +257,10 @@ germinal_terminal_spawn_command (GerminalTerminal *self,
         _free_command = command;
     }
 
-    /* Override TERM */
     g_autofree gchar *term = g_settings_get_string (priv->settings, TERM_KEY);
     g_auto (GStrv) envp = g_environ_setenv (g_get_environ (), "TERM", term, TRUE);
 
-    /* Spawn our command */
-    vte_terminal_spawn_async ((VteTerminal *) self, VTE_PTY_DEFAULT, g_get_home_dir (), command, envp, G_SPAWN_SEARCH_PATH,
+    vte_terminal_spawn_async (VTE_TERMINAL (self), VTE_PTY_DEFAULT, g_get_home_dir (), command, envp, G_SPAWN_SEARCH_PATH,
                               NULL,  /* child_setup */
                               NULL,  /* child_setup_data */
                               NULL,  /* child_setup_data_destroy */
@@ -353,7 +359,6 @@ germinal_terminal_init (GerminalTerminal *self)
     g_signal_group_connect (priv->settings_signals, "changed::" WORD_CHAR_EXCEPTIONS_KEY, G_CALLBACK (update_word_char_exceptions), self);
     g_signal_group_set_target (priv->settings_signals, settings);
 
-    /* Init settings */
     update_bell                 (settings, AUDIBLE_BELL_KEY,         self);
     update_colors               (settings, BACKCOLOR_KEY,            self);
     update_colors               (settings, FORECOLOR_KEY,            self);
@@ -381,14 +386,13 @@ germinal_terminal_init (GerminalTerminal *self)
     g_signal_connect (scroll_ctrl, "scroll", G_CALLBACK (on_scroll), self);
     gtk_widget_add_controller (GTK_WIDGET (self), scroll_ctrl);
 
-    VteTerminal *term = (VteTerminal *) self;
+    VteTerminal *term = VTE_TERMINAL (self);
 
     vte_terminal_set_mouse_autohide      (term, TRUE);
     vte_terminal_set_scroll_on_output    (term, FALSE);
     vte_terminal_set_scroll_on_keystroke (term, TRUE);
     vte_terminal_search_set_wrap_around  (term, TRUE);
 
-    /* Url matching stuff */
     g_autoptr (VteRegex) url_regexp = vte_regex_new_for_match (URL_REGEXP,
                                                               strlen (URL_REGEXP),
                                                               PCRE2_CASELESS | PCRE2_NOTEMPTY | PCRE2_MULTILINE,
@@ -415,24 +419,32 @@ copy_text (const gchar *text)
 void
 germinal_terminal_copy (GerminalTerminal *self)
 {
+    g_return_if_fail (GERMINAL_IS_TERMINAL (self));
+
     vte_terminal_copy_clipboard_format (VTE_TERMINAL (self), VTE_FORMAT_TEXT);
 }
 
 void
 germinal_terminal_copy_html (GerminalTerminal *self)
 {
+    g_return_if_fail (GERMINAL_IS_TERMINAL (self));
+
     vte_terminal_copy_clipboard_format (VTE_TERMINAL (self), VTE_FORMAT_HTML);
 }
 
 void
 germinal_terminal_paste (GerminalTerminal *self)
 {
+    g_return_if_fail (GERMINAL_IS_TERMINAL (self));
+
     vte_terminal_paste_clipboard (VTE_TERMINAL (self));
 }
 
 gboolean
 germinal_terminal_copy_url (GerminalTerminal *self)
 {
+    g_return_val_if_fail (GERMINAL_IS_TERMINAL (self), FALSE);
+
     const gchar *url = germinal_terminal_get_url (self);
 
     if (!url)
@@ -546,6 +558,9 @@ gboolean
 germinal_terminal_search (GerminalTerminal *self,
                           const gchar      *text)
 {
+    g_return_val_if_fail (GERMINAL_IS_TERMINAL (self), FALSE);
+    g_return_val_if_fail (text != NULL, FALSE);
+
     g_autoptr (GError) error = NULL;
     g_autoptr (VteRegex) regex = vte_regex_new_for_search (text, -1, PCRE2_CASELESS | PCRE2_MULTILINE, &error);
 
@@ -562,18 +577,24 @@ germinal_terminal_search (GerminalTerminal *self,
 gboolean
 germinal_terminal_search_next (GerminalTerminal *self)
 {
+    g_return_val_if_fail (GERMINAL_IS_TERMINAL (self), FALSE);
+
     return vte_terminal_search_find_next (VTE_TERMINAL (self));
 }
 
 gboolean
 germinal_terminal_search_prev (GerminalTerminal *self)
 {
+    g_return_val_if_fail (GERMINAL_IS_TERMINAL (self), FALSE);
+
     return vte_terminal_search_find_previous (VTE_TERMINAL (self));
 }
 
 void
 germinal_terminal_search_stop (GerminalTerminal *self)
 {
+    g_return_if_fail (GERMINAL_IS_TERMINAL (self));
+
     vte_terminal_search_set_regex (VTE_TERMINAL (self), NULL, 0);
 }
 
