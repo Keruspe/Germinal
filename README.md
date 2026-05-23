@@ -1,7 +1,6 @@
 # Germinal
 
 [![CI](https://github.com/Keruspe/Germinal/actions/workflows/ci.yml/badge.svg)](https://github.com/Keruspe/Germinal/actions/workflows/ci.yml)
-[![REUSE status](https://api.reuse.software/badge/github.com/Keruspe/Germinal)](https://api.reuse.software/info/github.com/Keruspe/Germinal)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Latest release](https://img.shields.io/github/v/tag/Keruspe/Germinal?label=release)](https://github.com/Keruspe/Germinal/releases)
 [![Packaging status](https://repology.org/badge/tiny-repos/germinal.svg)](https://repology.org/project/germinal/versions)

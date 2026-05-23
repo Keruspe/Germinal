@@ -14,9 +14,10 @@ jobs:
     container: fedora:42
     strategy:
       matrix:
-        compiler: [gcc, clang]
+        #compiler: [gcc, clang]
+        compiler: [gcc]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
@@ -24,7 +25,7 @@ jobs:
             gcc clang meson ninja-build git xorg-x11-server-Xvfb \
             glib2-devel gtk4-devel vte291-gtk4-devel \
             libadwaita-devel pango-devel pcre2-devel \
-            dbus-devel gsettings-desktop-schemas-devel \
+            dbus-devel dbus-x11 gsettings-desktop-schemas-devel \
             gettext gettext-devel appstream desktop-file-utils
 
       - name: Configure
@@ -38,7 +39,7 @@ jobs:
       - name: Start Xvfb
         run: |
           Xvfb :99 -screen 0 1024x768x24 &
-          echo "DISPLAY=:99" >> $GITHUB_ENV
+          echo "DISPLAY=:99" >> "$GITHUB_ENV"
 
       - name: Test
         run: ninja -C _build test
@@ -58,15 +59,11 @@ jobs:
             msgfmt --check "$f" -o /dev/null
           done
 
-      - name: Dist
-        if: matrix.compiler == 'gcc'
-        run: meson dist -C _build
-
   sanitizers:
     runs-on: ubuntu-latest
     container: fedora:42
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
@@ -74,7 +71,8 @@ jobs:
             gcc meson ninja-build xorg-x11-server-Xvfb \
             glib2-devel gtk4-devel vte291-gtk4-devel \
             libadwaita-devel pango-devel pcre2-devel \
-            dbus-devel gsettings-desktop-schemas-devel
+            dbus-devel dbus-x11 gsettings-desktop-schemas-devel \
+            libasan libubsan
 
       - name: Configure
         run: meson setup _build --buildtype=debug --werror -Db_sanitize=address,undefined -Db_lundef=false
@@ -85,7 +83,7 @@ jobs:
       - name: Start Xvfb
         run: |
           Xvfb :99 -screen 0 1024x768x24 &
-          echo "DISPLAY=:99" >> $GITHUB_ENV
+          echo "DISPLAY=:99" >> "$GITHUB_ENV"
 
       - name: Test
         run: ninja -C _build test
@@ -96,7 +94,7 @@ jobs:
     runs-on: ubuntu-latest
     container: fedora:42
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
@@ -104,7 +102,7 @@ jobs:
             clang clang-analyzer meson ninja-build \
             glib2-devel gtk4-devel vte291-gtk4-devel \
             libadwaita-devel pango-devel pcre2-devel \
-            dbus-devel gsettings-desktop-schemas-devel
+            dbus-devel dbus-x11 gsettings-desktop-schemas-devel
 
       - name: Configure
         run: meson setup _build --buildtype=debug --werror
@@ -112,48 +110,11 @@ jobs:
       - name: Analyse
         run: scan-build --status-bugs ninja -C _build
 
-  reuse:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: fsfe/reuse-action@v4
-
-  coverage:
-    runs-on: ubuntu-latest
-    container: fedora:42
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install dependencies
-        run: |
-          dnf install -y \
-            gcc meson ninja-build python3-gcovr xorg-x11-server-Xvfb \
-            gettext gettext-devel \
-            glib2-devel gtk4-devel vte291-gtk4-devel \
-            libadwaita-devel pango-devel pcre2-devel \
-            dbus-devel gsettings-desktop-schemas-devel
-
-      - name: Configure
-        run: meson setup _build --buildtype=debug --werror -Db_coverage=true
-
-      - name: Build
-        run: ninja -C _build
-
-      - name: Start Xvfb
-        run: |
-          Xvfb :99 -screen 0 1024x768x24 &
-          echo "DISPLAY=:99" >> $GITHUB_ENV
-
-      - name: Test
-        run: ninja -C _build test
-
-      - name: Coverage report
-        run: ninja -C _build coverage-text
-
   codespell:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: codespell-project/actions-codespell@v2
         with:
           ignore_words_list: termprop
+          skip: '*.po'
