@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: |
           dnf install -y \
-            gcc clang meson ninja-build git \
+            gcc clang meson ninja-build git xorg-x11-server-Xvfb \
             glib2-devel gtk4-devel vte291-gtk4-devel \
             libadwaita-devel pango-devel pcre2-devel \
             dbus-devel gsettings-desktop-schemas-devel \
@@ -34,6 +34,11 @@ jobs:
 
       - name: Build
         run: ninja -C _build
+
+      - name: Start Xvfb
+        run: |
+          Xvfb :99 -screen 0 1024x768x24 &
+          echo "DISPLAY=:99" >> $GITHUB_ENV
 
       - name: Test
         run: ninja -C _build test
@@ -66,7 +71,7 @@ jobs:
       - name: Install dependencies
         run: |
           dnf install -y \
-            gcc meson ninja-build \
+            gcc meson ninja-build xorg-x11-server-Xvfb \
             glib2-devel gtk4-devel vte291-gtk4-devel \
             libadwaita-devel pango-devel pcre2-devel \
             dbus-devel gsettings-desktop-schemas-devel
@@ -76,6 +81,11 @@ jobs:
 
       - name: Build
         run: ninja -C _build
+
+      - name: Start Xvfb
+        run: |
+          Xvfb :99 -screen 0 1024x768x24 &
+          echo "DISPLAY=:99" >> $GITHUB_ENV
 
       - name: Test
         run: ninja -C _build test
@@ -117,7 +127,8 @@ jobs:
       - name: Install dependencies
         run: |
           dnf install -y \
-            gcc meson ninja-build python3-gcovr gettext gettext-devel \
+            gcc meson ninja-build python3-gcovr xorg-x11-server-Xvfb \
+            gettext gettext-devel \
             glib2-devel gtk4-devel vte291-gtk4-devel \
             libadwaita-devel pango-devel pcre2-devel \
             dbus-devel gsettings-desktop-schemas-devel
@@ -127,6 +138,11 @@ jobs:
 
       - name: Build
         run: ninja -C _build
+
+      - name: Start Xvfb
+        run: |
+          Xvfb :99 -screen 0 1024x768x24 &
+          echo "DISPLAY=:99" >> $GITHUB_ENV
 
       - name: Test
         run: ninja -C _build test

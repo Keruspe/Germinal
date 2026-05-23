@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include "germinal-palette-editor.h"
 #include "germinal-preferences.h"
 #include "germinal-settings.h"
 
@@ -176,6 +177,14 @@ germinal_preferences_new (void)
     adw_preferences_group_add (colors_group, GTK_WIDGET (back_row));
 
     adw_preferences_page_add (appearance, colors_group);
+
+    /* Palette group */
+    AdwPreferencesGroup *palette_group = ADW_PREFERENCES_GROUP (adw_preferences_group_new ());
+    adw_preferences_group_set_title (palette_group, _("Palette"));
+    adw_preferences_group_set_header_suffix (palette_group, make_reset_button (settings, PALETTE_KEY));
+    adw_preferences_group_add (palette_group, germinal_palette_editor_new (settings));
+    adw_preferences_page_add (appearance, palette_group);
+
     adw_preferences_dialog_add (dialog, appearance);
 
     /* --- Terminal page ----------------------------------------------------- */
