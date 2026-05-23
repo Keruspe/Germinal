@@ -18,10 +18,8 @@ germinal_settings_new (void)
 
         return g_settings_new_with_backend ("org.gnome.Germinal", backend);
     }
-    else
-    {
-        return g_settings_new ("org.gnome.Germinal");
-    }
+
+    return g_settings_new ("org.gnome.Germinal");
 }
 
 GdkRGBA *
@@ -38,7 +36,9 @@ germinal_settings_get_palette (GSettings *settings,
           ((size >= 25) && (size <= 255))))
     {
         g_settings_reset (settings, PALETTE_KEY);
-        return germinal_settings_get_palette (settings, palette_size);
+        g_clear_pointer (&colors, g_strfreev);
+        colors = g_settings_get_strv (settings, PALETTE_KEY);
+        size = g_strv_length (colors);
     }
 
     GdkRGBA *palette = g_new (GdkRGBA, size);
