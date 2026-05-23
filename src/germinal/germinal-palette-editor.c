@@ -128,6 +128,8 @@ germinal_palette_editor_new (GSettings *settings)
 
     static const gchar * const row_labels[] = { N_("Normal"), N_("Bright") };
 
+    g_autoptr (GtkSizeGroup) label_group = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+
     for (guint row = 0; row < G_N_ELEMENTS (row_labels); ++row)
     {
         GtkWidget *box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
@@ -138,7 +140,7 @@ germinal_palette_editor_new (GSettings *settings)
 
         GtkWidget *label = gtk_label_new (_(row_labels[row]));
         gtk_label_set_xalign (GTK_LABEL (label), 0.0);
-        gtk_widget_set_size_request (label, 48, -1);
+        gtk_size_group_add_widget (label_group, label);
         gtk_box_append (GTK_BOX (box), label);
 
         for (guint col = 0; col < N_COLS; ++col)
