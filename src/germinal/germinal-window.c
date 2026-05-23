@@ -71,6 +71,8 @@ void
 germinal_window_spawn_command (GerminalWindow *self,
                                GStrv           command)
 {
+    g_return_if_fail (GERMINAL_IS_WINDOW (self));
+
     GerminalWindowPrivate *priv = germinal_window_get_instance_private (self);
 
     GerminalCommandData *data = g_new0 (GerminalCommandData, 1);
@@ -135,7 +137,7 @@ on_child_exited (VteTerminal *vteterminal G_GNUC_UNUSED,
                  gpointer     user_data)
 {
     if (status)
-        g_critical ("child exited with code %d", status);
+        g_warning ("child exited with code %d", status);
     gtk_window_close (GTK_WINDOW (user_data));
 }
 
@@ -359,7 +361,6 @@ germinal_window_constructed (GObject *object)
 
     G_OBJECT_CLASS (germinal_window_parent_class)->constructed (object);
 
-    /* Search bar */
     GtkWidget *search_entry = priv->search_entry = gtk_search_entry_new ();
     gtk_widget_set_hexpand (search_entry, TRUE);
 
@@ -380,7 +381,6 @@ germinal_window_constructed (GObject *object)
     g_signal_connect (window_key_ctrl, "key-pressed", G_CALLBACK (on_window_key_pressed), self);
     gtk_widget_add_controller (GTK_WIDGET (self), window_key_ctrl);
 
-    /* Fill window */
     GtkWidget *header_bar = priv->header_bar = adw_header_bar_new ();
 
     GtkWidget *search_button = priv->search_button = gtk_toggle_button_new ();
@@ -407,7 +407,6 @@ germinal_window_constructed (GObject *object)
 
     update_decorated (priv->settings, DECORATED_KEY, self);
 
-    /* Action group for right-click menu */
     static const GActionEntry ctx_actions[] = {
         { .name = "copy-url",    .activate = action_copy_url    },
         { .name = "open-url",    .activate = action_open_url    },
@@ -425,7 +424,6 @@ germinal_window_constructed (GObject *object)
     g_action_map_add_action_entries (G_ACTION_MAP (ag), ctx_actions, G_N_ELEMENTS (ctx_actions), self);
     gtk_widget_insert_action_group (GTK_WIDGET (self), "ctx", G_ACTION_GROUP (ag));
 
-    /* Build right-click menu model */
     priv->url_section = g_menu_new ();
 
     g_autoptr (GMenu) menu = g_menu_new ();
@@ -455,19 +453,16 @@ germinal_window_constructed (GObject *object)
     gtk_popover_set_has_arrow (GTK_POPOVER (priv->popover), FALSE);
     gtk_widget_set_parent (priv->popover, terminal);
 
-    /* Click gesture for right-click menu and shift+click URL */
     GtkGesture *gesture = gtk_gesture_click_new ();
     gtk_gesture_single_set_button (GTK_GESTURE_SINGLE (gesture), 0);
     g_signal_connect (gesture, "pressed", G_CALLBACK (on_click_pressed), self);
     gtk_widget_add_controller (terminal, GTK_EVENT_CONTROLLER (gesture));
 
-    /* VTE signals */
     priv->terminal_signals = g_signal_group_new (VTE_TYPE_TERMINAL);
     g_signal_group_connect (priv->terminal_signals, "child-exited",                                G_CALLBACK (on_child_exited),         self);
     g_signal_group_connect (priv->terminal_signals, "termprop-changed::" VTE_TERMPROP_XTERM_TITLE, G_CALLBACK (on_window_title_changed), self);
     g_signal_group_set_target (priv->terminal_signals, priv->terminal);
 
-    /* Initialize title */
     on_window_title_changed (VTE_TERMINAL (terminal), NULL, self);
 }
 
@@ -518,6 +513,8 @@ germinal_window_class_init (GerminalWindowClass *klass)
 void
 germinal_window_present (GerminalWindow *self)
 {
+    g_return_if_fail (GERMINAL_IS_WINDOW (self));
+
     gtk_window_maximize (GTK_WINDOW (self));
     gtk_window_present (GTK_WINDOW (self));
 }
@@ -526,6 +523,9 @@ GtkWidget *
 germinal_window_new (GtkApplication   *application,
                      GerminalTerminal *terminal)
 {
+    g_return_val_if_fail (GTK_IS_APPLICATION (application), NULL);
+    g_return_val_if_fail (GERMINAL_IS_TERMINAL (terminal), NULL);
+
     return g_object_new (GERMINAL_TYPE_WINDOW,
                          "application", application,
                          "terminal",    terminal,
