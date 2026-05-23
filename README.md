@@ -12,7 +12,9 @@ new-session
 
 ## Configuration
 
-Germinal reads its configuration from GSettings under `/org/gnome/Germinal/`. You can edit settings with `dconf-editor` or the `gsettings` command-line tool.
+Germinal has a built-in preferences dialog, accessible from the header bar (gear icon) or the right-click context menu.
+
+Settings are also available directly via GSettings under `/org/gnome/Germinal/`, using `dconf-editor` or the `gsettings` command-line tool.
 
 If the file `~/.config/germinal/settings` exists, Germinal uses it as a keyfile backend instead of dconf. The format is standard `ini` with a `[Germinal]` section:
 
@@ -48,7 +50,7 @@ germinal /bin/bash -l
 | `Ctrl` `Shift` `P` | Previous pane |
 | `Ctrl` `Shift` `W` | Close current pane |
 | `Ctrl` `Shift` `X` | Zoom current pane (tmux) |
-| `Ctrl` `F` | Open search bar |
+| `Ctrl` `F` | Open/focus search bar |
 | `Ctrl` `G` / `Enter` | Next search match |
 | `Ctrl` `Shift` `G` | Previous search match |
 | `Escape` | Close search bar |

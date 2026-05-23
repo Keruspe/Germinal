@@ -26,13 +26,15 @@ RPM packaging via mock:
 
 ## Architecture
 
-The application is a single `AdwApplication` that creates one window per invocation. The three main GObject types are:
+The application is a single `AdwApplication` that creates one window per invocation. The main GObject types are:
 
-- **`GerminalSettings`** (`germinal-settings.c/h`) — thin wrapper around `GSettings`. Transparently switches between a dconf backend (default) and a keyfile backend at `~/.config/germinal/settings` when that file exists. Settings keys are `#define`d in `germinal-settings.h`.
+- **`GerminalSettings`** (`germinal-settings.c/h`) — thin wrapper around `GSettings`. Transparently switches between a dconf backend (default) and a keyfile backend at `~/.config/germinal/settings` when that file exists. Settings keys are `#define`d in `germinal-settings.h`. Use `g_settings_get_string` directly; the old `germinal_settings_get_string` wrapper has been removed.
 
 - **`GerminalTerminal`** (`germinal-terminal.c/h`) — subclass of `VteTerminal`. Owns settings, handles all keyboard shortcuts (key-pressed controller at `GTK_PHASE_CAPTURE`), trackpad/mouse scroll-to-zoom (reads `org.gnome.desktop.peripherals.*` for natural-scroll state), URL regex matching, clipboard operations, and font/color/scrollback live updates via `GSignalGroup` on settings changes. All tmux commands (splits, tab management, pane navigation) are fired by `germinal_terminal_spawn()` from the key handler.
 
-- **`GerminalWindow`** (`germinal-window.c/h`) — subclass of `AdwApplicationWindow`. Contains the terminal widget, builds the right-click `GtkPopoverMenu` with actions registered via `g_action_map_add_action_entries`, manages the `decorated` setting, and defers the initial command spawn via `g_idle_add_full` until both window and terminal are realized. Also owns the in-buffer search bar (`GtkRevealer` + `GtkSearchEntry`), opened with Ctrl+F and closed with Escape.
+- **`GerminalWindow`** (`germinal-window.c/h`) — subclass of `AdwApplicationWindow`. Contains the terminal widget, an `AdwHeaderBar` (with a search-toggle button at the start and a preferences button at the end), and a search bar (`GtkRevealer` + `GtkSearchEntry`) below the header bar. Builds the right-click `GtkPopoverMenu` with actions registered via `g_action_map_add_action_entries`. The `decorated` setting controls `AdwHeaderBar` visibility (not `gtk_window_set_decorated`, which has no effect on `AdwApplicationWindow`). Defers the initial command spawn via `g_idle_add_full` until both window and terminal are realized. The search toggle button drives the `GtkRevealer`; `on_stop_search` untoggling the button is the single path to hide the search bar.
+
+- **`GerminalPreferences`** (`germinal-preferences.c/h`) — stateless factory function `germinal_preferences_new()` returning an `AdwPreferencesDialog`. Three pages (Appearance, Terminal, Shell) with per-key reset buttons backed by `g_settings_get_user_value`. Each `GtkColorDialogButton` gets its own fresh `GtkColorDialog` (they have `(transfer full)` semantics — sharing one dialog causes a double-free on finalize).
 
 Entry point (`germinal.c`) creates a terminal, creates a window around it, presents the window maximized, then triggers `germinal_window_spawn_command`. Command-line arguments beyond flags become the startup command, overriding the GSettings value.
 
@@ -79,5 +81,5 @@ sudo dnf install --nogpgcheck _build/mock-result/germinal-N-1.*.rpm
 - Register context-menu actions with `g_action_map_add_action_entries` and a static `GActionEntry` array using designated initialisers (`.name =`, `.activate =`) to avoid `-Wmissing-field-initializers` warnings from the `padding` field.
 - Version-gating macros (`GLIB_VERSION_MIN_REQUIRED`, `GDK_VERSION_MAX_ALLOWED`, etc.) are set in `meson.build` to the minimum required versions — stay within those API bounds.
 - All translatable strings use `_()` / `N_()` from `<glib/gi18n-lib.h>`; the gettext domain is `Germinal`.
-- The only test (`tests/regexp/test-regexp.c`) validates the URL regex defined in `germinal-util.h`.
+- The only automated test (`tests/regexp/test-regexp.c`) validates the URL regex defined in `germinal-util.h`. It has no display requirement and runs headlessly.
 - When updating source files, keep `AGENTS.md` up to date to reflect any new patterns or architectural decisions.

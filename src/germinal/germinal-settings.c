@@ -24,13 +24,6 @@ germinal_settings_new (void)
     }
 }
 
-gchar *
-germinal_settings_get_string (GSettings   *settings,
-                              const gchar *key)
-{
-    return (key) ? g_settings_get_string (settings, key) : NULL;
-}
-
 GdkRGBA *
 germinal_settings_get_palette (GSettings *settings,
                                gsize     *palette_size)

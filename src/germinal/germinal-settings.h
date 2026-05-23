@@ -21,7 +21,6 @@ G_BEGIN_DECLS
 #define WORD_CHAR_EXCEPTIONS_KEY "word-char-exceptions"
 
 GSettings *germinal_settings_new         (void);
-gchar     *germinal_settings_get_string  (GSettings *settings, const gchar *key);
 GdkRGBA   *germinal_settings_get_palette (GSettings *settings, gsize *palette_size);
 
 G_END_DECLS

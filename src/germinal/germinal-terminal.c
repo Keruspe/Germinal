@@ -46,7 +46,7 @@ update_word_char_exceptions (GSettings   *settings,
                              const gchar *key,
                              gpointer     user_data)
 {
-    g_autofree gchar *setting = germinal_settings_get_string (settings, key);
+    g_autofree gchar *setting = g_settings_get_string (settings, key);
 
     vte_terminal_set_word_char_exceptions (VTE_TERMINAL (user_data), setting);
 }
@@ -64,7 +64,7 @@ update_font (GSettings   *settings,
              const gchar *key,
              gpointer     user_data)
 {
-    g_autofree gchar *setting = germinal_settings_get_string (settings, key);
+    g_autofree gchar *setting = g_settings_get_string (settings, key);
 
     germinal_terminal_update_font (GERMINAL_TERMINAL (user_data), setting);
 }
@@ -78,13 +78,13 @@ update_colors (GSettings   *settings,
 
     if (g_strcmp0 (key, BACKCOLOR_KEY) == 0)
     {
-        g_autofree gchar *backcolor_str = germinal_settings_get_string (settings, BACKCOLOR_KEY);
+        g_autofree gchar *backcolor_str = g_settings_get_string (settings, BACKCOLOR_KEY);
 
         gdk_rgba_parse (&priv->backcolor, backcolor_str);
     }
     else if (g_strcmp0 (key, FORECOLOR_KEY) == 0)
     {
-        g_autofree gchar *forecolor_str = germinal_settings_get_string (settings, FORECOLOR_KEY);
+        g_autofree gchar *forecolor_str = g_settings_get_string (settings, FORECOLOR_KEY);
 
         gdk_rgba_parse (&priv->forecolor, forecolor_str);
     }
@@ -237,7 +237,7 @@ germinal_terminal_spawn_command (GerminalTerminal *self,
 
     if (G_LIKELY (!command))
     {
-        g_autofree gchar *setting = germinal_settings_get_string (priv->settings, STARTUP_COMMAND_KEY);
+        g_autofree gchar *setting = g_settings_get_string (priv->settings, STARTUP_COMMAND_KEY);
         g_autoptr (GError) error = NULL;
 
         if (!g_shell_parse_argv (setting, NULL, &command, &error))
@@ -250,7 +250,7 @@ germinal_terminal_spawn_command (GerminalTerminal *self,
     }
 
     /* Override TERM */
-    g_autofree gchar *term = germinal_settings_get_string (priv->settings, TERM_KEY);
+    g_autofree gchar *term = g_settings_get_string (priv->settings, TERM_KEY);
     g_auto (GStrv) envp = g_environ_setenv (g_get_environ (), "TERM", term, TRUE);
 
     /* Spawn our command */
@@ -264,12 +264,6 @@ germinal_terminal_spawn_command (GerminalTerminal *self,
                               NULL);
 }
 
-typedef enum {
-    DO_NOTHING,
-    ZOOM,
-    DEZOOM
-} ZoomAction;
-
 static gboolean
 on_scroll (GtkEventControllerScroll *controller,
            gdouble                   dx G_GNUC_UNUSED,
@@ -282,7 +276,9 @@ on_scroll (GtkEventControllerScroll *controller,
     if (!(gtk_event_controller_get_current_event_state (GTK_EVENT_CONTROLLER (controller)) & GDK_CONTROL_MASK))
         return GDK_EVENT_PROPAGATE;
 
-    ZoomAction zoom_action = DO_NOTHING;
+    if (dy == 0)
+        return GDK_EVENT_PROPAGATE;
+
     gboolean natural_scroll = FALSE;
 
     GdkEvent *event = gtk_event_controller_get_current_event (GTK_EVENT_CONTROLLER (controller));
@@ -300,39 +296,12 @@ on_scroll (GtkEventControllerScroll *controller,
             break;
     }
 
-    if (dy < 0)
-        zoom_action = ZOOM;
-    else if (dy > 0)
-        zoom_action = DEZOOM;
+    if ((dy < 0) != natural_scroll)
+        germinal_terminal_zoom (self);
+    else
+        germinal_terminal_dezoom (self);
 
-    if (natural_scroll)
-    {
-        switch (zoom_action)
-        {
-            case DO_NOTHING:
-                break;
-            case ZOOM:
-                zoom_action = DEZOOM;
-                break;
-            case DEZOOM:
-                zoom_action = ZOOM;
-                break;
-        }
-    }
-
-    switch (zoom_action)
-    {
-        case DO_NOTHING:
-            break;
-        case ZOOM:
-            germinal_terminal_zoom (self);
-            return GDK_EVENT_STOP;
-        case DEZOOM:
-            germinal_terminal_dezoom (self);
-            return GDK_EVENT_STOP;
-    }
-
-    return GDK_EVENT_PROPAGATE;
+    return GDK_EVENT_STOP;
 }
 
 static void
@@ -355,7 +324,6 @@ germinal_terminal_finalize (GObject *object)
 
     g_clear_pointer (&priv->palette, g_free);
     g_clear_pointer (&priv->url, g_free);
-    priv->n_zero_keycodes = 0;
     g_clear_pointer (&priv->zero_keycodes, g_free);
 
     G_OBJECT_CLASS (germinal_terminal_parent_class)->finalize (object);
@@ -374,8 +342,6 @@ germinal_terminal_init (GerminalTerminal *self)
     GSettings *settings = priv->settings = germinal_settings_new ();
     priv->mouse_settings = g_settings_new ("org.gnome.desktop.peripherals.mouse");
     priv->touchpad_settings = g_settings_new ("org.gnome.desktop.peripherals.touchpad");
-
-    priv->url = NULL;
 
     priv->settings_signals = g_signal_group_new (G_TYPE_SETTINGS);
     g_signal_group_connect (priv->settings_signals, "changed::" AUDIBLE_BELL_KEY,         G_CALLBACK (update_bell),                self);
@@ -403,11 +369,6 @@ germinal_terminal_init (GerminalTerminal *self)
 
         for (guint i = 0; i < priv->n_zero_keycodes; ++i)
             priv->zero_keycodes[i] = zero_keys[i].keycode;
-    }
-    else
-    {
-        priv->zero_keycodes = NULL;
-        priv->n_zero_keycodes = 0;
     }
 
     GtkEventController *key_ctrl = gtk_event_controller_key_new ();
