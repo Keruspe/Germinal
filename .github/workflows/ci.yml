@@ -1,0 +1,143 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: fedora:42
+    strategy:
+      matrix:
+        compiler: [gcc, clang]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          dnf install -y \
+            gcc clang meson ninja-build git \
+            glib2-devel gtk4-devel vte291-gtk4-devel \
+            libadwaita-devel pango-devel pcre2-devel \
+            dbus-devel gsettings-desktop-schemas-devel \
+            gettext gettext-devel appstream desktop-file-utils
+
+      - name: Configure
+        run: meson setup _build --werror
+        env:
+          CC: ${{ matrix.compiler }}
+
+      - name: Build
+        run: ninja -C _build
+
+      - name: Test
+        run: ninja -C _build test
+
+      - name: Validate metainfo
+        if: matrix.compiler == 'gcc'
+        run: appstreamcli validate _build/data/org.gnome.Germinal.metainfo.xml
+
+      - name: Validate desktop file
+        if: matrix.compiler == 'gcc'
+        run: desktop-file-validate _build/data/org.gnome.Germinal.desktop
+
+      - name: Check translations
+        if: matrix.compiler == 'gcc'
+        run: |
+          for f in po/*.po; do
+            msgfmt --check "$f" -o /dev/null
+          done
+
+      - name: Dist
+        if: matrix.compiler == 'gcc'
+        run: meson dist -C _build
+
+  sanitizers:
+    runs-on: ubuntu-latest
+    container: fedora:42
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          dnf install -y \
+            gcc meson ninja-build \
+            glib2-devel gtk4-devel vte291-gtk4-devel \
+            libadwaita-devel pango-devel pcre2-devel \
+            dbus-devel gsettings-desktop-schemas-devel
+
+      - name: Configure
+        run: meson setup _build --buildtype=debug --werror -Db_sanitize=address,undefined -Db_lundef=false
+
+      - name: Build
+        run: ninja -C _build
+
+      - name: Test
+        run: ninja -C _build test
+        env:
+          ASAN_OPTIONS: detect_leaks=0
+
+  static-analysis:
+    runs-on: ubuntu-latest
+    container: fedora:42
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          dnf install -y \
+            clang clang-analyzer meson ninja-build \
+            glib2-devel gtk4-devel vte291-gtk4-devel \
+            libadwaita-devel pango-devel pcre2-devel \
+            dbus-devel gsettings-desktop-schemas-devel
+
+      - name: Configure
+        run: meson setup _build --buildtype=debug --werror
+
+      - name: Analyse
+        run: scan-build --status-bugs ninja -C _build
+
+  reuse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: fsfe/reuse-action@v4
+
+  coverage:
+    runs-on: ubuntu-latest
+    container: fedora:42
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          dnf install -y \
+            gcc meson ninja-build python3-gcovr gettext gettext-devel \
+            glib2-devel gtk4-devel vte291-gtk4-devel \
+            libadwaita-devel pango-devel pcre2-devel \
+            dbus-devel gsettings-desktop-schemas-devel
+
+      - name: Configure
+        run: meson setup _build --buildtype=debug --werror -Db_coverage=true
+
+      - name: Build
+        run: ninja -C _build
+
+      - name: Test
+        run: ninja -C _build test
+
+      - name: Coverage report
+        run: ninja -C _build coverage-text
+
+  codespell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: codespell-project/actions-codespell@v2
+        with:
+          ignore_words_list: termprop
