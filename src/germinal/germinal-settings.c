@@ -26,6 +26,9 @@ GdkRGBA *
 germinal_settings_get_palette (GSettings *settings,
                                gsize     *palette_size)
 {
+    g_return_val_if_fail (G_IS_SETTINGS (settings), NULL);
+    g_return_val_if_fail (palette_size != NULL, NULL);
+
     g_auto (GStrv) colors = g_settings_get_strv (settings, PALETTE_KEY);
     guint size = g_strv_length (colors);
 
@@ -44,7 +47,13 @@ germinal_settings_get_palette (GSettings *settings,
     GdkRGBA *palette = g_new (GdkRGBA, size);
 
     for (guint i = 0; i < size; ++i)
-        gdk_rgba_parse (&palette[i], colors[i]);
+    {
+        if (!gdk_rgba_parse (&palette[i], colors[i]))
+        {
+            g_warning ("Invalid palette color '%s' at index %u, defaulting to black", colors[i], i);
+            palette[i] = (GdkRGBA) { 0.0, 0.0, 0.0, 1.0 };
+        }
+    }
 
     *palette_size = size;
 
