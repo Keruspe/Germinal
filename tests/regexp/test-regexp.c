@@ -3,45 +3,41 @@
 
 #include "germinal-util.h"
 
-#include <assert.h>
+#include <glib.h>
 
-#define STRV_FOREACH(strv, name) for (const gchar **name = strv; *name; ++name)
-
-#define FAIL(str) assert (!g_regex_match (url_regexp, str, 0, NULL))
-
-#define CHECK_FULL(str, expected)                            \
-    G_STMT_START {                                           \
-        g_autoptr (GMatchInfo) info = NULL;                  \
-        assert (g_regex_match (url_regexp, str, 0, &info));  \
-        g_autofree gchar *_s = g_match_info_fetch (info, 0); \
-        assert (!g_strcmp0 (expected, _s));                  \
-    } G_STMT_END
-
-#define CHECK(str) CHECK_FULL (str, str)
-
-gint
-main (G_GNUC_UNUSED gint argc,
-      G_GNUC_UNUSED gchar *argv[])
+static GRegex *
+make_regexp (void)
 {
     g_autoptr (GError) error = NULL;
-    g_autoptr (GRegex) url_regexp = g_regex_new (URL_REGEXP,
-                                                  G_REGEX_CASELESS | G_REGEX_OPTIMIZE,
-                                                  G_REGEX_MATCH_NOTEMPTY,
-                                                  &error);
-    assert (!error);
-    assert (url_regexp);
+    GRegex *re = g_regex_new (URL_REGEXP,
+                              G_REGEX_CASELESS | G_REGEX_OPTIMIZE,
+                              G_REGEX_MATCH_NOTEMPTY,
+                              &error);
+    g_assert_no_error (error);
+    g_assert_nonnull (re);
+    return re;
+}
 
-    /* Should not match */
-    const gchar *expect_failure[] = {
-        "foobar",     /* no scheme */
-        "82:/foo",    /* digit-only scheme */
-        "://foo.com", /* empty scheme */
-        "http://",    /* no host or path */
+static void
+test_no_match (void)
+{
+    g_autoptr (GRegex) re = make_regexp ();
+    const gchar *cases[] = {
+        "foobar",
+        "82:/foo",
+        "://foo.com",
+        "http://",
         NULL
     };
+    for (const gchar **c = cases; *c; ++c)
+        g_assert_false (g_regex_match (re, *c, 0, NULL));
+}
 
-    /* Should match the whole string — one case per regex branch */
-    const gchar *expect_self[] = {
+static void
+test_full_match (void)
+{
+    g_autoptr (GRegex) re = make_regexp ();
+    const gchar *cases[] = {
         /* STRAIGHT_TEXT_ONLY: plain URLs */
         "http://google.com/",
         "https://example.com/",
@@ -57,37 +53,49 @@ main (G_GNUC_UNUSED gint argc,
         "http://example.com/\"path\"",
         NULL
     };
+    for (const gchar **c = cases; *c; ++c)
+    {
+        g_autoptr (GMatchInfo) info = NULL;
+        g_assert_true (g_regex_match (re, *c, 0, &info));
+        g_autofree gchar *match = g_match_info_fetch (info, 0);
+        g_assert_cmpstr (match, ==, *c);
+    }
+}
 
-    /* Should match only a substring — verifies correct boundary detection */
-    const gchar *expect_subpart[][2] = {
+static void
+test_partial_match (void)
+{
+    g_autoptr (GRegex) re = make_regexp ();
+    const struct { const gchar *input; const gchar *expected; } cases[] = {
         /* URL followed by trailing context */
-        { "Google <http://google.com/>",             "http://google.com/"       },
+        { "Google <http://google.com/>",                          "http://google.com/"                     },
         /* SQUARE_BRACED_TEXT: bracket segment; trailing period not stripped */
-        { "foo:http://foo.bar:1234/[42] .",          "http://foo.bar:1234/[42]" },
+        { "foo:http://foo.bar:1234/[42] .",                       "http://foo.bar:1234/[42]"               },
         /* trailing comma stripped */
-        { "Visit http://example.com/path, please",   "http://example.com/path"  },
+        { "Visit http://example.com/path, please",                "http://example.com/path"                },
         /* trailing single-quote stripped */
-        { "Visit http://example.com/path' please",   "http://example.com/path"  },
+        { "Visit http://example.com/path' please",                "http://example.com/path"                },
         /* parenthesised URL in prose (Wikipedia-style) */
-        { "see http://en.wikipedia.org/wiki/Foo_(bar) for more",
-          "http://en.wikipedia.org/wiki/Foo_(bar)"                               },
-        { NULL }
+        { "see http://en.wikipedia.org/wiki/Foo_(bar) for more",  "http://en.wikipedia.org/wiki/Foo_(bar)" },
+        { NULL, NULL }
     };
-
-    STRV_FOREACH (expect_failure, txt)
+    for (guint i = 0; cases[i].input; ++i)
     {
-        FAIL (*txt);
+        g_autoptr (GMatchInfo) info = NULL;
+        g_assert_true (g_regex_match (re, cases[i].input, 0, &info));
+        g_autofree gchar *match = g_match_info_fetch (info, 0);
+        g_assert_cmpstr (match, ==, cases[i].expected);
     }
+}
 
-    STRV_FOREACH (expect_self, txt)
-    {
-        CHECK (*txt);
-    }
+gint
+main (gint argc, gchar *argv[])
+{
+    g_test_init (&argc, &argv, NULL);
 
-    for (guint i = 0; expect_subpart[i][0]; ++i)
-    {
-        CHECK_FULL (expect_subpart[i][0], expect_subpart[i][1]);
-    }
+    g_test_add_func ("/regexp/no-match",      test_no_match);
+    g_test_add_func ("/regexp/full-match",    test_full_match);
+    g_test_add_func ("/regexp/partial-match", test_partial_match);
 
-    return 0;
+    return g_test_run ();
 }
