@@ -19,8 +19,8 @@
       giving you splits and windows without extra chrome.
     </p>
     <p>
-      Settings are available via dconf-editor under /org/gnome/Germinal,
-      including font, colors, scrollback length, and startup command.
+      Settings for font, colors, scrollback length, and startup command
+      are available through the built-in Preferences dialog.
     </p>
   </description>
   <url type="homepage">https://github.com/Keruspe/Germinal</url>
