@@ -38,9 +38,8 @@ font_get_mapping (GValue   *value,
                   GVariant *variant,
                   gpointer  user_data G_GNUC_UNUSED)
 {
-    PangoFontDescription *desc = pango_font_description_from_string (g_variant_get_string (variant, NULL));
+    g_autoptr (PangoFontDescription) desc = pango_font_description_from_string (g_variant_get_string (variant, NULL));
     g_value_set_boxed (value, desc);
-    pango_font_description_free (desc);
     return TRUE;
 }
 
@@ -119,6 +118,22 @@ make_reset_button (GSettings   *settings,
     return button;
 }
 
+/* --- Row builder ------------------------------------------------------- */
+
+static AdwActionRow *
+make_button_row (const gchar *title,
+                 GtkWidget   *button,
+                 GSettings   *settings,
+                 const gchar *key)
+{
+    AdwActionRow *row = ADW_ACTION_ROW (adw_action_row_new ());
+    adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), title);
+    adw_action_row_add_suffix (row, button);
+    adw_action_row_add_suffix (row, make_reset_button (settings, key));
+    adw_action_row_set_activatable_widget (row, button);
+    return row;
+}
+
 /* --- Dialog factory ---------------------------------------------------- */
 
 AdwDialog *
@@ -137,13 +152,8 @@ germinal_preferences_new (void)
     AdwPreferencesGroup *font_group = ADW_PREFERENCES_GROUP (adw_preferences_group_new ());
     adw_preferences_group_set_title (font_group, _("Font"));
 
-    GtkFontDialog *font_dialog = gtk_font_dialog_new ();
-    GtkWidget *font_button = gtk_font_dialog_button_new (font_dialog);
-    AdwActionRow *font_row = ADW_ACTION_ROW (adw_action_row_new ());
-    adw_preferences_row_set_title (ADW_PREFERENCES_ROW (font_row), _("Font"));
-    adw_action_row_add_suffix (font_row, font_button);
-    adw_action_row_add_suffix (font_row, make_reset_button (settings, FONT_KEY));
-    adw_action_row_set_activatable_widget (font_row, font_button);
+    GtkWidget *font_button = gtk_font_dialog_button_new (gtk_font_dialog_new ());
+    AdwActionRow *font_row = make_button_row (_("Font"), font_button, settings, FONT_KEY);
     g_settings_bind_with_mapping (settings, FONT_KEY, font_button, "font-desc",
                                   G_SETTINGS_BIND_DEFAULT,
                                   font_get_mapping, font_set_mapping, NULL, NULL);
@@ -155,22 +165,14 @@ germinal_preferences_new (void)
     adw_preferences_group_set_title (colors_group, _("Colors"));
 
     GtkWidget *fore_button = gtk_color_dialog_button_new (gtk_color_dialog_new ());
-    AdwActionRow *fore_row = ADW_ACTION_ROW (adw_action_row_new ());
-    adw_preferences_row_set_title (ADW_PREFERENCES_ROW (fore_row), _("Foreground color"));
-    adw_action_row_add_suffix (fore_row, fore_button);
-    adw_action_row_add_suffix (fore_row, make_reset_button (settings, FORECOLOR_KEY));
-    adw_action_row_set_activatable_widget (fore_row, fore_button);
+    AdwActionRow *fore_row = make_button_row (_("Foreground color"), fore_button, settings, FORECOLOR_KEY);
     g_settings_bind_with_mapping (settings, FORECOLOR_KEY, fore_button, "rgba",
                                   G_SETTINGS_BIND_DEFAULT,
                                   color_get_mapping, color_set_mapping, NULL, NULL);
     adw_preferences_group_add (colors_group, GTK_WIDGET (fore_row));
 
     GtkWidget *back_button = gtk_color_dialog_button_new (gtk_color_dialog_new ());
-    AdwActionRow *back_row = ADW_ACTION_ROW (adw_action_row_new ());
-    adw_preferences_row_set_title (ADW_PREFERENCES_ROW (back_row), _("Background color"));
-    adw_action_row_add_suffix (back_row, back_button);
-    adw_action_row_add_suffix (back_row, make_reset_button (settings, BACKCOLOR_KEY));
-    adw_action_row_set_activatable_widget (back_row, back_button);
+    AdwActionRow *back_row = make_button_row (_("Background color"), back_button, settings, BACKCOLOR_KEY);
     g_settings_bind_with_mapping (settings, BACKCOLOR_KEY, back_button, "rgba",
                                   G_SETTINGS_BIND_DEFAULT,
                                   color_get_mapping, color_set_mapping, NULL, NULL);
