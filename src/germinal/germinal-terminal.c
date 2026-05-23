@@ -185,7 +185,7 @@ germinal_terminal_spawn (GerminalTerminal *self G_GNUC_UNUSED,
 #define ZOOM_FACTOR 1.2
 
 void
-germinal_terminal_zoom (GerminalTerminal *self)
+germinal_terminal_zoom_in (GerminalTerminal *self)
 {
     VteTerminal *terminal = VTE_TERMINAL (self);
 
@@ -193,7 +193,7 @@ germinal_terminal_zoom (GerminalTerminal *self)
 }
 
 void
-germinal_terminal_dezoom (GerminalTerminal *self)
+germinal_terminal_zoom_out (GerminalTerminal *self)
 {
     VteTerminal *terminal = VTE_TERMINAL (self);
 
@@ -297,9 +297,9 @@ on_scroll (GtkEventControllerScroll *controller,
     }
 
     if ((dy < 0) != natural_scroll)
-        germinal_terminal_zoom (self);
+        germinal_terminal_zoom_in (self);
     else
-        germinal_terminal_dezoom (self);
+        germinal_terminal_zoom_out (self);
 
     return GDK_EVENT_STOP;
 }
@@ -443,16 +443,21 @@ germinal_terminal_copy_url (GerminalTerminal *self)
     return TRUE;
 }
 
-static gboolean
+static void
 launch_cmd (GerminalTerminal *self,
             const gchar      *_cmd)
 {
     g_auto (GStrv) cmd = NULL;
+    g_autoptr (GError) error = NULL;
 
-    if (!g_shell_parse_argv (_cmd, NULL, &cmd, NULL))
-        return FALSE;
+    if (!g_shell_parse_argv (_cmd, NULL, &cmd, &error))
+    {
+        g_warning ("%s", error->message);
+        return;
+    }
 
-    return germinal_terminal_spawn (self, cmd, NULL);
+    if (!germinal_terminal_spawn (self, cmd, &error))
+        g_warning ("%s", error->message);
 }
 
 static gboolean
@@ -479,11 +484,11 @@ on_key_pressed (GtkEventControllerKey *controller G_GNUC_UNUSED,
     /* Zoom */
     case GDK_KEY_KP_Add:
     case GDK_KEY_plus:
-        germinal_terminal_zoom (self);
+        germinal_terminal_zoom_in (self);
         return GDK_EVENT_STOP;
     case GDK_KEY_KP_Subtract:
     case GDK_KEY_minus:
-        germinal_terminal_dezoom (self);
+        germinal_terminal_zoom_out (self);
         return GDK_EVENT_STOP;
     case GDK_KEY_KP_0:
     case GDK_KEY_0:
@@ -495,28 +500,37 @@ on_key_pressed (GtkEventControllerKey *controller G_GNUC_UNUSED,
         return GDK_EVENT_STOP;
     /* Window split (inspired by terminator) */
     case GDK_KEY_O:
-        return launch_cmd (self, "tmux split-window -v");
+        launch_cmd (self, "tmux split-window -v");
+        return GDK_EVENT_STOP;
     case GDK_KEY_E:
-        return launch_cmd (self, "tmux split-window -h");
+        launch_cmd (self, "tmux split-window -h");
+        return GDK_EVENT_STOP;
     /* Next/Previous window (tab) */
     case GDK_KEY_Tab:
-        return launch_cmd (self, "tmux next-window");
+        launch_cmd (self, "tmux next-window");
+        return GDK_EVENT_STOP;
     case GDK_KEY_ISO_Left_Tab:
-        return launch_cmd (self, "tmux previous-window");
+        launch_cmd (self, "tmux previous-window");
+        return GDK_EVENT_STOP;
     /* New window (tab) */
     case GDK_KEY_T:
-        return launch_cmd (self, "tmux new-window");
+        launch_cmd (self, "tmux new-window");
+        return GDK_EVENT_STOP;
     /* Next/Previous pane */
     case GDK_KEY_N:
-        return launch_cmd (self, "tmux select-pane -t :.+");
+        launch_cmd (self, "tmux select-pane -t :.+");
+        return GDK_EVENT_STOP;
     case GDK_KEY_P:
-        return launch_cmd (self, "tmux select-pane -t :.-");
+        launch_cmd (self, "tmux select-pane -t :.-");
+        return GDK_EVENT_STOP;
     /* Close current pane */
     case GDK_KEY_W:
-        return launch_cmd (self, "tmux kill-pane");
+        launch_cmd (self, "tmux kill-pane");
+        return GDK_EVENT_STOP;
     /* Resize current pane */
     case GDK_KEY_X:
-        return launch_cmd (self, "tmux resize-pane -Z");
+        launch_cmd (self, "tmux resize-pane -Z");
+        return GDK_EVENT_STOP;
     }
 
     if (germinal_terminal_is_zero (self, keycode))

@@ -127,12 +127,12 @@ msgid "Paste"
 msgstr "Coller"
 
 #: src/germinal/germinal-window.c:441
-msgid "Zoom"
-msgstr "Zoomer"
+msgid "Zoom in"
+msgstr "Zoom avant"
 
 #: src/germinal/germinal-window.c:442
-msgid "Dezoom"
-msgstr "Dézoomer"
+msgid "Zoom out"
+msgstr "Zoom arrière"
 
 #: src/germinal/germinal-window.c:443
 msgid "Reset zoom"
