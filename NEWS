@@ -1,3 +1,10 @@
+NEW in 29 (23/05/2026)
+=============
+
+- Built-in Preferences dialog (font, colors, palette, scrollback, word char exceptions, bell, decorations, startup command, TERM variable) — accessible from the header bar gear icon or the right-click menu; every setting has a reset-to-default button
+- Palette editor: 16 individual colour swatches arranged as Normal / Bright rows in the Preferences Appearance page
+- Default colour theme switched to Dracula (foreground #f8f8f2, background #282a36, full 16-colour Dracula ANSI palette)
+
 NEW in 28 (22/05/2026)
 =============
 

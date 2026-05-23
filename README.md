@@ -78,7 +78,7 @@ sudo ninja -C _build install
 
 ## Latest release
 
-[Germinal 28](https://www.imagination-land.org/posts/2026-05-22-germinal-28-released.html) — [download tarball](https://www.imagination-land.org/files/germinal/germinal-28.tar.xz)
+[Germinal 29](https://www.imagination-land.org/posts/2026-05-23-germinal-29-released.html) — [download tarball](https://www.imagination-land.org/files/germinal/germinal-29.tar.xz)
 
 More background on the project: [Germinal 7 release post](https://www.imagination-land.org/posts/2015-01-31-germinal-7-released.html).
 

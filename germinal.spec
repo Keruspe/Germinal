@@ -1,5 +1,5 @@
 Name:           germinal
-Version:        28
+Version:        29
 Release:        1%{?dist}
 Summary:        Minimalist VTE-based terminal emulator
 
@@ -54,6 +54,11 @@ tmux for tabs and pane management, and uses GSettings for configuration.
 %{_userunitdir}/org.gnome.Germinal.service
 
 %changelog
+* Sat May 23 2026 Marc-Antoine Perennou <Marc-Antoine@Perennou.com> - 29-1
+- Built-in Preferences dialog with per-setting reset buttons
+- Palette editor with 16-colour Dracula theme support
+- Default colour theme switched to Dracula
+
 * Fri May 22 2026 Marc-Antoine Perennou <Marc-Antoine@Perennou.com> - 28-1
 - In-buffer text search (Ctrl+F)
 - Trackpad zoom support (Ctrl+scroll)

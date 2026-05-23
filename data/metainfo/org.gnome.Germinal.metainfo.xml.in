@@ -30,6 +30,16 @@
   <update_contact>Marc-Antoine@Perennou.com</update_contact>
   <translation type="gettext">Germinal</translation>
   <releases>
+    <release version="29" type="stable" date="2026-05-23">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Built-in Preferences dialog (font, colors, palette, scrollback, word char exceptions, bell, decorations, startup command, TERM variable) with per-setting reset buttons</li>
+          <li>Palette editor: 16 individual colour swatches arranged as Normal / Bright rows</li>
+          <li>Default colour theme switched to Dracula</li>
+        </ul>
+      </description>
+    </release>
     <release version="28" type="stable" date="2026-05-22">
       <description>
         <p>Changes:</p>
