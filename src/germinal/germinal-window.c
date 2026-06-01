@@ -107,8 +107,8 @@ on_click_pressed (GtkGestureClick *gesture,
     guint button = gtk_gesture_single_get_current_button (GTK_GESTURE_SINGLE (gesture));
     GdkModifierType state = gtk_event_controller_get_current_event_state (GTK_EVENT_CONTROLLER (gesture));
 
-    /* Shift + Left click */
-    if (button == GDK_BUTTON_PRIMARY && (state & GDK_SHIFT_MASK))
+    /* Shift/Ctrl + Left click */
+    if (button == GDK_BUTTON_PRIMARY && (state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK)))
     {
         germinal_terminal_update_url (priv->terminal, x, y);
         germinal_terminal_open_url (priv->terminal);
