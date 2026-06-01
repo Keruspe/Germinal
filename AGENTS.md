@@ -24,6 +24,12 @@ RPM packaging via mock:
 ./mock-build.sh fedora-41-x86_64  # specific chroot
 ```
 
+Ubuntu/Debian packaging for local installs:
+```sh
+./deb-build.sh                    # writes .deb files to _build/deb-result/
+DEB_REVISION=1local2 ./deb-build.sh
+```
+
 ## Architecture
 
 The application is a single `AdwApplication` that creates one window per invocation. The main GObject types are:
