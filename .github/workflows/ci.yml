@@ -46,7 +46,7 @@ jobs:
 
       - name: Validate metainfo
         if: matrix.compiler == 'gcc'
-        run: appstreamcli validate _build/data/org.gnome.Germinal.metainfo.xml
+        run: appstreamcli validate --no-net _build/data/org.gnome.Germinal.metainfo.xml
 
       - name: Validate desktop file
         if: matrix.compiler == 'gcc'
