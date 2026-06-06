@@ -30,6 +30,14 @@
   <update_contact>Marc-Antoine@Perennou.com</update_contact>
   <translation type="gettext">Germinal</translation>
   <releases>
+    <release version="30" type="stable" date="2026-06-06">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Ctrl + left-click now opens the URL under the cursor (in addition to Shift + left-click)</li>
+        </ul>
+      </description>
+    </release>
     <release version="29" type="stable" date="2026-05-23">
       <description>
         <p>Changes:</p>

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Germinal\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-23 16:37+0200\n"
+"POT-Creation-Date: 2026-06-06 14:51+0200\n"
 "PO-Revision-Date: 2026-05-23 00:00+0200\n"
 "Last-Translator: Marc-Antoine Perennou <Marc-Antoine@Perennou.com>\n"
 "Language-Team: French\n"
@@ -176,28 +176,35 @@ msgid ""
 msgstr ""
 
 #: data/metainfo/org.gnome.Germinal.metainfo.xml.in:35
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:45
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:43
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:53
 msgid "Changes:"
 msgstr "Changements :"
 
 #: data/metainfo/org.gnome.Germinal.metainfo.xml.in:37
+msgid ""
+"Ctrl + left-click now opens the URL under the cursor (in addition to Shift + "
+"left-click)"
+msgstr ""
+
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:45
 msgid ""
 "Built-in Preferences dialog (font, colors, palette, scrollback, word char "
 "exceptions, bell, decorations, startup command, TERM variable) with per-"
 "setting reset buttons"
 msgstr ""
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:38
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:46
 msgid ""
 "Palette editor: 16 individual colour swatches arranged as Normal / Bright "
 "rows"
 msgstr ""
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:39
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:47
 msgid "Default colour theme switched to Dracula"
 msgstr ""
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:47
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:55
 msgid ""
 "In-buffer text search (Ctrl+F to open, Escape to close, Ctrl+G/Enter for "
 "next match, Ctrl+Shift+G for previous match)"
@@ -205,36 +212,36 @@ msgstr ""
 "Recherche dans le tampon (Ctrl+F pour ouvrir, Échap pour fermer, Ctrl+G/"
 "Entrée pour l'occurrence suivante, Ctrl+Maj+G pour la précédente)"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:48
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:56
 msgid "Trackpad zoom support (Ctrl+scroll)"
 msgstr "Prise en charge du zoom au pavé tactile (Ctrl+défilement)"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:49
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:57
 msgid "Fix keyboard shortcut controller precedence"
 msgstr "Correction de la priorité du contrôleur de raccourcis clavier"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:55
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:63
 msgid "Major update. Changes:"
 msgstr "Mise à jour majeure. Changements :"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:57
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:65
 msgid "Ported to GTK4 and libadwaita"
 msgstr "Porté vers GTK4 et libadwaita"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:58
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:66
 msgid "Right-click menu ported to GMenuModel and GSimpleActionGroup"
 msgstr "Menu contextuel porté vers GMenuModel et GSimpleActionGroup"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:59
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:67
 msgid "Window title now uses VTE termprop API"
 msgstr "Le titre de fenêtre utilise désormais l'API termprop de VTE"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:60
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:68
 msgid "Scroll zoom gated to discrete wheel events only"
 msgstr ""
 "Le zoom à la molette est désormais limité aux événements de molette discrets"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:61
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:69
 msgid "Minimum GLib 2.76, GTK 4.8, VTE 0.78, libadwaita 1.0"
 msgstr "Minimum GLib 2.76, GTK 4.8, VTE 0.78, libadwaita 1.0"
 
@@ -250,11 +257,11 @@ msgstr "Émulateur de terminal minimaliste basé sur vte"
 msgid "Terminal;"
 msgstr "Terminal;"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:6
+#: data/gsettings/org.gnome.Germinal.gschema.xml:6
 msgid "Number of lines to keep in the buffer"
 msgstr "Nombre de lignes à garder dans le tampon"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:7
+#: data/gsettings/org.gnome.Germinal.gschema.xml:7
 msgid ""
 "Maximum number of lines retained in the terminal scrollback buffer. Higher "
 "values use more memory."
@@ -262,7 +269,7 @@ msgstr ""
 "Nombre maximum de lignes conservées dans le tampon de défilement du "
 "terminal. Des valeurs plus élevées consomment plus de mémoire."
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:15
+#: data/gsettings/org.gnome.Germinal.gschema.xml:15
 msgid ""
 "List of ASCII punctuation characters that should be considered as part of a "
 "word when doing word-wise selection"
@@ -270,7 +277,7 @@ msgstr ""
 "Liste des caractères de ponctuation ASCII à considérer comme faisant partie "
 "d'un mot lors de la sélection par mot"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:16
+#: data/gsettings/org.gnome.Germinal.gschema.xml:16
 msgid ""
 "Characters listed here are treated as word constituents when double-clicking "
 "to select a word. Useful for selecting URLs or paths without surrounding "
@@ -280,11 +287,11 @@ msgstr ""
 "d'un double-clic pour sélectionner un mot. Utile pour sélectionner des URL "
 "ou des chemins sans que la ponctuation environnante ne soit exclue."
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:25
+#: data/gsettings/org.gnome.Germinal.gschema.xml:25
 msgid "The font to use"
 msgstr "La police à utiliser"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:26
+#: data/gsettings/org.gnome.Germinal.gschema.xml:26
 msgid ""
 "Pango font description string for the terminal font, e.g. \"Monospace 12\" "
 "or \"DejaVu Sans Mono 8.5\"."
@@ -292,33 +299,33 @@ msgstr ""
 "Chaîne de description de police Pango pour la police du terminal, p. ex. "
 "« Monospace 12 » ou « DejaVu Sans Mono 8.5 »."
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:34
+#: data/gsettings/org.gnome.Germinal.gschema.xml:34
 msgid "The foreground color"
 msgstr "La couleur de premier plan"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:35
+#: data/gsettings/org.gnome.Germinal.gschema.xml:35
 msgid "Hex color string for the default text color in the terminal."
 msgstr ""
 "Chaîne de couleur hexadécimale pour la couleur du texte par défaut dans le "
 "terminal."
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:42
+#: data/gsettings/org.gnome.Germinal.gschema.xml:42
 msgid "The background color"
 msgstr "La couleur de fond"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:43
+#: data/gsettings/org.gnome.Germinal.gschema.xml:43
 msgid "Hex color string for the terminal background."
 msgstr "Chaîne de couleur hexadécimale pour l'arrière-plan du terminal."
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:58
+#: data/gsettings/org.gnome.Germinal.gschema.xml:58
 msgid "The color palette"
 msgstr "La palette de couleurs"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:63
+#: data/gsettings/org.gnome.Germinal.gschema.xml:63
 msgid "Command to launch at startup"
 msgstr "Commande à lancer au démarrage"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:64
+#: data/gsettings/org.gnome.Germinal.gschema.xml:64
 msgid ""
 "Shell command to run when the terminal opens. Defaults to tmux, which "
 "provides session persistence, splits, and windows. Set to an empty string to "
@@ -328,11 +335,11 @@ msgstr ""
 "assure la persistance de session, les panneaux et les fenêtres. Mettre une "
 "chaîne vide pour lancer le shell par défaut de l'utilisateur."
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:73
+#: data/gsettings/org.gnome.Germinal.gschema.xml:73
 msgid "The value of the TERM env variable"
 msgstr "La valeur de la variable d'environnement TERM"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:74
+#: data/gsettings/org.gnome.Germinal.gschema.xml:74
 msgid ""
 "Value exported as the TERM environment variable inside the terminal. "
 "Determines which terminfo entry programs use for cursor movement, color, and "
@@ -342,11 +349,11 @@ msgstr ""
 "Détermine l'entrée terminfo utilisée par les programmes pour le déplacement "
 "du curseur, les couleurs et autres capacités."
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:83
+#: data/gsettings/org.gnome.Germinal.gschema.xml:83
 msgid "Activate the audible bell"
 msgstr "Activer le beep sonore"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:84
+#: data/gsettings/org.gnome.Germinal.gschema.xml:84
 msgid ""
 "When enabled, the terminal emits an audible beep in response to the BEL "
 "control character. Disabled by default."
@@ -354,11 +361,11 @@ msgstr ""
 "Quand activé, le terminal émet un beep sonore en réponse au caractère de "
 "contrôle BEL. Désactivé par défaut."
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:92
+#: data/gsettings/org.gnome.Germinal.gschema.xml:92
 msgid "Display window decoration"
 msgstr "Afficher la décoration de fenêtre"
 
-#: data/gsettings/org.gnome.Germinal.gschema.xml.in:93
+#: data/gsettings/org.gnome.Germinal.gschema.xml:93
 msgid ""
 "When enabled, the window manager draws a title bar and border around the "
 "terminal window. Disabled by default for a minimal look."

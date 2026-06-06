@@ -64,6 +64,7 @@ germinal /bin/bash -l
 
 - **Right-click** — opens the context menu (copy, paste, zoom, URL actions)
 - **Shift + left-click** — opens the URL under the cursor
+- **Ctrl + left-click** — opens the URL under the cursor
 - **Ctrl + scroll** — zoom in/out
 
 ## Building
@@ -78,7 +79,7 @@ sudo ninja -C _build install
 
 ## Latest release
 
-[Germinal 29](https://www.imagination-land.org/posts/2026-05-23-germinal-29-released.html) — [download tarball](https://www.imagination-land.org/files/germinal/germinal-29.tar.xz)
+[Germinal 30](https://www.imagination-land.org/posts/2026-06-06-germinal-30-released.html) — [download tarball](https://www.imagination-land.org/files/germinal/germinal-30.tar.xz)
 
 More background on the project: [Germinal 7 release post](https://www.imagination-land.org/posts/2015-01-31-germinal-7-released.html).
 
