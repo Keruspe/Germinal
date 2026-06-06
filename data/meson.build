@@ -2,18 +2,7 @@ bindir = get_option('prefix') / get_option('bindir')
 conf   = configuration_data({'bindir': bindir})
 
 # GSettings schema
-gschema_xml = configure_file(
-  input:         'gsettings/org.gnome.Germinal.gschema.xml.in',
-  output:        'org.gnome.Germinal.gschema.xml',
-  configuration: {'GETTEXT_PACKAGE': gettext_package},
-  install:       true,
-  install_dir:   get_option('datadir') / 'glib-2.0' / 'schemas',
-)
-
-# Compile the schema in the build directory for tests
-gnome.compile_schemas(
-  depend_files: gschema_xml,
-)
+subdir('gsettings')
 
 # Desktop file (two-pass: substitute @bindir@, then merge translations)
 desktop_in = configure_file(

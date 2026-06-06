@@ -1,5 +1,5 @@
 <schemalist>
-    <schema id="org.gnome.Germinal" path="/org/gnome/Germinal/" gettext-domain="@GETTEXT_PACKAGE@">
+    <schema id="org.gnome.Germinal" path="/org/gnome/Germinal/" gettext-domain="Germinal">
 
     <key name="scrollback-lines" type="i">
       <default>65536</default>

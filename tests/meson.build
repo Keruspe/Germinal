@@ -11,7 +11,7 @@ test_settings = executable('test-settings',
   include_directories: include_directories('../src/germinal'),
 )
 test('settings', test_settings,
-  env: ['GSETTINGS_SCHEMA_DIR=' + (meson.project_build_root() / 'data')],
+  env: ['GSETTINGS_SCHEMA_DIR=' + (meson.project_build_root() / 'data' / 'gsettings')],
 )
 
 test_palette_editor = executable('test-palette-editor',
@@ -22,5 +22,5 @@ test_palette_editor = executable('test-palette-editor',
   include_directories: include_directories('../src/germinal'),
 )
 test('palette-editor', test_palette_editor,
-  env: ['GSETTINGS_SCHEMA_DIR=' + (meson.project_build_root() / 'data')],
+  env: ['GSETTINGS_SCHEMA_DIR=' + (meson.project_build_root() / 'data' / 'gsettings')],
 )

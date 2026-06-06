@@ -16,7 +16,7 @@ sudo ninja -C _build install
 ninja -C _build test        # run tests
 ```
 
-GSettings schemas must be compiled before running from the build tree. `gnome.post_install(glib_compile_schemas: true)` handles this on install; for local testing, run `glib-compile-schemas _build/data/gsettings/`.
+GSettings schemas must be compiled before running from the build tree. `gnome.post_install(glib_compile_schemas: true)` handles this on install; for the build tree, `gnome.compile_schemas()` in `data/gsettings/meson.build` compiles the schema into `_build/data/gsettings/` (where the test suite's `GSETTINGS_SCHEMA_DIR` points), so `ninja -C _build` produces it automatically. The schema is a static file with a hardcoded `gettext-domain`; its `<summary>`/`<description>` strings are extracted for translation via GLib's ITS rules (listed in `po/POTFILES.in`) and resolved at runtime, so the schema is never templated or merged.
 
 RPM packaging via mock:
 ```sh

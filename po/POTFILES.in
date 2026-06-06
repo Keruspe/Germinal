@@ -4,4 +4,4 @@ src/germinal/germinal-terminal.c
 src/germinal/germinal-window.c
 data/metainfo/org.gnome.Germinal.metainfo.xml.in
 data/desktop/org.gnome.Germinal.desktop.in.in
-data/gsettings/org.gnome.Germinal.gschema.xml.in
+data/gsettings/org.gnome.Germinal.gschema.xml
