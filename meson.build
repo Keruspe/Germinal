@@ -46,6 +46,7 @@ add_project_arguments(
   '-DG_LOG_USE_STRUCTURED=1',
   '-DGETTEXT_PACKAGE="@0@"'.format(gettext_package),
   '-DPACKAGE_STRING="Germinal @0@"'.format(meson.project_version()),
+  '-DPACKAGE_VERSION="@0@"'.format(meson.project_version()),
   '-DLOCALEDIR="@0@"'.format(get_option('prefix') / get_option('localedir')),
   '-DGLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_@0@_@1@'.format(glib_major, glib_minor),
   '-DGLIB_VERSION_MAX_ALLOWED=GLIB_VERSION_@0@_@1@'.format(glib_major, glib_minor),
