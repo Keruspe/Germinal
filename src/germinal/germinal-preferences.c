@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include "germinal-about.h"
 #include "germinal-palette-editor.h"
 #include "germinal-preferences.h"
 #include "germinal-settings.h"
@@ -134,6 +135,15 @@ make_button_row (const gchar *title,
     return row;
 }
 
+/* --- About ------------------------------------------------------------- */
+
+static void
+on_about_activated (AdwButtonRow *row G_GNUC_UNUSED,
+                    gpointer      user_data)
+{
+    adw_dialog_present (germinal_about_new (), GTK_WIDGET (user_data));
+}
+
 /* --- Dialog factory ---------------------------------------------------- */
 
 AdwDialog *
@@ -255,6 +265,17 @@ germinal_preferences_new (void)
     adw_preferences_group_add (command_group, term_row);
 
     adw_preferences_page_add (shell, command_group);
+
+    /* About group */
+    AdwPreferencesGroup *about_group = ADW_PREFERENCES_GROUP (adw_preferences_group_new ());
+
+    GtkWidget *about_row = adw_button_row_new ();
+    adw_preferences_row_set_title (ADW_PREFERENCES_ROW (about_row), _("About Germinal"));
+    adw_button_row_set_start_icon_name (ADW_BUTTON_ROW (about_row), "help-about-symbolic");
+    g_signal_connect_object (about_row, "activated", G_CALLBACK (on_about_activated), dialog, 0);
+    adw_preferences_group_add (about_group, about_row);
+
+    adw_preferences_page_add (shell, about_group);
     adw_preferences_dialog_add (dialog, shell);
 
     return ADW_DIALOG (dialog);

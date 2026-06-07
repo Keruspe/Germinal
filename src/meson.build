@@ -1,5 +1,6 @@
 executable('germinal',
   'germinal/germinal.c',
+  'germinal/germinal-about.c',
   'germinal/germinal-palette-editor.c',
   'germinal/germinal-preferences.c',
   'germinal/germinal-settings.c',
