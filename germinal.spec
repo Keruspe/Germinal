@@ -13,9 +13,9 @@ BuildRequires:  gettext
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  pkgconfig(glib-2.0) >= 2.76
 BuildRequires:  pkgconfig(gio-2.0) >= 2.76
-BuildRequires:  pkgconfig(gtk4) >= 4.8
+BuildRequires:  pkgconfig(gtk4) >= 4.10
 BuildRequires:  pkgconfig(vte-2.91-gtk4) >= 0.78.0
-BuildRequires:  pkgconfig(libadwaita-1) >= 1.0
+BuildRequires:  pkgconfig(libadwaita-1) >= 1.6
 BuildRequires:  pkgconfig(pango)
 BuildRequires:  pkgconfig(libpcre2-8)
 BuildRequires:  pkgconfig(dbus-1)
