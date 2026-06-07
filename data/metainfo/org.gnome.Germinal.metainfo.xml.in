@@ -30,6 +30,16 @@
   <update_contact>Marc-Antoine@Perennou.com</update_contact>
   <translation type="gettext">Germinal</translation>
   <releases>
+    <release version="31" type="stable" date="2026-06-07">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>New About dialog, reachable from the bottom of the Preferences dialog</li>
+          <li>The preferences, settings and about commands (and matching desktop launcher actions) open the corresponding dialog without spawning a terminal</li>
+          <li>Foreground and background colours are now applied even when the palette is empty</li>
+        </ul>
+      </description>
+    </release>
     <release version="30" type="stable" date="2026-06-06">
       <description>
         <p>Changes:</p>

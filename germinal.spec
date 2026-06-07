@@ -1,5 +1,5 @@
 Name:           germinal
-Version:        30
+Version:        31
 Release:        1%{?dist}
 Summary:        Minimalist VTE-based terminal emulator
 
@@ -54,6 +54,11 @@ tmux for tabs and pane management, and uses GSettings for configuration.
 %{_userunitdir}/org.gnome.Germinal.service
 
 %changelog
+* Sun Jun 07 2026 Marc-Antoine Perennou <Marc-Antoine@Perennou.com> - 31-1
+- New About dialog, reachable from Preferences
+- preferences/settings/about commands and desktop actions open the matching dialog
+- Fix foreground/background colours with an empty palette
+
 * Sat Jun 06 2026 Marc-Antoine Perennou <Marc-Antoine@Perennou.com> - 30-1
 - Ctrl + left-click now opens the URL under the cursor
 

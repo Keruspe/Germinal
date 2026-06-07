@@ -1,3 +1,12 @@
+NEW in 31 (07/06/2026)
+=============
+
+- New About dialog (libadwaita), reachable from the bottom of the Preferences dialog
+- `germinal preferences` (or `settings`) opens the Preferences dialog, and `germinal about` opens the About dialog, without spawning a terminal; an already-running instance reuses its window
+- Preferences and About are now exposed as desktop launcher actions
+- Fix: foreground/background colours are now applied even when the palette is empty
+- Updated French translations
+
 NEW in 30 (06/06/2026)
 =============
 

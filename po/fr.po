@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Germinal\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-07 17:32+0200\n"
+"POT-Creation-Date: 2026-06-07 18:02+0200\n"
 "PO-Revision-Date: 2026-05-23 00:00+0200\n"
 "Last-Translator: Marc-Antoine Perennou <Marc-Antoine@Perennou.com>\n"
 "Language-Team: French\n"
@@ -115,7 +115,7 @@ msgstr "Variable TERM"
 msgid "About Germinal"
 msgstr "À propos de Germinal"
 
-#: src/germinal/germinal-terminal.c:147
+#: src/germinal/germinal-terminal.c:148
 msgid "Couldn't exec"
 msgstr "Impossible d'exécuter"
 
@@ -193,12 +193,36 @@ msgstr ""
 "intégrée."
 
 #: data/metainfo/org.gnome.Germinal.metainfo.xml.in:35
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:43
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:45
 #: data/metainfo/org.gnome.Germinal.metainfo.xml.in:53
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:63
 msgid "Changes:"
 msgstr "Changements :"
 
 #: data/metainfo/org.gnome.Germinal.metainfo.xml.in:37
+msgid "New About dialog, reachable from the bottom of the Preferences dialog"
+msgstr ""
+"Nouvelle boîte de dialogue À propos, accessible depuis le bas de la boîte de "
+"dialogue Préférences"
+
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:38
+msgid ""
+"The preferences, settings and about commands (and matching desktop launcher "
+"actions) open the corresponding dialog without spawning a terminal"
+msgstr ""
+"Les commandes preferences, settings et about (et les actions de lanceur de "
+"bureau correspondantes) ouvrent la boîte de dialogue correspondante sans "
+"lancer de terminal"
+
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:39
+msgid ""
+"Foreground and background colours are now applied even when the palette is "
+"empty"
+msgstr ""
+"Les couleurs de premier plan et d'arrière-plan sont désormais appliquées même "
+"lorsque la palette est vide"
+
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:47
 msgid ""
 "Ctrl + left-click now opens the URL under the cursor (in addition to Shift + "
 "left-click)"
@@ -206,7 +230,7 @@ msgstr ""
 "Ctrl + clic gauche ouvre désormais l'URL sous le curseur (en plus de Maj + "
 "clic gauche)"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:45
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:55
 msgid ""
 "Built-in Preferences dialog (font, colors, palette, scrollback, word char "
 "exceptions, bell, decorations, startup command, TERM variable) with per-"
@@ -217,7 +241,7 @@ msgstr ""
 "décorations, commande de démarrage, variable TERM) avec des boutons de "
 "réinitialisation par réglage"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:46
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:56
 msgid ""
 "Palette editor: 16 individual colour swatches arranged as Normal / Bright "
 "rows"
@@ -225,11 +249,11 @@ msgstr ""
 "Éditeur de palette : 16 échantillons de couleur individuels disposés en "
 "rangées Normal / Vif"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:47
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:57
 msgid "Default colour theme switched to Dracula"
 msgstr "Thème de couleurs par défaut remplacé par Dracula"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:55
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:65
 msgid ""
 "In-buffer text search (Ctrl+F to open, Escape to close, Ctrl+G/Enter for "
 "next match, Ctrl+Shift+G for previous match)"
@@ -237,36 +261,36 @@ msgstr ""
 "Recherche dans le tampon (Ctrl+F pour ouvrir, Échap pour fermer, Ctrl+G/"
 "Entrée pour l'occurrence suivante, Ctrl+Maj+G pour la précédente)"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:56
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:66
 msgid "Trackpad zoom support (Ctrl+scroll)"
 msgstr "Prise en charge du zoom au pavé tactile (Ctrl+défilement)"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:57
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:67
 msgid "Fix keyboard shortcut controller precedence"
 msgstr "Correction de la priorité du contrôleur de raccourcis clavier"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:63
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:73
 msgid "Major update. Changes:"
 msgstr "Mise à jour majeure. Changements :"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:65
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:75
 msgid "Ported to GTK4 and libadwaita"
 msgstr "Porté vers GTK4 et libadwaita"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:66
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:76
 msgid "Right-click menu ported to GMenuModel and GSimpleActionGroup"
 msgstr "Menu contextuel porté vers GMenuModel et GSimpleActionGroup"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:67
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:77
 msgid "Window title now uses VTE termprop API"
 msgstr "Le titre de fenêtre utilise désormais l'API termprop de VTE"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:68
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:78
 msgid "Scroll zoom gated to discrete wheel events only"
 msgstr ""
 "Le zoom à la molette est désormais limité aux événements de molette discrets"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:69
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:79
 msgid "Minimum GLib 2.76, GTK 4.8, VTE 0.78, libadwaita 1.0"
 msgstr "Minimum GLib 2.76, GTK 4.8, VTE 0.78, libadwaita 1.0"
 
