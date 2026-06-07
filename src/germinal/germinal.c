@@ -97,7 +97,7 @@ germinal_command_line (GApplication            *application,
     if (g_variant_dict_contains (dict, "version"))
     {
         g_application_command_line_print (command_line, PACKAGE_STRING "\n");
-        return 0;
+        return EXIT_SUCCESS;
     }
 
     g_autoptr (GVariant) v = g_variant_dict_lookup_value (dict, G_OPTION_REMAINING, NULL);

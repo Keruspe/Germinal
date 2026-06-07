@@ -79,8 +79,9 @@ update_colors (GSettings   *settings,
     gsize palette_size = 0;
     g_autofree GdkRGBA *palette = germinal_settings_get_palette (settings, &palette_size);
 
-    if (palette)
-        vte_terminal_set_colors (VTE_TERMINAL (user_data), &forecolor, &backcolor, palette, palette_size);
+    /* palette may be NULL for an empty palette; VTE accepts (NULL, 0) and
+     * still applies the foreground/background colors in that case. */
+    vte_terminal_set_colors (VTE_TERMINAL (user_data), &forecolor, &backcolor, palette, palette_size);
 }
 
 static gboolean
