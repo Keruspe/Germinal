@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Germinal\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-06 14:51+0200\n"
+"POT-Creation-Date: 2026-06-07 17:32+0200\n"
 "PO-Revision-Date: 2026-05-23 00:00+0200\n"
 "Last-Translator: Marc-Antoine Perennou <Marc-Antoine@Perennou.com>\n"
 "Language-Team: French\n"
@@ -17,86 +17,103 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: src/germinal/germinal.c:64
+#: src/germinal/germinal.c:135
 msgid "display the version"
 msgstr "afficher la version"
 
-#: src/germinal/germinal.c:65
+#: src/germinal/germinal.c:136
 msgid "the command to launch"
 msgstr "la commande à lancer"
 
-#: src/germinal/germinal-preferences.c:101
+#: src/germinal/germinal-about.c:19
+#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:7
+msgid "Minimalist VTE-based terminal emulator"
+msgstr "Émulateur de terminal minimaliste basé sur VTE"
+
+#: src/germinal/germinal-palette-editor.c:129
+msgid "Normal"
+msgstr "Normal"
+
+#: src/germinal/germinal-palette-editor.c:129
+msgid "Bright"
+msgstr "Vif"
+
+#: src/germinal/germinal-preferences.c:102
 msgid "Reset to default"
 msgstr "Remettre par défaut"
 
-#: src/germinal/germinal-preferences.c:148
+#: src/germinal/germinal-preferences.c:158
 msgid "Appearance"
 msgstr "Apparence"
 
-#: src/germinal/germinal-preferences.c:153
-#: src/germinal/germinal-preferences.c:156
+#: src/germinal/germinal-preferences.c:163
+#: src/germinal/germinal-preferences.c:166
 msgid "Font"
 msgstr "Police"
 
-#: src/germinal/germinal-preferences.c:165
+#: src/germinal/germinal-preferences.c:175
 msgid "Colors"
 msgstr "Couleurs"
 
-#: src/germinal/germinal-preferences.c:168
+#: src/germinal/germinal-preferences.c:178
 msgid "Foreground color"
 msgstr "Couleur de premier plan"
 
-#: src/germinal/germinal-preferences.c:175
+#: src/germinal/germinal-preferences.c:185
 msgid "Background color"
 msgstr "Couleur de fond"
 
-#: src/germinal/germinal-preferences.c:185
+#: src/germinal/germinal-preferences.c:195
 msgid "Palette"
-msgstr ""
+msgstr "Palette"
 
-#: src/germinal/germinal-preferences.c:194
+#: src/germinal/germinal-preferences.c:204
 msgid "Terminal"
 msgstr "Terminal"
 
-#: src/germinal/germinal-preferences.c:199
+#: src/germinal/germinal-preferences.c:209
 msgid "Behavior"
 msgstr "Comportement"
 
-#: src/germinal/germinal-preferences.c:202
+#: src/germinal/germinal-preferences.c:212
 msgid "Audible bell"
 msgstr "Bip sonore"
 
-#: src/germinal/germinal-preferences.c:208
+#: src/germinal/germinal-preferences.c:218
 msgid "Scrollback lines"
 msgstr "Lignes d'historique"
 
-#: src/germinal/germinal-preferences.c:216
+#: src/germinal/germinal-preferences.c:226
 msgid "Word char exceptions"
 msgstr "Exceptions de caractères composant un mot"
 
-#: src/germinal/germinal-preferences.c:225
+#: src/germinal/germinal-preferences.c:235
 msgid "Window"
 msgstr "Fenêtre"
 
-#: src/germinal/germinal-preferences.c:228
+#: src/germinal/germinal-preferences.c:238
 msgid "Window decorations"
 msgstr "Décorations de fenêtre"
 
-#: src/germinal/germinal-preferences.c:238
+#: src/germinal/germinal-preferences.c:248
 msgid "Shell"
 msgstr "Shell"
 
-#: src/germinal/germinal-preferences.c:243
+#: src/germinal/germinal-preferences.c:253
 msgid "Command"
 msgstr "Commande"
 
-#: src/germinal/germinal-preferences.c:246
+#: src/germinal/germinal-preferences.c:256
 msgid "Startup command"
 msgstr "Commande de démarrage"
 
-#: src/germinal/germinal-preferences.c:252
+#: src/germinal/germinal-preferences.c:262
 msgid "TERM variable"
 msgstr "Variable TERM"
+
+#: src/germinal/germinal-preferences.c:273
+msgid "About Germinal"
+msgstr "À propos de Germinal"
 
 #: src/germinal/germinal-terminal.c:147
 msgid "Couldn't exec"
@@ -115,6 +132,7 @@ msgid "Search"
 msgstr "Rechercher"
 
 #: src/germinal/germinal-window.c:394 src/germinal/germinal-window.c:445
+#: data/desktop/org.gnome.Germinal.desktop.in.in:17
 msgid "Preferences"
 msgstr "Préférences"
 
@@ -151,10 +169,6 @@ msgstr "Quitter"
 msgid "Germinal"
 msgstr "Germinal"
 
-#: data/metainfo/org.gnome.Germinal.metainfo.xml.in:7
-msgid "Minimalist VTE-based terminal emulator"
-msgstr "Émulateur de terminal minimaliste basé sur VTE"
-
 #: data/metainfo/org.gnome.Germinal.metainfo.xml.in:9
 msgid "Marc-Antoine Perennou"
 msgstr "Marc-Antoine Perennou"
@@ -174,6 +188,9 @@ msgid ""
 "Settings for font, colors, scrollback length, and startup command are "
 "available through the built-in Preferences dialog."
 msgstr ""
+"Les réglages de police, de couleurs, de taille de l'historique et de "
+"commande de démarrage sont accessibles via la boîte de dialogue Préférences "
+"intégrée."
 
 #: data/metainfo/org.gnome.Germinal.metainfo.xml.in:35
 #: data/metainfo/org.gnome.Germinal.metainfo.xml.in:43
@@ -186,6 +203,8 @@ msgid ""
 "Ctrl + left-click now opens the URL under the cursor (in addition to Shift + "
 "left-click)"
 msgstr ""
+"Ctrl + clic gauche ouvre désormais l'URL sous le curseur (en plus de Maj + "
+"clic gauche)"
 
 #: data/metainfo/org.gnome.Germinal.metainfo.xml.in:45
 msgid ""
@@ -193,16 +212,22 @@ msgid ""
 "exceptions, bell, decorations, startup command, TERM variable) with per-"
 "setting reset buttons"
 msgstr ""
+"Boîte de dialogue Préférences intégrée (police, couleurs, palette, "
+"historique, exceptions de caractères composant un mot, bip sonore, "
+"décorations, commande de démarrage, variable TERM) avec des boutons de "
+"réinitialisation par réglage"
 
 #: data/metainfo/org.gnome.Germinal.metainfo.xml.in:46
 msgid ""
 "Palette editor: 16 individual colour swatches arranged as Normal / Bright "
 "rows"
 msgstr ""
+"Éditeur de palette : 16 échantillons de couleur individuels disposés en "
+"rangées Normal / Vif"
 
 #: data/metainfo/org.gnome.Germinal.metainfo.xml.in:47
 msgid "Default colour theme switched to Dracula"
-msgstr ""
+msgstr "Thème de couleurs par défaut remplacé par Dracula"
 
 #: data/metainfo/org.gnome.Germinal.metainfo.xml.in:55
 msgid ""
@@ -256,6 +281,10 @@ msgstr "Émulateur de terminal minimaliste basé sur vte"
 #: data/desktop/org.gnome.Germinal.desktop.in.in:6
 msgid "Terminal;"
 msgstr "Terminal;"
+
+#: data/desktop/org.gnome.Germinal.desktop.in.in:21
+msgid "About"
+msgstr "À propos"
 
 #: data/gsettings/org.gnome.Germinal.gschema.xml:6
 msgid "Number of lines to keep in the buffer"

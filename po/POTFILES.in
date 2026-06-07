@@ -1,5 +1,6 @@
 src/germinal/germinal.c
 src/germinal/germinal-about.c
+src/germinal/germinal-palette-editor.c
 src/germinal/germinal-preferences.c
 src/germinal/germinal-terminal.c
 src/germinal/germinal-window.c
