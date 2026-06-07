@@ -1,9 +1,25 @@
 // SPDX-FileCopyrightText: 2011-2026 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include "germinal-preferences.h"
 #include "germinal-window.h"
 
 #include <stdlib.h>
+
+static gboolean
+germinal_command_matches (GStrv        command,
+                          const gchar *name)
+{
+    return command && command[0] && !command[1] && !g_strcmp0 (command[0], name);
+}
+
+static void
+germinal_present_dialog (GerminalWindow *window,
+                         AdwDialog      *dialog)
+{
+    g_signal_connect_object (dialog, "closed", G_CALLBACK (gtk_window_close), window, G_CONNECT_SWAPPED);
+    adw_dialog_present (dialog, GTK_WIDGET (window));
+}
 
 static void
 germinal_create_window (GApplication *application,
@@ -13,6 +29,14 @@ germinal_create_window (GApplication *application,
     GerminalWindow *window = GERMINAL_WINDOW (germinal_window_new (GTK_APPLICATION (application), terminal));
 
     germinal_window_present (window);
+
+    if (germinal_command_matches (command, "preferences") || germinal_command_matches (command, "settings"))
+    {
+        g_strfreev (command);
+        germinal_present_dialog (window, germinal_preferences_new ());
+        return;
+    }
+
     germinal_window_spawn_command (window, command);
 }
 
