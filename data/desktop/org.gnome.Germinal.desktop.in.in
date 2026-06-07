@@ -11,3 +11,12 @@ Terminal=false
 Categories=GTK;GNOME;Utility;TerminalEmulator;System;
 StartupWMClass=germinal
 StartupNotify=true
+Actions=preferences;about;
+
+[Desktop Action preferences]
+Name=Preferences
+Exec=@bindir@/germinal preferences
+
+[Desktop Action about]
+Name=About
+Exec=@bindir@/germinal about
